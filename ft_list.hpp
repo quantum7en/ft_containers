@@ -9,16 +9,16 @@
 #include <string>
 #include <memory> // for allocator
 #include <limits>
-//#include <cstddef> // size_t, ptrdiff_t
+#include <cstddef> // here defined ptrdiff_t
 
 
 //template < class T, class Alloc = allocator<T> > class list;
 namespace ft {
 	template<typename T>
-	typedef T value_type;
 
-	typedef std::ptrdiff_t difference_type; //difference in ptrs
-	typedef size_t size_type;
+	typedef T value_type;
+	typedef std::ptrdiff_t difference_type; // std::ptrdiff_t is the signed integer type of the result of subtracting two pointers.
+	typedef std::size_t size_type;
 
 	template<class T>
 	class Node {
@@ -39,7 +39,10 @@ namespace ft {
 //	template<class T>
 //			class List;
 
-	template < class T, class Alloc = allocator<T> >
+	//template < class T, class Alloc = allocator<T> > class list;
+	template < class T, class Alloc = allocator<T> > // Allocator object. The container keeps and uses an internal copy of this allocator.
+	// Member type allocator_type is the internal allocator type used by the container, defined in list as an alias of its second template parameter (Alloc).
+	// If allocator_type is an instantiation of the default allocator (which has no state), this is not relevant.
 	class List{
 	public:
 
@@ -54,33 +57,63 @@ namespace ft {
 //		typedef ReverseIterator<iterator>                 reverse_iterator;
 //		typedef ReverseIterator<const_iterator>     const_reverse_iterator;
 //		typedef typename ft::ListBidirectionalIterator<T, T*, T&, Node>::difference_type difference_type;
-//
+
+
+
 ////       ***** CONSTRUCTORS *****
 		// The container keeps an internal copy of alloc, which is used to allocate storage throughout its lifetime.
-		// (1) empty container constructor (Default constructor): Constructs an empty container, with no elements.
-		explicit List() : listSize(0) {  //explicit - значит можно создать самостоятельно
-			first = new Node<T>; //создать 1 ноду или нет??
-			last = first;
+		//// (1) empty container constructor (Default constructor): Constructs an empty container, with no elements.
+		// explicit list (const allocator_type& alloc = allocator_type());
+		explicit List() : listSize(0) {  //explicit - значит можно создать по поданному типу (не будет неявного каста)
+			first = new Node();
+			afterLast = first;
 		}
 
-		// (2) fill constructor : Constructs a container with n elements. Each element is a copy of val.
-		explicit List(size_type n, const value_type &value = value_type()) : listSize(0){
+		//// (2) fill constructor : Constructs a container with n elements. Each element is a copy of val.
+		// n - Initial container size
+		// explicit list (size_type n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type());
+		explicit List(size_type n, const value_type &val = value_type()) : listSize(0){
 			first = new Node<T>;
 			last = first;
-			insert(begin(), n, value);
+			//for ()
+			// push_back
+
+			//insert(begin(), n, value);
 		}
-		// (3) range constructor : Constructs a container with as many elements as the range [first,last), with each element constructed from its corresponding element in that range, in the same order.
+		//// (3) range constructor : Constructs a container with as many elements as the range [first,last),
+		//// with each element constructed from its corresponding element in that range, in the same order.
+		//// Input iterators to the initial and final positions in a range. The range used is [first,last), which includes all the elements between first and last, including the element pointed by first but not the element pointed by last.
+		//// The function template argument InputIterator shall be an input iterator type that points to elements of a type from which value_type objects can be constructed.
+		// list (InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type());
 		List (iterator fst, iterator lst) : listSize(0){
 			first = new Node<T>;
 			last = first;
 			insert(begin(), fst, lst);
 		}
-		// (4) copy constructor : Constructs a container with a copy of each of the elements in x, in the same order.
-		// The copy constructor (4) creates a container that keeps and uses a copy of x's allocator.
-		//List()
+		//// (4) copy constructor : Constructs a container with a copy of each of the elements in x, in the same order.
+		//// The copy constructor (4) creates a container that keeps and uses a copy of x's allocator.
+		//// x - Another list object of the same type (with the same class template arguments), whose contents are either copied or acquired.
+		// list (const list& x);
+		List(const List& x): listSize(x.listSize){
+			//TODO
+		}
+
+		void push_back(value_type const & val) {
+			Node *tmp = new Node(val);
+			if (listSize == 0)
+			{
+				first = tmp;
+			}
+			afterLast->prev->next = tmp;
+			tmp->prev = afterLast->prev;
+			afterLast->prev = tmp;
+			tmp->next = afterLast;
+		}
 
 	private:
 		size_type listSize;
+		Node *first;
+		Node *afterLast;
 	};
 
 
