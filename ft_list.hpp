@@ -12,19 +12,22 @@
 #include <cstddef> // here defined ptrdiff_t
 
 
-//template < class T, class Alloc = allocator<T> > class list;
 namespace ft {
 	template<typename T>
+
+	//template <class T, bool isconst = false>
+	//class iterator;
 
 	typedef T value_type;
 	typedef std::ptrdiff_t difference_type; // std::ptrdiff_t is the signed integer type of the result of subtracting two pointers.
 	typedef std::size_t size_type;
 
+
 	template<class T>
 	class Node {
 	private:
 		Node(const Node &arg); //constructor
-		Node &operator = (const Node &arg);
+		Node &operator = (const Node &rhs);
 	public:
 		typedef T value_type;
 		Node(): prev(NULL), next(NULL), data(T()) {}
@@ -33,7 +36,7 @@ namespace ft {
 		Node *prev;
 		Node *next;
 		T data;
-		//специальный указатель на Node sentinal
+		//специальный указатель на Node sentinal - shadow node
 	};
 
 //	template<class T>
@@ -52,6 +55,7 @@ namespace ft {
 		typedef typename allocator_type::pointer                pointer;
 		typedef typename allocator_type::const_pointer          const_pointer;
 
+//		typedef ft::IteratorList <T>	iterator;
 //		typedef BidirectionalIterator<T, T*, T&, Node>  iterator;
 //		typedef BidirectionalIterator<T, const T*, const T&, Node> const_iterator;
 //		typedef ReverseIterator<iterator>                 reverse_iterator;
@@ -59,7 +63,7 @@ namespace ft {
 //		typedef typename ft::ListBidirectionalIterator<T, T*, T&, Node>::difference_type difference_type;
 
 
-
+/*** Member functions: ****/
 ////       ***** CONSTRUCTORS *****
 		// The container keeps an internal copy of alloc, which is used to allocate storage throughout its lifetime.
 		//// (1) empty container constructor (Default constructor): Constructs an empty container, with no elements.
@@ -67,6 +71,8 @@ namespace ft {
 		explicit List() : listSize(0) {  //explicit - значит можно создать по поданному типу (не будет неявного каста)
 			first = new Node();
 			afterLast = first;
+			//first->prev
+			data = NULL;
 		}
 
 		//// (2) fill constructor : Constructs a container with n elements. Each element is a copy of val.
@@ -87,7 +93,7 @@ namespace ft {
 		// list (InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type());
 		List (iterator fst, iterator lst) : listSize(0){
 			first = new Node<T>;
-			last = first;
+			//last = first;
 			insert(begin(), fst, lst);
 		}
 		//// (4) copy constructor : Constructs a container with a copy of each of the elements in x, in the same order.
@@ -97,6 +103,32 @@ namespace ft {
 		List(const List& x): listSize(x.listSize){
 			//TODO
 		}
+
+		~List();
+
+		//// operator=
+
+		//// assign
+
+
+/**** Element access ****/
+//// front - access the first element
+//// back - access the last element
+
+
+
+		iterator begin(){}
+		const_iterator begin() const {};
+		iterator end();
+		const_iterator end()  const {};
+		reverse_iterator rbegin();
+		const_reverse_iterator rbegin() const;
+
+		// true  if container's size = 0, otherwise false
+		bool empty() const {}
+
+		size_type size() const{}
+
 
 		void push_back(value_type const & val) {
 			Node *tmp = new Node(val);
@@ -109,14 +141,55 @@ namespace ft {
 			afterLast->prev = tmp;
 			tmp->next = afterLast;
 		}
+/* определить тип и запустить с нужным значением
+		template<class InputIterator>
+		void insert(iterator position, InputIterator first, InputIterator last){ //возвращает значение которое вставил в контейнер
+			typedef typename ft::is_integer<InputIterator>::type Integral;
+			insert_dispatch(position,, first, last, Integral)
+		}
+		*/
+
+//resize - меняет размер, увеличивает или уменьшает
+//splice - перемещает из одного контейнера в другой, ничего там не удаляя - сменить указатели в одном контейнере другими
+
+		iterator insert(iterator position, const value_type& val) {
+			Node<T> *pos = position.getPtr();
+			Node<T> *ptr = new Node<T>;
+
+			ptr->prev =pos->prev;
+			ptr->next = pos;
+			ptr->data = _alloc.allocate(1);
+			_alloc.construct(ptr->data, val);
+		}
+
+		iterator erase(iterator position) {
+			Node<T> *ptr = position.getPtr();
+			Node<T> *tmp = ptr->next;
+			ptr->prev->next = ptr->next;
+			ptr->next->prev = ptr->prev;
+			if (ptr == first){
+				end->next = first->next;
+				first = first->next;
+				first->prev = end;
+			}
+			if (ptr == last){
+				last = last->prev;
+				last->next = end;
+			}
+
+			_alloc.destroy(ptr->data);
+			_alloc.deallocate(ptr->data, 1);
+			delete ptr;
+			listSize--;
+			return iterator(tmp);
+		}
 
 	private:
 		size_type listSize;
 		Node *first;
+	//	Node *last;
 		Node *afterLast;
 	};
-
-
 
 	template<class T>
 	class listIterator
@@ -143,7 +216,8 @@ namespace ft {
 		}
 
 		listIterator &operator++(){
-			currentPtr = currentPtr->next;
+			if(currentPtr && currentPtr->next)
+				currentPtr = currentPtr->next;
 			return *this;
 		}
 
@@ -193,6 +267,7 @@ namespace ft {
 			//TODO fullfill all fields here
 		};
 
+		//const iterator - мы не можем разыменовать константный итератор и присвоить какое-то значение
 
 	};
 
