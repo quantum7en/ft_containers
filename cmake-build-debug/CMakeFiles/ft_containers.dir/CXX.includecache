@@ -6,9 +6,23 @@
 
 #IncludeRegexTransform: 
 
+/Users/pmelinda/ft_containers/classes.hpp
+iostream
+-
+ostream
+-
+vector
+-
+string
+-
+
 /Users/pmelinda/ft_containers/main.cpp
 iostream
 -
 vector
 -
+string
+-
+classes.hpp
+/Users/pmelinda/ft_containers/classes.hpp
 

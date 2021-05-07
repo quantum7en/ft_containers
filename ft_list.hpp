@@ -50,7 +50,7 @@ namespace ft {
 	public:
 
 		typedef Alloc                                           allocator_type;
-		typedef typename allocator_type::reference              reference;
+		typedef typename allocator_type::reference              reference; //Alloc::
 		typedef typename allocator_type::const_reference        const_reference;
 		typedef typename allocator_type::pointer                pointer;
 		typedef typename allocator_type::const_pointer          const_pointer;
@@ -72,7 +72,7 @@ namespace ft {
 			first = new Node();
 			afterLast = first;
 			//first->prev
-			data = NULL;
+			// afterLast->prev = NULL;
 		}
 
 		//// (2) fill constructor : Constructs a container with n elements. Each element is a copy of val.
@@ -99,12 +99,12 @@ namespace ft {
 		//// (4) copy constructor : Constructs a container with a copy of each of the elements in x, in the same order.
 		//// The copy constructor (4) creates a container that keeps and uses a copy of x's allocator.
 		//// x - Another list object of the same type (with the same class template arguments), whose contents are either copied or acquired.
-		// list (const list& x);
+		// list (const list& x); m_end(NULL), m_size(0), m_allocator(x.m_allocator){}
 		List(const List& x): listSize(x.listSize){
 			//TODO
 		}
 
-		~List();
+		~List(){};
 
 		//// operator=
 
@@ -115,14 +115,18 @@ namespace ft {
 //// front - access the first element
 //// back - access the last element
 
+		typedef ListIterator		iterator;
+		typedef ListConstIterator	const_iterator;
+		typedef ListConstIterator	reverse_iterator;
+		typedef ListConstIterator	const_reverse_iterator;
 
 
-		iterator begin(){}
-		const_iterator begin() const {};
-		iterator end();
-		const_iterator end()  const {};
-		reverse_iterator rbegin();
-		const_reverse_iterator rbegin() const;
+		iterator begin(){ return iterator(end->next); }
+		const_iterator begin() const {  }
+		iterator end(){}
+		const_iterator end()  const {}
+		reverse_iterator rbegin(){}
+		const_reverse_iterator rbegin() const{}
 
 		// true  if container's size = 0, otherwise false
 		bool empty() const {}
@@ -185,11 +189,84 @@ namespace ft {
 		}
 
 	private:
+		//typedef Node<value_type, allocator_type> lst
 		size_type listSize;
 		Node *first;
 	//	Node *last;
 		Node *afterLast;
 	};
+
+
+	//// ***** Non-member functions *****
+	template<T, Alloc>
+	bool operator == (const List<T, Alloc> &lhs, const List<T, Alloc> &rhs){}
+
+	template<T, Alloc>
+	bool operator != (const List<T, Alloc> &lhs, const List<T, Alloc> &rhs){
+		return !operator==(lhs, rhs);
+	}
+
+	template<T, Alloc>
+	bool operator < (const List<T, Alloc> &lhs, const List<T, Alloc> &rhs) {
+		typedef typename List<T, Alloc>::const_iterator it;
+		it lIt = lhs.begin();
+		it lIte = lhs.end();
+		it rIt = rhs.begin();
+		it rIte = rhs.end();
+		for (; lIt != lIte && rIt != rIte; ++lIt, ++rIt){
+			if(*lIt < *rIt)
+				return true;
+			if(*rIt < *lIt)
+				return false;
+		}
+	}
+
+	template<T, Alloc> //?
+	bool operator <= (const List<T, Alloc> &lhs, const List<T, Alloc> &rhs) {
+		it lIt = lhs.begin();
+		it lIte = lhs.end();
+		it rIt = rhs.begin();
+		it rIte = rhs.end();
+		for (; lIt != lIte && rIt != rIte; ++lIt, ++rIt){
+			if(*lIt <= *rIt)
+				return true;
+			if(*rIt <= *lIt) //?
+				return false;
+		}
+	}
+
+	template<T, Alloc>
+	bool operator > (const List<T, Alloc> &lhs, const List<T, Alloc> &rhs) {
+		typedef typename List<T, Alloc>::const_iterator it;
+		it lIt = lhs.begin();
+		it lIte = lhs.end();
+		it rIt = rhs.begin();
+		it rIte = rhs.end();
+		for (; lIt != lIte && rIt != rIte; ++lIt, ++rIt){
+			if(*lIt > *rIt)
+				return true;
+			if(*rIt > *lIt)
+				return false;
+		}
+	}
+
+	template<T, Alloc>
+	bool operator >= (const List<T, Alloc> &lhs, const List<T, Alloc> &rhs) {
+		typedef typename List<T, Alloc>::const_iterator it;
+		it lIt = lhs.begin();
+		it lIte = lhs.end();
+		it rIt = rhs.begin();
+		it rIte = rhs.end();
+		for (; lIt != lIte && rIt != rIte; ++lIt, ++rIt){
+			if(*lIt >= *rIt)
+				return true;
+			if(*rIt >= *lIt)
+				return false;
+		}
+	}
+
+	template<T, Alloc>
+	void swap(const List<T, Alloc> &x, const List<T, Alloc> &y){}
 
 	template<class T>
 	class listIterator

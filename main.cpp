@@ -1,5 +1,7 @@
 #include <iostream>
 #include <vector>
+#include <string>
+#include "classes.hpp"
 
 #define DarkGreen "\033[32m"
 #define Red "\033[31m"
@@ -18,11 +20,18 @@ int main() {
 
 	ListTest();
 
-	std::vector<int> vec;
+	example ex;
+	ex.setStr("hello");
+	//std::ostream &operator<<(std::ostream &os, const example &ex);
+	std::vector<class example> vec;
 	for(int i = 0; i < 7; i++){
-		vec.push_back(i);
+		ex.setStr(i+"qwertyuiopasdfghjkl");
+		vec.push_back(ex);
 		std::cout << vec[i] <<"\t";
 		}
-	std::cout << *(vec.end()) <<"\t";
-	std::cout << *(vec.end()) <<"\t";
+	std::cout << *(vec.end()) <<"a\t";
+	std::cout << *(vec.end()) <<"a\t";
+
+
+	std::cout << "end\n";
 }
