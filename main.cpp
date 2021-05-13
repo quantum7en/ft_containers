@@ -1,5 +1,7 @@
 #include <iostream>
 #include <vector>
+#include <list>
+#include <stack>
 #include <string>
 #include "classes.hpp"
 
@@ -13,7 +15,10 @@
 
 void ListTest(){
 	std::cout << DarkGreen << "List test" << RESET << std::endl;
-
+	std::list<int> first;
+	std::list<int>::iterator it = first.begin();
+	std::cout << *it << "   here\n";
+	std::list<int> second (4,100);
 }
 
 int main() {
@@ -22,7 +27,7 @@ int main() {
 
 	example ex;
 	ex.setStr("hello");
-	//std::ostream &operator<<(std::ostream &os, const example &ex);
+
 	std::vector<class example> vec;
 	for(int i = 0; i < 7; i++){
 		ex.setStr(i+"qwertyuiopasdfghjkl");
@@ -32,6 +37,12 @@ int main() {
 	std::cout << *(vec.end()) <<"a\t";
 	std::cout << *(vec.end()) <<"a\t";
 
+	//std::stack stk(vec, <vector>);
 
+/*	size_type max_size() const throw(){
+//#if defined (__APPLE__) || defined (_WIN32)
+		return std::numeric_limits<size_type>::max() / sizeof(value_type);
+	}
+*/
 	std::cout << "end\n";
 }

@@ -21,6 +21,10 @@ iostream
 -
 vector
 -
+list
+-
+stack
+-
 string
 -
 classes.hpp
