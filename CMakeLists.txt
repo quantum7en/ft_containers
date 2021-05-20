@@ -6,4 +6,4 @@ set(CMAKE_CXX_STANDARD 98)
 add_executable(ft_containers
         #ft_list.hpp
         #ft_list.cpp
-        main.cpp)
+        main.cpp ft_vector.hpp ft_map.hpp ft_stack.hpp ft_queue.hpp)

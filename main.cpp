@@ -4,6 +4,8 @@
 #include <stack>
 #include <string>
 #include "classes.hpp"
+#include "ft_list.hpp"
+#include <map>
 
 #define DarkGreen "\033[32m"
 #define Red "\033[31m"
@@ -14,11 +16,13 @@
 #define RESET "\033[0m"
 
 void ListTest(){
-	std::cout << DarkGreen << "List test" << RESET << std::endl;
+	std::cout << DarkGreen << "std:: List test" << RESET << std::endl;
 	std::list<int> first;
 	std::list<int>::iterator it = first.begin();
 	std::cout << *it << "   here\n";
 	std::list<int> second (4,100);
+
+	std::cout << DarkGreen << "ft:: List test" << RESET << std::endl;
 }
 
 int main() {
@@ -27,6 +31,7 @@ int main() {
 
 	example ex;
 	ex.setStr("hello");
+
 
 	std::vector<class example> vec;
 	for(int i = 0; i < 7; i++){

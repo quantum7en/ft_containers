@@ -13,36 +13,33 @@
 #include <utility>
 
 namespace ft {
-	template<typename T>
+	//template<typename T>
 
-	//template <class T, bool isconst = false>
-	//class iterator;
-
+/*
 	typedef T value_type;
 	typedef std::ptrdiff_t difference_type; // std::ptrdiff_t is the signed integer type of the result of subtracting two pointers.
 	typedef std::size_t size_type;  //remove?
-
+*/
 	template<class T>
 	class Node {
 	private:
-		Node(const Node &arg);
 		Node &operator = (const Node &rhs);
 	public:
 		typedef T value_type;
-		Node(): prev(NULL), next(NULL), data(T()) {} //constructor
-		Node(const value_type &value) : prev(NULL), next(NULL), data(value) {}
+		Node(): prev(NULL), next(NULL), data(T()) {} //default constructor without args
+		Node(const value_type &value) : prev(NULL), next(NULL), data(value) {} //constructor with value for data
+		Node(const Node &rhs) : data(rhs.data) {} //copy constructor
+
 		~Node() {}
+
 		Node *prev;
 		Node *next;
 		T data;
-		//специальный указатель на Node sentinal - shadow node
 	};
 
-//	template<class T>
-//			class List;
 
-	//template < class T, class Alloc = allocator<T> > class list;
-	template < class T, class Alloc = allocator<T> > // Allocator object. The container keeps and uses an internal copy of this allocator.
+	//template < class T, class Alloc = std::allocator<T> > class List;
+	template < class T, class Alloc = std::allocator<T> > // Allocator object. The container keeps and uses an internal copy of this allocator.
 	// Member type allocator_type is the internal allocator type used by the container, defined in list as an alias of its second template parameter (Alloc).
 	// If allocator_type is an instantiation of the default allocator (which has no state), this is not relevant.
 	class List{
@@ -55,11 +52,11 @@ namespace ft {
 		typedef typename allocator_type::pointer                	pointer;		// for the default allocator: value_type*
 		typedef typename allocator_type::const_pointer          	const_pointer;	// for the default allocator: const value_type*
 
-		typedef ft::ListIterator <T>								iterator;
-		typedef std::bidirectional_iterator_tag						iterator_category;
+		typedef std::allocator<Node<T> >							node_allocator; //allocator for a node
+//		typedef ft::ListIterator <T>								iterator;		// bidirectional iterator
 		typedef ft::ListIterator <T, T*, T&, Node> 					iterator;
 		typedef ft::ListIterator <T, const T*, const T&, Node> 		const_iterator;
-//		typedef ReverseIterator<iterator>                 reverse_iterator;
+//		typedef ReverseIterator<iterator>                 reverse_iterator;   дописать реверс итератор
 //		typedef ReverseIterator<const_iterator>     const_reverse_iterator;
 //		typedef typename ft::ListBidirectionalIterator<T, T*, T&, Node>::difference_type difference_type;
 		typedef std::ptrdiff_t										difference_type; // std::ptrdiff_t is the signed integer type of the result of subtracting two pointers.
@@ -73,8 +70,7 @@ namespace ft {
 		// explicit list (const allocator_type& alloc = allocator_type()); //explicit - значит можно создать по поданному типу (не будет неявного каста)
 
 		explicit List(const allocator_type& alloc = allocator_type()) : _listSize(0), _allocator(alloc){
-			//first = new Node();
-
+			first = _node_alloc.allocate(1);
 			afterLast = first;
 			afterLast->next = NULL;
 			afterLast->prev = NULL;
@@ -83,10 +79,11 @@ namespace ft {
 		//// (2) fill constructor : Constructs a container with n elements. Each element is a copy of val.
 		// n - Initial container size
 		// explicit list (size_type n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type());
-		explicit List(size_type n, const value_type &val = value_type()) : _listSize(0){
-			first = new Node<T>;
-			last = first;
-
+		explicit List(size_type n, const value_type &val = value_type(), const allocator_type& alloc = allocator_type()) : _listSize(0), _allocator(alloc){
+			first = _node_alloc.allocate(1);
+			for(size_type i = 0; i < n; i++)
+				push_back(val);
+			//last = first;
 			//insert(begin(), n, value);
 		}
 		//// (3) range constructor : Constructs a container with as many elements as the range [first,last),
@@ -94,10 +91,13 @@ namespace ft {
 		//// Input iterators to the initial and final positions in a range. The range used is [first,last), which includes all the elements between first and last, including the element pointed by first but not the element pointed by last.
 		//// The function template argument InputIterator shall be an input iterator type that points to elements of a type from which value_type objects can be constructed.
 		// list (InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type());
-		List (iterator fst, iterator lst) : _listSize(0){
-			first = new Node<T>;
+		List (iterator first, iterator last, const allocator_type& alloc = allocator_type(), typename enable_if
+				< !std::numeric_limits<InputIterator>::is_specialized >::type* = 0) : _listSize(0), _allocator(alloc){
+			first = _node_alloc.allocate(1);
 			//last = first;
-			insert(begin(), fst, lst);
+			insert(begin(), first, last);
+
+
 		}
 		//// (4) copy constructor : Constructs a container with a copy of each of the elements in x, in the same order.
 		//// The copy constructor (4) creates a container that keeps and uses a copy of x's allocator.
@@ -107,6 +107,10 @@ namespace ft {
 			//TODO
 		}
 
+
+		//This destroys all container elements, and deallocates all the storage capacity allocated by the list container using its allocator.
+		//std::allocator::deallocate : The elements in the array are not destroyed by a call to this member function.
+		//In the default allocator, the block of storage is at some point deallocated using ::operator delete (either during the function call, or later).
 		~List(){
 
 		};
@@ -120,18 +124,26 @@ namespace ft {
 //// front - access the first element
 //// back - access the last element
 
+/*
 		typedef ListIterator		iterator;
 		typedef ListConstIterator	const_iterator;
 		typedef ListConstIterator	reverse_iterator;
 		typedef ListConstIterator	const_reverse_iterator;
+*/
 
+		iterator begin(){
+			return iterator(afterLast->next);} //
+		const_iterator begin() const {
+			return afterLast->next;}
+		iterator end(){
+			return afterLast->prev;}
+		const_iterator end()  const {
+			return afterLast->prev;}
 
-		iterator begin(){ return iterator(afterLast->next); }
-		const_iterator begin() const { return afterLast->next;}
-		iterator end(){ return afterLast->prev; }
-		const_iterator end()  const { return afterLast->prev; }
+			/*
 		reverse_iterator rbegin(){  }
 		const_reverse_iterator rbegin() const{}
+*/
 
 		// true  if container's size = 0, otherwise false
 		bool empty() const {
@@ -172,8 +184,8 @@ namespace ft {
 
 			ptr->prev =pos->prev;
 			ptr->next = pos;
-			ptr->data = _alloc.allocate(1);
-			_alloc.construct(ptr->data, val);
+			ptr->data = _allocator.allocate(1);
+			_allocator.construct(ptr->data, val);
 		}
 
 		iterator erase(iterator position) {
@@ -191,8 +203,8 @@ namespace ft {
 				last->next = end;
 			}
 
-			_alloc.destroy(ptr->data);
-			_alloc.deallocate(ptr->data, 1);
+			_allocator.destroy(ptr->data);
+			_allocator.deallocate(ptr->data, 1);
 			delete ptr;
 			_listSize--;
 			return iterator(tmp);
@@ -217,9 +229,9 @@ namespace ft {
 		size_type _listSize;
 		Node *first;
 	//	Node *last;
-		Node *afterLast;
+		Node *afterLast; //специальный указатель на Node sentinal - shadow node, элемент после последнего
 		allocator_type _allocator;
-
+		node_allocator _node_alloc;
 	};
 
 
@@ -294,8 +306,9 @@ namespace ft {
 	template<T, Alloc>
 	void swap(const List<T, Alloc> &x, const List<T, Alloc> &y){}
 
-	template<class T>
-	class listIterator
+
+	template <class T,class T*,class T&, class Node>
+	class ListIterator
 	{
 	private:
 		Node<T> *currentPtr; //
@@ -306,38 +319,38 @@ namespace ft {
 		typedef T *pointer;
 		typedef const T &const_pointer;
 
-		listIterator() : currentPtr(NULL){} // : Node(NULL){}
-		listIterator(Node<T> *ptr) : currentPtr(ptr) {}
-		listIterator(const Node<const T> *ptr) : currentPtr(const_cast<Node<const T> *>(ptr)) {}
-		listIterator(const listIterator &rhs) : currentPtr(rhs.currentPtr) {}
+		ListIterator() : currentPtr(NULL){} // : Node(NULL){}
+		ListIterator(Node<T> *ptr) : currentPtr(ptr) {}
+		ListIterator(const Node<const T> *ptr) : currentPtr(const_cast<Node<const T> *>(ptr)) {}
+		ListIterator(const ListIterator &rhs) : currentPtr(rhs.currentPtr) {}
 		//TODO all list iterators
-		virtual ~listIterator(){}
+		virtual ~ListIterator(){}
 
-		listIterator &operator = (const listIterator<T> &rhs){
+		ListIterator &operator = (const ListIterator<T> &rhs){
 			currentPtr = rhs.currentPtr;
 			return *this;
 		}
 
-		listIterator &operator++(){
+		ListIterator &operator++(){
 			if(currentPtr && currentPtr->next)
 				currentPtr = currentPtr->next;
 			return *this;
 		}
 
-		listIterator &operator++(int){
-			listIterator tmp = *this;
+		ListIterator &operator++(int){
+			ListIterator tmp = *this;
 			++(*this);
 			//currentPtr = currentPtr->next;
 			return tmp;
 		}
 
-		listIterator &operator--(){
+		ListIterator &operator--(){
 			currentPtr = currentPtr->prev;
 			return *this;
 		}
 
-		listIterator &operator--(int){
-			listIterator *tmp = this;
+		ListIterator &operator--(int){
+			ListIterator *tmp = this;
 			currentPtr = currentPtr->prev;
 			return *tmp;
 		}
@@ -359,11 +372,11 @@ namespace ft {
 		}
 
 //		template<class TYPE>
-		friend bool operator==(const listIterator<TYPE> &lhs, const listIterator<TYPE> &rhs){
+		friend bool operator==(const ListIterator<TYPE> &lhs, const ListIterator<TYPE> &rhs){
 			return (lhs.Node == rhs.Node);
 		}
 
-		friend bool operator!=(const listIterator<TYPE> &lhs, const listIterator<TYPE> &rhs){
+		friend bool operator!=(const ListIterator<TYPE> &lhs, const ListIterator<TYPE> &rhs){
 			return (lhs.Node != rhs.Node);
 		}
 
