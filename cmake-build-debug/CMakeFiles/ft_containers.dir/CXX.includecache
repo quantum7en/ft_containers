@@ -16,20 +16,6 @@ vector
 string
 -
 
-/Users/pmelinda/ft_containers/ft_list.hpp
-iostream
--
-string
--
-memory
--
-limits
--
-cstddef
--
-utility
--
-
 /Users/pmelinda/ft_containers/main.cpp
 iostream
 -
@@ -43,8 +29,6 @@ string
 -
 classes.hpp
 /Users/pmelinda/ft_containers/classes.hpp
-ft_list.hpp
-/Users/pmelinda/ft_containers/ft_list.hpp
 map
 -
 

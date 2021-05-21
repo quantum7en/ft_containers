@@ -91,13 +91,13 @@ namespace ft {
 		//// Input iterators to the initial and final positions in a range. The range used is [first,last), which includes all the elements between first and last, including the element pointed by first but not the element pointed by last.
 		//// The function template argument InputIterator shall be an input iterator type that points to elements of a type from which value_type objects can be constructed.
 		// list (InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type());
-		List (iterator first, iterator last, const allocator_type& alloc = allocator_type(), typename enable_if
-				< !std::numeric_limits<InputIterator>::is_specialized >::type* = 0) : _listSize(0), _allocator(alloc){
+		template <class InputIterator>
+		List (iterator first, iterator last, const allocator_type& alloc = allocator_type(), typename std::enable_if
+				< !std::numeric_limits<InputIterator>::is_specialized >::type* = NULL) : _listSize(0), _allocator(alloc){
 			first = _node_alloc.allocate(1);
+			//TODO
 			//last = first;
 			insert(begin(), first, last);
-
-
 		}
 		//// (4) copy constructor : Constructs a container with a copy of each of the elements in x, in the same order.
 		//// The copy constructor (4) creates a container that keeps and uses a copy of x's allocator.
