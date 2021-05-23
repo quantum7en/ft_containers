@@ -86,6 +86,9 @@
 		<Unit filename="/Users/pmelinda/ft_containers/ft_queue.hpp">
 			<Option target="ft_containers"/>
 		</Unit>
+		<Unit filename="/Users/pmelinda/ft_containers/ft_reverse_iterator.hpp">
+			<Option target="ft_containers"/>
+		</Unit>
 		<Unit filename="/Users/pmelinda/ft_containers/ft_stack.hpp">
 			<Option target="ft_containers"/>
 		</Unit>

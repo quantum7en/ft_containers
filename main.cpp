@@ -4,7 +4,7 @@
 #include <stack>
 #include <string>
 #include "classes.hpp"
-//#include "ft_list.hpp"
+#include "ft_list.hpp"
 #include <map>
 
 #define DarkGreen "\033[32m"
@@ -47,18 +47,33 @@ void ListTest(){
 	}
 
 	PRINT("\n ---| from int |---");
-	int     tmp[] = {5,10,21,42};
-	std::list<int>  test(tmp, tmp + 4);
+	int     tmp[] = {5,-10,21,42,78, -290};
+	std::list<int>  test;
+	for(int i = 0; i < 7; i++)
+		test.push_back(i);
+	std::cout << test.max_size() << "\n";
+	for(std::list<int>::iterator iter = test.begin(); iter != (test.end()); iter++) {
+		std::cout << *iter << "\n";
+		//std::cout << test.empty()std::cout <<
+		//std::cout <<  test.size() << "\t";
+	}
+
+
+	for(std::list<int>::reverse_iterator iter = test.rbegin(); iter != (test.rend()); iter++) {
+		std::cout << *iter << "\t";
+		//std::cout << test.empty() << "\t";
+		//std::cout <<  test.size() << "\t";
+	}
 	//TEST_LIST
 
 PRINT("\n ---| from iterator |---");
-std::list<int>  test(5,10);
+std::list<int>  test_std_list(5,10);
 PRINT("list")
 //TEST_LIST
 PRINT("ft_list")
-std::list<int>::iterator    it = test.begin();
+std::list<int>::iterator    it1 = test_std_list.begin();
 // std::list<int>::iterator end = test.end();
-std::list<int>      ft_test(it, it.operator--(45));
+std::list<int>      ft_test(it1, it1.operator--(45));
 // it.operator--(45)    ==  it--
 // it.operator--()      ==  --it
 //TEST(ft_test);
