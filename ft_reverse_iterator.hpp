@@ -19,7 +19,10 @@ namespace ft {
 		typedef typename Iterator::difference_type		difference_type;
 		typedef typename Iterator::pointer				pointer;
 		typedef typename Iterator::reference			reference;
-		//TODO fullfill all fields here
+		//TODO fill all fields here
+
+
+
 
 		explicit ReverseIterator(iterator_type it) :
 	};

@@ -42,6 +42,8 @@ namespace ft {
 		T const* valptr() const { return std::addressof(data); }
 	};
 
+	template < class T, class Pointer, class Reference, class Node>
+	class ListIterator;
 
 	//template < class T, class Alloc = std::allocator<T> > class List;
 	template < class T, class Alloc = std::allocator<T> > // Allocator object. The container keeps and uses an internal copy of this allocator.
@@ -60,8 +62,8 @@ namespace ft {
 
 		typedef std::allocator <Node <T> >							node_allocator; //allocator for a node
 //		typedef ft::ListIterator <T>								iterator;		// bidirectional iterator
-		typedef ft::ListIterator <T, T*, T&, Node> 					iterator;
-		typedef ft::ListIterator <T, const T*, const T&, Node> 		const_iterator;
+		typedef ft::ListIterator <T, T*, T&, Node<T> > 					iterator;
+		typedef ft::ListIterator <T, const T*, const T&, Node<T> > 		const_iterator;
 		typedef ft::ReverseIterator <iterator>                 			reverse_iterator;  // дописать реверс итератор
 		typedef ft::ReverseIterator <const_iterator>     				const_reverse_iterator;
 //		typedef typename ft::ListBidirectionalIterator<T, T*, T&, Node>::difference_type difference_type;
@@ -210,7 +212,7 @@ namespace ft {
 		/**** Modifiers: ****/
 
 		void push_back(value_type const & val) {
-			Node *tmp = new Node(val);
+			Node<T> *tmp = new Node<T>(val);
 			if (_listSize == 0)
 			{
 				first = tmp;
@@ -251,9 +253,9 @@ namespace ft {
 				first = first->next;
 				first->prev = end;
 			}
-			if (ptr == last){
-				last = last->prev;
-				last->next = end;
+			if (ptr == afterLast->prev){
+				afterLast->prev = afterLast->prev->prev;
+				afterLast->prev->next = end;
 			}
 
 			_allocator.destroy(ptr->data);
@@ -263,7 +265,7 @@ namespace ft {
 			return iterator(tmp);
 		}
 
-		void splice(iterator position, list & x){
+		void splice(iterator position, List & x){
 			if (x.begin() == x.end() || &x == this)
 				return;
 			Node *next = position.base();
@@ -359,94 +361,92 @@ namespace ft {
 	template<T, Alloc>
 	void swap(const List<T, Alloc> &x, const List<T, Alloc> &y){}
 
-
-	//template <class Category, class T, class Distance = ptrdiff_t,
-	//          class Pointer = T*, class Reference = T&>
-
-	template < class T, class T*, class T&, class Node>
-	//template < class Iterator>
+//TODO all list iterators
+	template < class T, class Pointer, class Reference, class Node>
+//	template < T, T*, T&, Node>
 	class ListIterator
 	{
 	private:
-		Node<T> *currentPtr; //указатель на текущую ноду листа
+		Node *_currentNodePtr; //указатель на текущую ноду листа
 	public:
-		typedef T value_type;
+		typedef T			value_type;
+		typedef T *			pointer;
+		typedef T &			reference;
+		typedef ptrdiff_t	difference_type;
 		typedef std::bidirectional_iterator_tag iterator_category; //works??
-		typedef T &reference;
-		typedef const T &const_reference;
-		typedef T *pointer;
-		typedef const T &const_pointer;
+		typedef const T &	const_reference;
+		typedef const T &	const_pointer;
 
-		ListIterator() : currentPtr(){} // : Node(NULL){}
-		explicit ListIterator(Node<T> *ptr) : currentPtr(ptr) {}
-		ListIterator(const Node<const T> *ptr) : currentPtr(const_cast<Node<const T> *>(ptr)) {}
-		ListIterator(const ListIterator &rhs) : currentPtr(rhs.currentPtr) {}
-		//TODO all list iterators
-		virtual ~ListIterator(){}
+		ListIterator() : _currentNodePtr(NULL){}; // ?
+		explicit ListIterator(Node *ptr = 0) : _currentNodePtr(ptr) {};
+		ListIterator(const Node  *ptr) : _currentNodePtr(const_cast<Node *>(ptr)) {};
+		ListIterator(const ListIterator &rhs) : _currentNodePtr(rhs._currentNodePtr) {};
 
-		ListIterator &operator = (const ListIterator<T> &rhs){
-			currentPtr = rhs.currentPtr;
+		virtual ~ListIterator(){};
+
+		//assignation =
+		ListIterator &operator = (const ListIterator &rhs){
+			if (this == &rhs)
+				return *this;
+			_currentNodePtr = rhs._currentNodePtr;
 			return *this;
 		}
 
+		// ++iterator
 		ListIterator &operator++(){
-			if(currentPtr && currentPtr->next)
-				currentPtr = currentPtr->next;
+			if(_currentNodePtr && _currentNodePtr->next)
+				_currentNodePtr = _currentNodePtr->next;
 			return *this;
 		}
 
+		// iterator++
 		ListIterator &operator++(int){
 			ListIterator tmp = *this;
 			++(*this);
-			//currentPtr = currentPtr->next;
+			//_currentNodePtr = _currentNodePtr->next;
 			return tmp;
 		}
 
+		//
 		ListIterator &operator--(){
-			currentPtr = currentPtr->prev;
+			_currentNodePtr = _currentNodePtr->prev;
 			return *this;
 		}
 
+		// todo: how it works
 		ListIterator &operator--(int){
 			ListIterator *tmp = this;
-			currentPtr = currentPtr->prev;
+			_currentNodePtr = _currentNodePtr->prev;
 			return *tmp;
 		}
 
 		reference operator*(){
-			return currentPtr->data;
+			if (_currentNodePtr) // maybe not needed
+				return _currentNodePtr->data;
 		}
 
 		const_reference operator*() const{
-			return currentPtr->data;
+			if (_currentNodePtr) // maybe not needed
+				return _currentNodePtr->data;
 		}
 
 		pointer operator->(){
-			return &(currentPtr->data);
+			return &_currentNodePtr->data;
 		}
 
 		const_pointer operator->() const{
-			return &(currentPtr->data);
+			return &_currentNodePtr->data;
 		}
 
-//		template<class TYPE>
-		friend bool operator==(const ListIterator<TYPE> &lhs, const ListIterator<TYPE> &rhs){
-			return (lhs.Node == rhs.Node);
+
+		bool operator==( const ListIterator &rhs){
+			return (_currentNodePtr == rhs._currentNodePtr);
 		}
 
-		friend bool operator!=(const ListIterator<TYPE> &lhs, const ListIterator<TYPE> &rhs){
-			return (lhs.Node != rhs.Node);
+		bool operator!=( const ListIterator &rhs){
+			return (_currentNodePtr != rhs._currentNodePtr);
 		}
 
-		template < class Iterator>
-				class reverseListIterator{
-		private:
-			Iterator it;
-			reverseListIterator();
-		public:
-			typedef typename Iterator::value_type value_type;
-			//TODO fullfill all fields here
-		};
 
 		//const iterator - мы не можем разыменовать константный итератор и присвоить какое-то значение
 
