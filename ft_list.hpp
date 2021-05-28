@@ -29,6 +29,7 @@ namespace ft {
 	public:
 		typedef T value_type;
 		Node(): prev(NULL), next(NULL), data(T()) {} //default constructor without args
+		Node(Node *prev_n, Node *next_n): prev(prev_n), next(next_n) {} //maybe will use it
 		Node(const value_type &value) : prev(NULL), next(NULL), data(value) {} //constructor with value for data
 		Node(const Node &rhs) : data(rhs.data) {} //copy constructor
 
@@ -61,12 +62,12 @@ namespace ft {
 
 
 		typedef std::allocator <Node <T> >							node_allocator; //allocator for a node
-//		typedef ft::ListIterator <T>								iterator;		// bidirectional iterator
+//		typedef ft::ListIterator <T>								iterator;		// todo delete
 		typedef ft::ListIterator <T, T*, T&, Node<T> > 					iterator;
 		typedef ft::ListIterator <T, const T*, const T&, Node<T> > 		const_iterator;
 		typedef ft::ReverseIterator <iterator>                 			reverse_iterator;  // дописать реверс итератор
 		typedef ft::ReverseIterator <const_iterator>     				const_reverse_iterator;
-//		typedef typename ft::ListBidirectionalIterator<T, T*, T&, Node>::difference_type difference_type;
+		typedef typename ft::ListIterator<T, T*, T&, Node <T> >::difference_type difference_type;
 		typedef std::ptrdiff_t										difference_type; // std::ptrdiff_t is the signed integer type of the result of subtracting two pointers.
 		typedef std::size_t											size_type;
 
@@ -103,7 +104,7 @@ namespace ft {
 		List (iterator first, iterator last, const allocator_type& alloc = allocator_type(), typename std::enable_if
 				< !std::numeric_limits<InputIterator>::is_specialized >::type* = NULL) : _listSize(0), _allocator(alloc){
 			afterLast = _node_alloc.allocate(1);
-			//TODO
+			//TODO write struct enable if
 			//last = first;
 			insert(begin(), first, last);
 		}
@@ -115,7 +116,7 @@ namespace ft {
 			afterLast = _node_alloc.allocate(1);
 			const_iterator ite = x.end();
 			for (const_iterator it(x.begin()); it != ite; it++){
-				this->push_back(*it)
+				this->push_back(*it);
 			}
 		}
 
@@ -211,7 +212,19 @@ namespace ft {
 
 		/**** Modifiers: ****/
 
-		void push_back(value_type const & val) {
+		template <class InputIterator>
+		void assign(InputIterator first, InputIterator last) {
+			List new_list(first, last, allocator_type());
+			this->swap(new_list);
+		}
+
+		void	assign(size_type count, const T& value)
+		{
+			clear();
+			insert(begin(), count, value);
+		}
+
+		void	push_back(value_type const & val) {
 			Node<T> *tmp = new Node<T>(val);
 			if (_listSize == 0)
 			{
@@ -447,7 +460,9 @@ namespace ft {
 			return (_currentNodePtr != rhs._currentNodePtr);
 		}
 
-
+		Node *getPtr() const{
+			return _currentNodePtr;
+		}
 		//const iterator - мы не можем разыменовать константный итератор и присвоить какое-то значение
 
 	};
