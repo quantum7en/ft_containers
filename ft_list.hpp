@@ -68,7 +68,7 @@ namespace ft {
 		typedef ft::ReverseIterator <iterator>                 			reverse_iterator;  // дописать реверс итератор
 		typedef ft::ReverseIterator <const_iterator>     				const_reverse_iterator;
 		typedef typename ft::ListIterator<T, T*, T&, Node <T> >::difference_type difference_type;
-		typedef std::ptrdiff_t										difference_type; // std::ptrdiff_t is the signed integer type of the result of subtracting two pointers.
+//todo		typedef std::ptrdiff_t										difference_type; // std::ptrdiff_t is the signed integer type of the result of subtracting two pointers.
 		typedef std::size_t											size_type;
 
 
@@ -212,22 +212,28 @@ namespace ft {
 
 		/**** Modifiers: ****/
 
+		// Assign new content to container
+		// Assigns new contents to the list container, replacing its current contents, and modifying its size accordingly.
+		// In the range version (1), the new contents are elements constructed from each of the elements in the range between first and last, in the same order.
 		template <class InputIterator>
 		void assign(InputIterator first, InputIterator last) {
+			clear();
 			List new_list(first, last, allocator_type());
 			this->swap(new_list);
 		}
 
-		void	assign(size_type count, const T& value)
+		// In the fill version (2), the new contents are n elements, each initialized to a copy of val.
+		// Any storage needed for the assigned elements is allocated using the internal allocator.
+		// Any elements held in the container before the call are destroyed and replaced by newly constructed elements (no assignments of elements take place).
+		void	assign(size_type n, const value_type& val)
 		{
 			clear();
-			insert(begin(), count, value);
+			insert(this->begin(), n, val);
 		}
 
 		void	push_back(value_type const & val) {
 			Node<T> *tmp = new Node<T>(val);
-			if (_listSize == 0)
-			{
+			if (_listSize == 0){
 				first = tmp;
 			}
 			afterLast->prev->next = tmp;
@@ -235,17 +241,20 @@ namespace ft {
 			afterLast->prev = tmp;
 			tmp->next = afterLast;
 		}
-/* определить тип и запустить с нужным значением
+
 		template<class InputIterator>
 		void insert(iterator position, InputIterator first, InputIterator last){ //возвращает значение которое вставил в контейнер
 			typedef typename ft::is_integer<InputIterator>::type Integral;
 			insert_dispatch(position,, first, last, Integral)
 		}
-		*/
 
 //resize - меняет размер, увеличивает или уменьшает
 //splice - перемещает из одного контейнера в другой, ничего там не удаляя - сменить указатели в одном контейнере другими
 
+		//TODO
+		// The container is extended by inserting new elements before the element at the specified position.
+		// This effectively increases the list size by the amount of elements inserted.
+		// single element (1)
 		iterator insert(iterator position, const value_type& val) {
 			Node<T> *pos = position.getPtr();
 			Node<T> *ptr = new Node<T>;
@@ -254,21 +263,28 @@ namespace ft {
 			ptr->next = pos;
 			ptr->data = _allocator.allocate(1);
 			_allocator.construct(ptr->data, val);
+
+			++this->_listSize;
+			return iterator(ptr);
+
 		}
 
+
+
+		//TODO
 		iterator erase(iterator position) {
 			Node<T> *ptr = position.getPtr();
 			Node<T> *tmp = ptr->next;
 			ptr->prev->next = ptr->next;
 			ptr->next->prev = ptr->prev;
 			if (ptr == first){
-				end->next = first->next;
+				afterLast->next = first->next;
 				first = first->next;
-				first->prev = end;
+				first->prev = afterLast;
 			}
 			if (ptr == afterLast->prev){
 				afterLast->prev = afterLast->prev->prev;
-				afterLast->prev->next = end;
+				afterLast->prev->next = afterLast;
 			}
 
 			_allocator.destroy(ptr->data);
@@ -281,8 +297,8 @@ namespace ft {
 		void splice(iterator position, List & x){
 			if (x.begin() == x.end() || &x == this)
 				return;
-			Node *next = position.base();
-			Node *prev = next->prev;
+			Node<T> *next = position.base();
+			Node<T> *prev = next->prev;
 
 			//			Node *const positionNode = position.getListNode(); //определить позицию пришедшей ноды
 //			//Node *const drawnNode =
@@ -292,12 +308,21 @@ namespace ft {
 //					)
 //					++_listSize;
 		}
+
+
+		// Clear content
+		// Removes all elements from the list container (which are destroyed), and leaving the container with a size of 0.
+		void	clear(){
+			this->erase(begin(), end());
+			// _listSize = 0;
+		}
+
 	private:
 		//typedef Node<value_type, allocator_type> lst
 		size_type _listSize;
-		Node *first;
+		Node<T> *first;
 	//	Node *last;
-		Node *afterLast; //специальный указатель на Node sentinal - shadow node, элемент после последнего
+		Node<T> *afterLast; //специальный указатель на Node sentinal - shadow node, элемент после последнего
 		allocator_type _allocator;
 		node_allocator _node_alloc;
 	};
@@ -426,7 +451,6 @@ namespace ft {
 			return *this;
 		}
 
-		// todo: how it works
 		ListIterator &operator--(int){
 			ListIterator *tmp = this;
 			_currentNodePtr = _currentNodePtr->prev;
@@ -460,6 +484,7 @@ namespace ft {
 			return (_currentNodePtr != rhs._currentNodePtr);
 		}
 
+		//// *** Getter for private field _currentNodePtr
 		Node *getPtr() const{
 			return _currentNodePtr;
 		}
