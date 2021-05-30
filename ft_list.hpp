@@ -11,8 +11,9 @@
 #include <limits>
 #include <cstddef> // here defined ptrdiff_t
 #include <utility>
-#include <type_traits>
+
 #include "ft_reverse_iterator.hpp"
+#include "enable_if.hpp"
 
 namespace ft {
 //	template<typename T>
@@ -39,7 +40,7 @@ namespace ft {
 		Node *next;
 		T data;
 
-		T* valptr() { return std::addressof(data); } //as in gnu src
+		T* valptr() { return std::addressof(data); } ////as in gnu src
 		T const* valptr() const { return std::addressof(data); }
 	};
 
@@ -215,6 +216,7 @@ namespace ft {
 		// Assign new content to container
 		// Assigns new contents to the list container, replacing its current contents, and modifying its size accordingly.
 		// In the range version (1), the new contents are elements constructed from each of the elements in the range between first and last, in the same order.
+		//todo rewrite
 		template <class InputIterator>
 		void assign(InputIterator first, InputIterator last) {
 			clear();
@@ -231,6 +233,14 @@ namespace ft {
 			insert(this->begin(), n, val);
 		}
 
+		// todo
+		//Insert element at beginning
+
+
+
+		// todo pop_front
+		//Delete first element
+
 		void	push_back(value_type const & val) {
 			Node<T> *tmp = new Node<T>(val);
 			if (_listSize == 0){
@@ -242,36 +252,52 @@ namespace ft {
 			tmp->next = afterLast;
 		}
 
-		template<class InputIterator>
-		void insert(iterator position, InputIterator first, InputIterator last){ //возвращает значение которое вставил в контейнер
-			typedef typename ft::is_integer<InputIterator>::type Integral;
-			insert_dispatch(position,, first, last, Integral)
-		}
+		// pop_back
+		// Delete last element
 
-//resize - меняет размер, увеличивает или уменьшает
 //splice - перемещает из одного контейнера в другой, ничего там не удаляя - сменить указатели в одном контейнере другими
 
-		//TODO
 		// The container is extended by inserting new elements before the element at the specified position.
 		// This effectively increases the list size by the amount of elements inserted.
+		// Return : An iterator that points to the first of the newly inserted elements.
 		// single element (1)
 		iterator insert(iterator position, const value_type& val) {
 			Node<T> *pos = position.getPtr();
-			Node<T> *ptr = new Node<T>;
 
-			ptr->prev =pos->prev;
-			ptr->next = pos;
-			ptr->data = _allocator.allocate(1);
-			_allocator.construct(ptr->data, val);
+			Node<T> *newNodePtr = _node_alloc.allocate(1);
+			newNodePtr->prev =pos->prev;
+			newNodePtr->next = pos;
+			newNodePtr->data = _allocator.allocate(1);
+
+			_allocator.construct(newNodePtr->data, val);
 
 			++this->_listSize;
-			return iterator(ptr);
+			return iterator(newNodePtr);
 
 		}
 
+		// fill (2)
+		// n - Number of elements to insert. Each element is initialized to a copy of val.
+		void insert(iterator position, size_type n, const value_type & val) {
+			for (size_type numOfElems = 0; numOfElems < n; numOfElems++) {
+				position = insert(position, val);
+			}
+		}
 
+		// range (3)
+		// first, last : Iterators specifying a range of elements. Copies of the elements in the range [first,last) are inserted at position (in the same order).
+		// Notice that the range includes all the elements between first and last, including the element pointed by first but not the one pointed by last.
+		template<class InputIterator>
+		void insert(iterator position, InputIterator first, InputIterator last, typename enable_if
+				< !std::numeric_limits<InputIterator>::is_specialized >::type* = NULL){
+			for (; first != last; first++, position++)
+				position = insert(position, *first);
+		}
 
-		//TODO
+		//Removes from the list container either a single element (position) or a range of elements ([first,last)).
+		//This effectively reduces the container size by the number of elements removed, which are destroyed.
+		//Unlike other standard sequence containers, list and forward_list objects are specifically designed
+		// to be efficient inserting and removing elements in any position, even in the middle of the sequence.
 		iterator erase(iterator position) {
 			Node<T> *ptr = position.getPtr();
 			Node<T> *tmp = ptr->next;
@@ -289,11 +315,57 @@ namespace ft {
 
 			_allocator.destroy(ptr->data);
 			_allocator.deallocate(ptr->data, 1);
-			delete ptr;
+			delete ptr; //todo
 			_listSize--;
 			return iterator(tmp);
 		}
 
+		// Removes from the list container a range of elements ([first,last)).
+		// first, last : Iterators specifying a range within the list to be removed: [first,last). i.e.,
+		// the range includes all the elements between first and last, including the element pointed by first but not the one pointed by last.
+		iterator erase (iterator first, iterator last) {
+			Node<T> *current;
+			Node<T> *firstPtr;
+			for (; first != last; ++first) {
+				current = first.getPtr();
+			//	current = first.get_node();
+			//	++first;
+				_allocator.destroy(current->data);
+				_allocator.deallocate(current->data, 1);
+			//	destroy_node(current);
+				_listSize--;
+			}
+			return last;
+		}
+
+		//todo Swap content
+
+
+
+		//Resizes the container so that it contains n elements.
+		// If n is smaller than the current container size, the content is reduced to its first n elements, removing those beyond (and destroying them).
+		// If n is greater than the current container size, the content is expanded by inserting at the end as many elements as needed to reach a size of n.
+		// If val is specified, the new elements are initialized as copies of val, otherwise, they are value-initialized.
+		//val - Object whose content is copied to the added elements in case that n is greater than the current container size. If not specified, the default constructor is used instead.
+		void resize (size_type n, value_type val = value_type()){
+			if (n >= _listSize)
+				insert(end(), n - _listSize, val);
+			iterator it = begin();
+			for (size_t count = 0; count < n; count++)
+				++it;
+			erase(it, end());
+		}
+
+		// Clear content
+		// Removes all elements from the list container (which are destroyed), and leaving the container with a size of 0.
+		void	clear(){
+			this->erase(begin(), end());
+			// _listSize = 0;
+		}
+
+		//// Operations:
+
+		//splice - перемещает из одного контейнера в другой, ничего там не удаляя - сменить указатели в одном контейнере другими
 		void splice(iterator position, List & x){
 			if (x.begin() == x.end() || &x == this)
 				return;
@@ -309,14 +381,6 @@ namespace ft {
 //					++_listSize;
 		}
 
-
-		// Clear content
-		// Removes all elements from the list container (which are destroyed), and leaving the container with a size of 0.
-		void	clear(){
-			this->erase(begin(), end());
-			// _listSize = 0;
-		}
-
 	private:
 		//typedef Node<value_type, allocator_type> lst
 		size_type _listSize;
@@ -327,7 +391,7 @@ namespace ft {
 		node_allocator _node_alloc;
 	};
 
-
+/*
 	//// ***** Non-member functions *****
 	template<T, Alloc>
 	bool operator == (const List<T, Alloc> &lhs, const List<T, Alloc> &rhs){}
@@ -398,7 +462,7 @@ namespace ft {
 
 	template<T, Alloc>
 	void swap(const List<T, Alloc> &x, const List<T, Alloc> &y){}
-
+*/
 //TODO all list iterators
 	template < class T, class Pointer, class Reference, class Node>
 //	template < T, T*, T&, Node>

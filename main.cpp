@@ -5,6 +5,7 @@
 #include <string>
 #include "classes.hpp"
 #include "ft_list.hpp"
+#include "ft_map.hpp"
 #include <map>
 
 #define DarkGreen "\033[32m"
