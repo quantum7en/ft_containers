@@ -216,44 +216,51 @@ namespace ft {
 		// Assign new content to container
 		// Assigns new contents to the list container, replacing its current contents, and modifying its size accordingly.
 		// In the range version (1), the new contents are elements constructed from each of the elements in the range between first and last, in the same order.
-		//todo rewrite
 		template <class InputIterator>
 		void assign(InputIterator first, InputIterator last) {
 			clear();
-			List new_list(first, last, allocator_type());
-			this->swap(new_list);
+			insert(this->begin(), first, last);
 		}
 
 		// In the fill version (2), the new contents are n elements, each initialized to a copy of val.
 		// Any storage needed for the assigned elements is allocated using the internal allocator.
 		// Any elements held in the container before the call are destroyed and replaced by newly constructed elements (no assignments of elements take place).
-		void	assign(size_type n, const value_type& val)
-		{
+		void	assign(size_type n, const value_type& val){
 			clear();
 			insert(this->begin(), n, val);
 		}
 
-		// todo
-		//Insert element at beginning
-
-
-
-		// todo pop_front
-		//Delete first element
-
-		void	push_back(value_type const & val) {
-			Node<T> *tmp = new Node<T>(val);
-			if (_listSize == 0){
-				first = tmp;
-			}
-			afterLast->prev->next = tmp;
-			tmp->prev = afterLast->prev;
-			afterLast->prev = tmp;
-			tmp->next = afterLast;
+		//Insert element at beginning. Inserts a new element at the beginning of the list, right before its current first element.
+		// The content of val is copied (or moved) to the inserted element.
+		void	push_front (const value_type& val){
+			insert(this->begin(), val);
 		}
 
-		// pop_back
-		// Delete last element
+		//Delete first element. This destroys the removed element.
+		void	pop_front(){
+			erase(this->begin());
+		}
+
+		void	push_back(value_type const & val) {
+			insert(this->end(), val);
+
+//			Node<T> *tmp = new Node<T>(val);
+//			if (_listSize == 0){
+//				first = tmp;
+//			}
+//			afterLast->prev->next = tmp;
+//			tmp->prev = afterLast->prev;
+//			afterLast->prev = tmp;
+//			tmp->next = afterLast;
+		}
+
+		// Delete last element. Removes the last element in the list container, effectively reducing the container size by one.
+		// This destroys the removed element.
+		void 	pop_back(value_type const & val){
+			iterator it = end();
+			--it;
+			erase(it);
+		}
 
 //splice - перемещает из одного контейнера в другой, ничего там не удаляя - сменить указатели в одном контейнере другими
 
@@ -273,7 +280,6 @@ namespace ft {
 
 			++this->_listSize;
 			return iterator(newNodePtr);
-
 		}
 
 		// fill (2)
@@ -315,7 +321,7 @@ namespace ft {
 
 			_allocator.destroy(ptr->data);
 			_allocator.deallocate(ptr->data, 1);
-			delete ptr; //todo
+			delete ptr; //todo?
 			_listSize--;
 			return iterator(tmp);
 		}
@@ -338,16 +344,24 @@ namespace ft {
 			return last;
 		}
 
-		//todo Swap content
-
-
+		// Exchanges the content of the container by the content of x, which is another list of the same type. Sizes may differ.
+		// After the call to this member function, the elements in this container are those which were in x before the call,
+		// and the elements of x are those which were in this.
+		// All iterators, references and pointers remain valid for the swapped objects.
+		void	swap(List & x){
+			std::swap(afterLast, x.afterLast);
+			std::swap(_allocator, x._allocator);
+			std::swap(_node_alloc, x._node_alloc);
+			//std::swap(afterLast->prev, x.afterLast->prev);
+			std::swap(_listSize, x._listSize);
+		}
 
 		//Resizes the container so that it contains n elements.
 		// If n is smaller than the current container size, the content is reduced to its first n elements, removing those beyond (and destroying them).
 		// If n is greater than the current container size, the content is expanded by inserting at the end as many elements as needed to reach a size of n.
 		// If val is specified, the new elements are initialized as copies of val, otherwise, they are value-initialized.
 		//val - Object whose content is copied to the added elements in case that n is greater than the current container size. If not specified, the default constructor is used instead.
-		void resize (size_type n, value_type val = value_type()){
+		void	resize (size_type n, value_type val = value_type()){
 			if (n >= _listSize)
 				insert(end(), n - _listSize, val);
 			iterator it = begin();
@@ -363,10 +377,11 @@ namespace ft {
 			// _listSize = 0;
 		}
 
-		//// Operations:
+		//// *** Operations: ***
 
 		//splice - перемещает из одного контейнера в другой, ничего там не удаляя - сменить указатели в одном контейнере другими
-		void splice(iterator position, List & x){
+		//
+		void	splice(iterator position, List & x){
 			if (x.begin() == x.end() || &x == this)
 				return;
 			Node<T> *next = position.base();
@@ -380,6 +395,18 @@ namespace ft {
 //					)
 //					++_listSize;
 		}
+
+		////splice
+		void	splice(iterator position, List & x, iterator i){
+
+		}
+
+		////
+		void splice(iterator position, List & x, iterator first, iterator last){
+
+		}
+
+		//
 
 	private:
 		//typedef Node<value_type, allocator_type> lst
