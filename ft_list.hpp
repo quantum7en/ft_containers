@@ -268,10 +268,10 @@ namespace ft {
 			position.getPtr()->prev->next = newNodePtr;
 			position.getPtr()->prev = newNodePtr;
 
-		//	_allocator.construct(&newNodePtr->data);
-		//	newNodePtr->data = _allocator.allocate(1);
+			//	_allocator.construct(&newNodePtr->data);
+			//	newNodePtr->data = _allocator.allocate(1);
 
-		//	_allocator.construct(&newNodePtr->data, val);
+			//	_allocator.construct(&newNodePtr->data, val);
 
 			++this->_listSize;
 			return iterator(newNodePtr);
@@ -333,7 +333,7 @@ namespace ft {
 				_allocator.destroy(&current->data);
 				current->prev->next = current->next;
 				current->next->prev = current->prev;
-				_allocator.deallocate(current->valptr(), 1);
+				_node_alloc.deallocate(current, 1);
 				_listSize--;
 			}
 			return last;
@@ -344,7 +344,7 @@ namespace ft {
 		// and the elements of x are those which were in this.
 		// All iterators, references and pointers remain valid for the swapped objects.
 		void	swap(List & x){
-		//	std::swap(afterLast, x.afterLast);
+			//	std::swap(afterLast, x.afterLast);
 			std::swap(_allocator, x._allocator);
 			std::swap(_node_alloc, x._node_alloc);
 			std::swap(afterLast->prev, x.afterLast->prev);
@@ -384,18 +384,20 @@ namespace ft {
 		void	splice(iterator position, List & x){
 			if (x.begin() == x.end() || &x == this || x._listSize == 0)
 				return;
+
+			this->_listSize	+= x._listSize;
+			x._listSize = 0;
+
 			Node<T>* pos  = position.getPtr();
 			Node<T>* prev = pos->prev;
 
-			pos->prev         = x.afterLast->prev;
-			pos->prev->next   = pos;
-			prev->next        = x.afterLast->next;
-			prev->next->prev  = prev;
-			_listSize        += x._listSize;
-			x._listSize          = 0;
+			prev->next = x.afterLast->next;
+			prev->next->prev = prev;
+			pos->prev = x.afterLast->prev;
+			pos->prev->next = pos;
+
 			x.afterLast->next = x.afterLast;
 			x.afterLast->prev = x.afterLast;
-			//splice(position, x, x.begin(), x.end());
 		}
 
 		// The second version (2) transfers only the element pointed by i from x into the container.
@@ -415,7 +417,7 @@ namespace ft {
 		// Notice that the range includes all the elements between first and last, including the element pointed by first but not the one pointed by last.
 
 		void	splice(iterator position, List & x, iterator first, iterator last){
-			if (first == last) //todo  this == last
+			if (first == last || this == last)
 				return;
 
 			size_t dist;
@@ -429,47 +431,46 @@ namespace ft {
 			Node<T>* firstNode = first.getPtr();
 			Node<T>* lastNode = last.getPtr();
 
-			this->splice(position, created_x);
+			Node<T>* pos  = position.getPtr();
+			Node<T>* prev = pos->prev;
 
-//			Node<T>* pos  = position.getPtr();
-//			Node<T>* prev = pos->prev;
-//			//Node<T>*
-//
-//			pos->prev         = created_x.afterLast->prev;
-//			pos->prev->next   = pos;
-//			prev->next        = created_x.afterLast->next;
-//			prev->next->prev  = prev;
-//
-//			created_x.afterLast->next = created_x.afterLast;
-//			created_x.afterLast->prev = created_x.afterLast;
-//
+			pos->prev         = created_x.afterLast->prev;
+			pos->prev->next   = pos;
+			prev->next        = created_x.afterLast->next;
+			prev->next->prev  = prev;
+
+			created_x.afterLast->next = created_x.afterLast;
+			created_x.afterLast->prev = created_x.afterLast;
+
 			firstNode->prev->next = lastNode;
 			lastNode->prev       = firstNode->prev;
-			while(first != last) {
+			for(; first != last; first++) {
 				firstNode = first.getPtr();
-				++first;
-				
+
 				_allocator.destroy(&firstNode->data);
 				firstNode->prev->next = firstNode->next;
 				firstNode->next->prev = firstNode->prev;
 				_node_alloc.deallocate(firstNode, 1);
 			}
-
-//			// Remove [first, last) from its old position.
-//			last->prev->next  = this;
-//			first->prev->next = last;
-//			this->prev->next  = first;
-//
-//			// Splice [first, last) into its new position.
-//			Node<T>* const tmp = this->prev;
-//			this->prev                = last->prev;
-//			last->prev              = first->prev;
-//			first->prev             = tmp;
 		}
 
-		//// remove
+		//Remove elements with specific value. Removes from the container all the elements that compare equal to val.
+		// This calls the destructor of these objects and reduces the container size by the number of elements removed.
+		//Unlike member function list::erase, which erases elements by their position (using an iterator),
+		// this function (list::remove) removes elements by their value. // Linear in container size (comparisons).
 
-		//// remove if
+		void remove (const value_type& val){
+
+		}
+
+		// A similar function, list::remove_if, exists, which allows for a condition other than an equality comparison to determine whether an element is removed.
+//		Removes from the container all the elements for which Predicate pred returns true.
+//		This calls the destructor of these objects and reduces the container size by the number of elements removed.
+//		The function calls pred(*i) for each element (where i is an iterator to that element). Any of the elements in the list for which this returns true, are removed from the container.
+		template <class Predicate>
+		void remove_if (Predicate pred){
+
+		}
 
 		//// unique
 
