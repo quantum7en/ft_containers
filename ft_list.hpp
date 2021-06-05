@@ -23,6 +23,7 @@ namespace ft {
 /*	typedef std::ptrdiff_t difference_type; // std::ptrdiff_t is the signed integer type of the result of subtracting two pointers.
 	typedef std::size_t size_type;  //remove?
 */
+
 	template<class T>
 	class Node {
 	private:
@@ -72,6 +73,7 @@ namespace ft {
 //todo		typedef std::ptrdiff_t										difference_type; // std::ptrdiff_t is the signed integer type of the result of subtracting two pointers.
 		typedef std::size_t											size_type;
 
+		friend class Node<T>;
 
 /////      *** Member functions: ****
 ////       ***** CONSTRUCTORS *****
@@ -82,8 +84,8 @@ namespace ft {
 		explicit List(const allocator_type& alloc = allocator_type()) : _listSize(0), _allocator(alloc){
 			first = _node_alloc.allocate(1);
 			afterLast = first;
-			afterLast->next = NULL;
-			afterLast->prev = NULL;
+			afterLast->next = afterLast;
+			afterLast->prev = afterLast;
 		}
 
 		//// (2) fill constructor : Constructs a container with n elements. Each element is a copy of val.
@@ -91,10 +93,9 @@ namespace ft {
 		// explicit list (size_type n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type());
 		explicit List(size_type n, const value_type &val = value_type(), const allocator_type& alloc = allocator_type()) : _listSize(0), _allocator(alloc){
 			afterLast = _node_alloc.allocate(1);
-			for(size_type i = 0; i < n; i++)
-				push_back(val);
-			//last = first;
-			//insert(begin(), n, value);
+//			for(size_type i = 0; i < n; i++)
+//				push_back(val);
+			insert(begin(), n, val);
 		}
 		//// (3) range constructor : Constructs a container with as many elements as the range [first,last),
 		//// with each element constructed from its corresponding element in that range, in the same order.
@@ -102,10 +103,9 @@ namespace ft {
 		//// The function template argument InputIterator shall be an input iterator type that points to elements of a type from which value_type objects can be constructed.
 		// list (InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type());
 		template <class InputIterator>
-		List (iterator first, iterator last, const allocator_type& alloc = allocator_type(), typename std::enable_if
+		List (InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type(), typename std::enable_if
 				< !std::numeric_limits<InputIterator>::is_specialized >::type* = NULL) : _listSize(0), _allocator(alloc){
 			afterLast = _node_alloc.allocate(1);
-			//TODO write struct enable if
 			//last = first;
 			insert(begin(), first, last);
 		}
@@ -131,12 +131,6 @@ namespace ft {
 			_node_alloc.deallocate(afterLast, 1);
 		};
 
-/* TODO delete
-		typedef ListIterator		iterator;
-		typedef ListConstIterator	const_iterator;
-		typedef ListConstIterator	reverse_iterator;
-		typedef ListConstIterator	const_reverse_iterator;
-*/
 
 ////**** Iterators: ****
 //std::list::begin - Returns an iterator pointing to the first element in the list container.
@@ -243,15 +237,6 @@ namespace ft {
 
 		void	push_back(value_type const & val) {
 			insert(this->end(), val);
-
-//			Node<T> *tmp = new Node<T>(val);
-//			if (_listSize == 0){
-//				first = tmp;
-//			}
-//			afterLast->prev->next = tmp;
-//			tmp->prev = afterLast->prev;
-//			afterLast->prev = tmp;
-//			tmp->next = afterLast;
 		}
 
 		// Delete last element. Removes the last element in the list container, effectively reducing the container size by one.
@@ -269,14 +254,24 @@ namespace ft {
 		// Return : An iterator that points to the first of the newly inserted elements.
 		// single element (1)
 		iterator insert(iterator position, const value_type& val) {
-			Node<T> *pos = position.getPtr();
+			//Node<T> *pos = position.getPtr();
 
+			//Node<T> *newNodePtr;
 			Node<T> *newNodePtr = _node_alloc.allocate(1);
-			newNodePtr->prev =pos->prev;
-			newNodePtr->next = pos;
-			newNodePtr->data = _allocator.allocate(1);
+			newNodePtr->next = newNodePtr;
+			newNodePtr->prev = newNodePtr;
 
-			_allocator.construct(newNodePtr->data, val);
+			_allocator.construct(&newNodePtr->data, val);
+
+			newNodePtr->prev =position.getPtr()->prev;
+			newNodePtr->next = position.getPtr();
+			position.getPtr()->prev->next = newNodePtr;
+			position.getPtr()->prev = newNodePtr;
+
+		//	_allocator.construct(&newNodePtr->data);
+		//	newNodePtr->data = _allocator.allocate(1);
+
+		//	_allocator.construct(&newNodePtr->data, val);
 
 			++this->_listSize;
 			return iterator(newNodePtr);
@@ -294,7 +289,7 @@ namespace ft {
 		// first, last : Iterators specifying a range of elements. Copies of the elements in the range [first,last) are inserted at position (in the same order).
 		// Notice that the range includes all the elements between first and last, including the element pointed by first but not the one pointed by last.
 		template<class InputIterator>
-		void insert(iterator position, InputIterator first, InputIterator last, typename enable_if
+		void	insert(iterator position, InputIterator first, InputIterator last, typename enable_if
 				< !std::numeric_limits<InputIterator>::is_specialized >::type* = NULL){
 			for (; first != last; first++, position++)
 				position = insert(position, *first);
@@ -321,7 +316,7 @@ namespace ft {
 
 			_allocator.destroy(ptr->data);
 			_allocator.deallocate(ptr->data, 1);
-			delete ptr; //todo?
+			//delete ptr; //todo?
 			_listSize--;
 			return iterator(tmp);
 		}
@@ -332,13 +327,13 @@ namespace ft {
 		iterator erase (iterator first, iterator last) {
 			Node<T> *current;
 			Node<T> *firstPtr;
+
 			for (; first != last; ++first) {
 				current = first.getPtr();
-			//	current = first.get_node();
-			//	++first;
-				_allocator.destroy(current->data);
-				_allocator.deallocate(current->data, 1);
-			//	destroy_node(current);
+				_allocator.destroy(&current->data);
+				current->prev->next = current->next;
+				current->next->prev = current->prev;
+				_allocator.deallocate(current->valptr(), 1);
 				_listSize--;
 			}
 			return last;
@@ -349,10 +344,11 @@ namespace ft {
 		// and the elements of x are those which were in this.
 		// All iterators, references and pointers remain valid for the swapped objects.
 		void	swap(List & x){
-			std::swap(afterLast, x.afterLast);
+		//	std::swap(afterLast, x.afterLast);
 			std::swap(_allocator, x._allocator);
 			std::swap(_node_alloc, x._node_alloc);
-			//std::swap(afterLast->prev, x.afterLast->prev);
+			std::swap(afterLast->prev, x.afterLast->prev);
+			std::swap(afterLast->next, x.afterLast->next);
 			std::swap(_listSize, x._listSize);
 		}
 
@@ -374,61 +370,138 @@ namespace ft {
 		// Removes all elements from the list container (which are destroyed), and leaving the container with a size of 0.
 		void	clear(){
 			this->erase(begin(), end());
-			// _listSize = 0;
+			_listSize = 0;
 		}
 
 		//// *** Operations: ***
 
 		//splice - перемещает из одного контейнера в другой, ничего там не удаляя - сменить указатели в одном контейнере другими
-		//
+		// entire list (1): Transfers elements from x into the container, inserting them at position.
+		// This effectively inserts those elements into the container and removes them from x, altering the sizes of both containers.
+		// The operation does not involve the construction or destruction of any element.
+		// They are transferred, no matter whether x is an lvalue or an rvalue, or whether the value_type supports move-construction or not.
+
 		void	splice(iterator position, List & x){
-			if (x.begin() == x.end() || &x == this)
+			if (x.begin() == x.end() || &x == this || x._listSize == 0)
 				return;
-			Node<T> *next = position.base();
-			Node<T> *prev = next->prev;
+			Node<T>* pos  = position.getPtr();
+			Node<T>* prev = pos->prev;
 
-			//			Node *const positionNode = position.getListNode(); //определить позицию пришедшей ноды
-//			//Node *const drawnNode =
-//			--x._listSize;
-//			Node::insertBetween(
-//
-//					)
-//					++_listSize;
+			pos->prev         = x.afterLast->prev;
+			pos->prev->next   = pos;
+			prev->next        = x.afterLast->next;
+			prev->next->prev  = prev;
+			_listSize        += x._listSize;
+			x._listSize          = 0;
+			x.afterLast->next = x.afterLast;
+			x.afterLast->prev = x.afterLast;
+			//splice(position, x, x.begin(), x.end());
 		}
 
-		////splice
+		// The second version (2) transfers only the element pointed by i from x into the container.
+		// x - A list object of the same type (i.e., with the same template parameters, T and Alloc).
+		//This parameter may be *this if position points to an element not actually being spliced
+		// (for the first version, this is never the case, but for the other versions this is possible).
+		// i - Iterator to an element in x. Only this single element is transferred.
+
 		void	splice(iterator position, List & x, iterator i){
-
+			iterator next_it = i;
+			next_it++;
+			splice(position, x, i, next_it);
 		}
 
-		////
-		void splice(iterator position, List & x, iterator first, iterator last){
+		// The third version (3) transfers the range [first,last) from x into the container.
+		// first,last - Iterators specifying a range of elements in x. Transfers the elements in the range [first,last) to position.
+		// Notice that the range includes all the elements between first and last, including the element pointed by first but not the one pointed by last.
 
+		void	splice(iterator position, List & x, iterator first, iterator last){
+			if (first == last) //todo  this == last
+				return;
+
+			size_t dist;
+			for (dist = 0; first != last; dist++)
+				++first;
+
+			this->_listSize += dist;
+			x._listSize -= dist;
+
+			List created_x(first, last);
+			Node<T>* firstNode = first.getPtr();
+			Node<T>* lastNode = last.getPtr();
+
+			this->splice(position, created_x);
+
+//			Node<T>* pos  = position.getPtr();
+//			Node<T>* prev = pos->prev;
+//			//Node<T>*
+//
+//			pos->prev         = created_x.afterLast->prev;
+//			pos->prev->next   = pos;
+//			prev->next        = created_x.afterLast->next;
+//			prev->next->prev  = prev;
+//
+//			created_x.afterLast->next = created_x.afterLast;
+//			created_x.afterLast->prev = created_x.afterLast;
+//
+			firstNode->prev->next = lastNode;
+			lastNode->prev       = firstNode->prev;
+			while(first != last) {
+				firstNode = first.getPtr();
+				++first;
+				
+				_allocator.destroy(&firstNode->data);
+				firstNode->prev->next = firstNode->next;
+				firstNode->next->prev = firstNode->prev;
+				_node_alloc.deallocate(firstNode, 1);
+			}
+
+//			// Remove [first, last) from its old position.
+//			last->prev->next  = this;
+//			first->prev->next = last;
+//			this->prev->next  = first;
+//
+//			// Splice [first, last) into its new position.
+//			Node<T>* const tmp = this->prev;
+//			this->prev                = last->prev;
+//			last->prev              = first->prev;
+//			first->prev             = tmp;
 		}
 
-		//
+		//// remove
+
+		//// remove if
+
+		//// unique
+
+		//// merge
+
+		//// sort
+
+		//// reverse
+
 
 	private:
 		//typedef Node<value_type, allocator_type> lst
 		size_type _listSize;
 		Node<T> *first;
-	//	Node *last;
 		Node<T> *afterLast; //специальный указатель на Node sentinal - shadow node, элемент после последнего
 		allocator_type _allocator;
 		node_allocator _node_alloc;
 	};
 
-/*
-	//// ***** Non-member functions *****
-	template<T, Alloc>
-	bool operator == (const List<T, Alloc> &lhs, const List<T, Alloc> &rhs){}
 
-	template<T, Alloc>
+	//// ***** Non-member functions *****
+	template< class T, class Alloc>
+	bool operator == (const List<T, Alloc> &lhs, const List<T, Alloc> &rhs){
+
+	}
+
+	template<class T, class Alloc>
 	bool operator != (const List<T, Alloc> &lhs, const List<T, Alloc> &rhs){
 		return !operator==(lhs, rhs);
 	}
 
-	template<T, Alloc>
+	template<class T, class Alloc>
 	bool operator < (const List<T, Alloc> &lhs, const List<T, Alloc> &rhs) {
 		typedef typename List<T, Alloc>::const_iterator it;
 		it lIt = lhs.begin();
@@ -442,10 +515,10 @@ namespace ft {
 				return false;
 		}
 	}
-
-	template<T, Alloc> //?
+/*
+	template<class T, class Alloc>
 	bool operator <= (const List<T, Alloc> &lhs, const List<T, Alloc> &rhs) {
-		it lIt = lhs.begin();
+		ListIterator<T>:: iterator lIt = lhs.begin();
 		it lIte = lhs.end();
 		it rIt = rhs.begin();
 		it rIte = rhs.end();
@@ -456,8 +529,9 @@ namespace ft {
 				return false;
 		}
 	}
+*/
 
-	template<T, Alloc>
+	template<class T, class Alloc>
 	bool operator > (const List<T, Alloc> &lhs, const List<T, Alloc> &rhs) {
 		typedef typename List<T, Alloc>::const_iterator it;
 		it lIt = lhs.begin();
@@ -472,7 +546,7 @@ namespace ft {
 		}
 	}
 
-	template<T, Alloc>
+	template<class T, class Alloc>
 	bool operator >= (const List<T, Alloc> &lhs, const List<T, Alloc> &rhs) {
 		typedef typename List<T, Alloc>::const_iterator it;
 		it lIt = lhs.begin();
@@ -487,9 +561,9 @@ namespace ft {
 		}
 	}
 
-	template<T, Alloc>
+	template<class T, class Alloc>
 	void swap(const List<T, Alloc> &x, const List<T, Alloc> &y){}
-*/
+
 //TODO all list iterators
 	template < class T, class Pointer, class Reference, class Node>
 //	template < T, T*, T&, Node>
@@ -497,6 +571,7 @@ namespace ft {
 	{
 	private:
 		Node *_currentNodePtr; //указатель на текущую ноду листа
+
 	public:
 		typedef T			value_type;
 		typedef T *			pointer;
@@ -506,15 +581,15 @@ namespace ft {
 		typedef const T &	const_reference;
 		typedef const T &	const_pointer;
 
-		ListIterator() : _currentNodePtr(NULL){}; // ?
-		explicit ListIterator(Node *ptr = 0) : _currentNodePtr(ptr) {};
+		//ListIterator() : _currentNodePtr(NULL){}; // ?
+		ListIterator(Node *ptr = 0) : _currentNodePtr(ptr) {};
 		ListIterator(const Node  *ptr) : _currentNodePtr(const_cast<Node *>(ptr)) {};
 		ListIterator(const ListIterator &rhs) : _currentNodePtr(rhs._currentNodePtr) {};
 
 		virtual ~ListIterator(){};
 
 		//assignation =
-		ListIterator &operator = (const ListIterator &rhs){
+		ListIterator operator = (const ListIterator &rhs){
 			if (this == &rhs)
 				return *this;
 			_currentNodePtr = rhs._currentNodePtr;
@@ -522,35 +597,32 @@ namespace ft {
 		}
 
 		// ++iterator
-		ListIterator &operator++(){
-			if(_currentNodePtr && _currentNodePtr->next)
-				_currentNodePtr = _currentNodePtr->next;
+		ListIterator operator++(){
+			_currentNodePtr = _currentNodePtr->next;
 			return *this;
 		}
 
 		// iterator++
-		ListIterator &operator++(int){
-			ListIterator tmp = *this;
-			++(*this);
-			//_currentNodePtr = _currentNodePtr->next;
+		ListIterator operator++(int){
+			ListIterator tmp(*this);
+			_currentNodePtr = _currentNodePtr->next;
 			return tmp;
 		}
 
 		//
-		ListIterator &operator--(){
+		ListIterator operator--(){
 			_currentNodePtr = _currentNodePtr->prev;
 			return *this;
 		}
 
-		ListIterator &operator--(int){
+		ListIterator operator--(int){
 			ListIterator *tmp = this;
 			_currentNodePtr = _currentNodePtr->prev;
 			return *tmp;
 		}
 
 		reference operator*(){
-			if (_currentNodePtr) // maybe not needed
-				return _currentNodePtr->data;
+			return _currentNodePtr->data;
 		}
 
 		const_reference operator*() const{
@@ -575,10 +647,13 @@ namespace ft {
 			return (_currentNodePtr != rhs._currentNodePtr);
 		}
 
+
 		//// *** Getter for private field _currentNodePtr
 		Node *getPtr() const{
 			return _currentNodePtr;
 		}
+
+		friend class List<T>;
 		//const iterator - мы не можем разыменовать константный итератор и присвоить какое-то значение
 
 	};
