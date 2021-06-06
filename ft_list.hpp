@@ -28,7 +28,7 @@ namespace ft {
 		Node(const value_type &value) : prev(NULL), next(NULL), data(value) {} //constructor with value for data
 		Node(const Node &rhs) : data(rhs.data) {} //copy constructor
 
-		~Node() {}
+		~Node() {} //virt?
 
 		Node *prev;
 		Node *next;
@@ -68,13 +68,22 @@ namespace ft {
 
 		friend class Node<T>;
 
+		List &operator=(const List &rhs)
+		{
+			clear();
+			assign(rhs.begin(), rhs.end());
+			_listSize = rhs._listSize;
+			return (*this);
+		};
+
 /////      *** Member functions: ****
 ////       ***** CONSTRUCTORS *****
 		// The container keeps an internal copy of alloc, which is used to allocate storage throughout its lifetime.
 		//// (1) empty container constructor (Default constructor): Constructs an empty container, with no elements.
 		// explicit list (const allocator_type& alloc = allocator_type()); //explicit - значит можно создать по поданному типу (не будет неявного каста)
 
-		explicit List(const allocator_type& alloc = allocator_type()) : _listSize(0), _allocator(alloc){
+		explicit List(const allocator_type& alloc = allocator_type()) : _listSize(0), _allocator(alloc), _node_alloc(node_allocator()){
+
 			afterLast = _node_alloc.allocate(1);
 //			first = _node_alloc.allocate(1);
 //			afterLast = first;
@@ -85,10 +94,12 @@ namespace ft {
 		//// (2) fill constructor : Constructs a container with n elements. Each element is a copy of val.
 		// n - Initial container size
 		// explicit list (size_type n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type());
-		explicit List(size_type n, const value_type &val = value_type(), const allocator_type& alloc = allocator_type()) : _listSize(0), _allocator(alloc){
+		explicit List(size_type n, const value_type &val = value_type(), const allocator_type& alloc = allocator_type()) : _listSize(0), _allocator(alloc),  _node_alloc(node_allocator()){
 			afterLast = _node_alloc.allocate(1);
 //			for(size_type i = 0; i < n; i++)
 //				push_back(val);
+			afterLast->next = afterLast;
+			afterLast->prev = afterLast;
 			insert(begin(), n, val);
 		}
 		//// (3) range constructor : Constructs a container with as many elements as the range [first,last),
@@ -98,9 +109,11 @@ namespace ft {
 		// list (InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type());
 		template <class InputIterator>
 		List (InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type(), typename std::enable_if
-				< !std::numeric_limits<InputIterator>::is_specialized >::type* = NULL) : _listSize(0), _allocator(alloc){
+				< !std::numeric_limits<InputIterator>::is_specialized >::type* = NULL) : _listSize(0), _allocator(alloc), _node_alloc(node_allocator()){
 			afterLast = _node_alloc.allocate(1);
 			//last = first;
+			afterLast->next = afterLast;
+			afterLast->prev = afterLast;
 			insert(begin(), first, last);
 		}
 		//// (4) copy constructor : Constructs a container with a copy of each of the elements in x, in the same order.
@@ -109,6 +122,8 @@ namespace ft {
 		// list (const list& x); m_end(NULL), m_size(0), m_allocator(x.m_allocator){}
 		List(const List& x): _listSize(x._listSize), _allocator(x._allocator){
 			afterLast = _node_alloc.allocate(1);
+			afterLast->next = afterLast;
+			afterLast->prev = afterLast;
 			const_iterator ite = x.end();
 			for (const_iterator it(x.begin()); it != ite; it++){
 				this->push_back(*it);
@@ -248,14 +263,16 @@ namespace ft {
 		// Return : An iterator that points to the first of the newly inserted elements.
 		// single element (1)
 		iterator insert(iterator position, const value_type& val) {
-			Node<T> *pos = position.getPtr();
-
+		//	Node<T> *pos = position.getPtr();
+		//	std::cout<< "print\n";
 			Node<T> *newNodePtr;
 			newNodePtr = _node_alloc.allocate(1);
 			newNodePtr->next = newNodePtr;
 			newNodePtr->prev = newNodePtr;
 
 			_allocator.construct(&newNodePtr->data, val);
+
+			Node<T> *pos = position.getPtr();
 
 			newNodePtr->next = pos;
 			newNodePtr->prev =pos->prev;
@@ -328,13 +345,19 @@ namespace ft {
 		iterator erase (iterator first, iterator last) {
 			Node<T> *current;
 
-			for (; first != last; ++first) {
-				current = first.getPtr();
-				_allocator.destroy(&current->data);
+			Node<T>* fst = first.getPtr();
+			while (fst != last.getPtr()) {
+				current = fst;
+				//_allocator.destroy(&current->data);
+
 				current->prev->next = current->next;
 				current->next->prev = current->prev;
+
+				Node<T>* nxt = current->next;
+				_allocator.destroy(&current->data);
 				_node_alloc.deallocate(current, 1);
 				_listSize--;
+				fst = nxt;
 			}
 			return last;
 		}
@@ -514,7 +537,7 @@ namespace ft {
 				return ;
 			iterator currentIt = this->begin();
 			iterator next = currentIt;
-			iterator ite = end();
+			iterator ite = this->end();
 			//++next;
 			while (next != ite)
 			{
@@ -657,6 +680,7 @@ namespace ft {
 	void swap(const List<T, Alloc> &x, const List<T, Alloc> &y){}
 
 //TODO all list iterators
+
 	template < class T, class Pointer, class Reference, class Node>
 //	template < T, T*, T&, Node>
 	class ListIterator

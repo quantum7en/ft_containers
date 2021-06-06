@@ -1519,13 +1519,57 @@ void ft_erase_position_test() {
 	std::cout << std::endl;
 }
 
+template<typename T>
+void	print_container_content(ft::List<T>& l, const std::string& name = "container") {
+	std::cout << name << " contains:";
+	for (typename ft::List<T>::iterator it = l.begin(); it != l.end(); it++)
+		std::cout << ' ' << *it;
+	std::cout << std::endl;
+}
+
+void	constructors_test() {
+	ft::List<int>	defaultList; // default constructor makes an empty list
+	print_container_content(defaultList, "defaultList");
+	ft::List<int>	fillList(5, -10); // fill constructor makes 5 elements with value -10
+	print_container_content(fillList, "fillList");
+
+	for (int i = 0; i < 5; i++)
+		defaultList.push_front(i * 4);
+	ft::List<int>::iterator	advance_it = defaultList.begin();
+	std::advance(advance_it, 3);
+	ft::List<int>	rangeList(defaultList.begin(), advance_it); // range constructor takes a range of 2 iterators
+	print_container_content(rangeList, "rangeList");
+
+	ft::List<int>	copyList(rangeList);
+	print_container_content(copyList, "copyList");
+	copyList = defaultList;
+	print_container_content(copyList, "copyList");
+	std::cout<< "here\n";
+	std::cout << std::endl;
+}
+
+void reverse_iterator_test() {
+	std::cout << "reverse_iterator_test" << std::endl;
+	lib::con<int> def;
+	for (int i = 0; i < 10; ++i) {
+		def.push_back(i);
+	}
+	lib::con<int>::reverse_iterator rit(def.rbegin());
+
+	while (rit != def.rend()) {
+		std::cout << *rit << " ";
+		++rit;
+	}
+	std::cout << std::endl;
+}
+
 void ListTest(){
 
+//	constructors_test();
 	ft_iterator_test();
+	reverse_iterator_test();
 	ft_constructors_capacity_test();
 	ft_element_access_test();
-
-
 
 //	lib::con<Test>           empty;
 //	lib::con<Test>           mouse;
