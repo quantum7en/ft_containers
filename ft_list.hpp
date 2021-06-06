@@ -16,13 +16,6 @@
 #include "enable_if.hpp"
 
 namespace ft {
-//	template<typename T>
-
-
-//	typedef T value_type;
-/*	typedef std::ptrdiff_t difference_type; // std::ptrdiff_t is the signed integer type of the result of subtracting two pointers.
-	typedef std::size_t size_type;  //remove?
-*/
 
 	template<class T>
 	class Node {
@@ -82,8 +75,9 @@ namespace ft {
 		// explicit list (const allocator_type& alloc = allocator_type()); //explicit - значит можно создать по поданному типу (не будет неявного каста)
 
 		explicit List(const allocator_type& alloc = allocator_type()) : _listSize(0), _allocator(alloc){
-			first = _node_alloc.allocate(1);
-			afterLast = first;
+			afterLast = _node_alloc.allocate(1);
+//			first = _node_alloc.allocate(1);
+//			afterLast = first;
 			afterLast->next = afterLast;
 			afterLast->prev = afterLast;
 		}
@@ -254,19 +248,25 @@ namespace ft {
 		// Return : An iterator that points to the first of the newly inserted elements.
 		// single element (1)
 		iterator insert(iterator position, const value_type& val) {
-			//Node<T> *pos = position.getPtr();
+			Node<T> *pos = position.getPtr();
 
-			//Node<T> *newNodePtr;
-			Node<T> *newNodePtr = _node_alloc.allocate(1);
+			Node<T> *newNodePtr;
+			newNodePtr = _node_alloc.allocate(1);
 			newNodePtr->next = newNodePtr;
 			newNodePtr->prev = newNodePtr;
 
 			_allocator.construct(&newNodePtr->data, val);
 
-			newNodePtr->prev =position.getPtr()->prev;
-			newNodePtr->next = position.getPtr();
-			position.getPtr()->prev->next = newNodePtr;
-			position.getPtr()->prev = newNodePtr;
+			newNodePtr->next = pos;
+			newNodePtr->prev =pos->prev;
+			pos->prev->next = newNodePtr;
+			pos->prev = newNodePtr;
+
+//			newNodePtr->next = position.getPtr();
+//			newNodePtr->prev =position.getPtr()->prev;
+////			newNodePtr->next = position.getPtr();
+//			position.getPtr()->prev->next = newNodePtr;
+//			position.getPtr()->prev = newNodePtr;
 
 			//	_allocator.construct(&newNodePtr->data);
 			//	newNodePtr->data = _allocator.allocate(1);
@@ -302,21 +302,22 @@ namespace ft {
 		iterator erase(iterator position) {
 			Node<T> *ptr = position.getPtr();
 			Node<T> *tmp = ptr->next;
-			ptr->prev->next = ptr->next;
-			ptr->next->prev = ptr->prev;
-			if (ptr == first){
-				afterLast->next = first->next;
-				first = first->next;
-				first->prev = afterLast;
+//			ptr->prev->next = ptr->next;
+//			ptr->next->prev = ptr->prev;
+			if (ptr == afterLast->next){
+				afterLast->next = afterLast->next->next;
+				afterLast->next = afterLast->next->next;
+				afterLast->next->prev = afterLast;
 			}
 			if (ptr == afterLast->prev){
 				afterLast->prev = afterLast->prev->prev;
 				afterLast->prev->next = afterLast;
 			}
 
-			_allocator.destroy(ptr->data);
-			_allocator.deallocate(ptr->data, 1);
-			//delete ptr; //todo?
+			_allocator.destroy(&ptr->data);
+			ptr->prev->next = ptr->next;
+			ptr->next->prev = ptr->prev;
+			_node_alloc.deallocate(ptr, 1);
 			_listSize--;
 			return iterator(tmp);
 		}
@@ -326,7 +327,6 @@ namespace ft {
 		// the range includes all the elements between first and last, including the element pointed by first but not the one pointed by last.
 		iterator erase (iterator first, iterator last) {
 			Node<T> *current;
-			Node<T> *firstPtr;
 
 			for (; first != last; ++first) {
 				current = first.getPtr();
@@ -417,7 +417,7 @@ namespace ft {
 		// Notice that the range includes all the elements between first and last, including the element pointed by first but not the one pointed by last.
 
 		void	splice(iterator position, List & x, iterator first, iterator last){
-			if (first == last || this == last)
+			if (first == last)
 				return;
 
 			size_t dist;
@@ -459,8 +459,13 @@ namespace ft {
 		//Unlike member function list::erase, which erases elements by their position (using an iterator),
 		// this function (list::remove) removes elements by their value. // Linear in container size (comparisons).
 
-		void remove (const value_type& val){
-
+		void	remove (const value_type& val){
+			for (iterator it = begin(); it != end(); ++it){
+				if (it.getPtr()->data == val)
+					it = erase(it);
+//				else
+//					++it;
+			}
 		}
 
 		// A similar function, list::remove_if, exists, which allows for a condition other than an equality comparison to determine whether an element is removed.
@@ -468,23 +473,109 @@ namespace ft {
 //		This calls the destructor of these objects and reduces the container size by the number of elements removed.
 //		The function calls pred(*i) for each element (where i is an iterator to that element). Any of the elements in the list for which this returns true, are removed from the container.
 		template <class Predicate>
-		void remove_if (Predicate pred){
-
+		void	remove_if (Predicate pred){
+			for(iterator it = begin(); it != end(); ++it){
+				if(pred(*it))
+					it = erase(it);
+//				else
+//					++it;
+			}
 		}
 
-		//// unique
+		//The version with no parameters (1), removes all but the first element from every consecutive group of equal elements in the container.
+		// Notice that an element is only removed from the list container if it compares equal to the element immediately preceding it.
+		// Thus, this function is especially useful for sorted lists.
+		void	unique(){
+			if (begin() == end() || _listSize == 1)
+				return ;
+			iterator currentIt = this->begin();
+			iterator next = currentIt;
+			++next;
+			while (next != end())
+			{
+				if (*currentIt == *next){
+					erase(next);
+				}
+				else
+				{
+					currentIt = next;
+					++next;
+				}
+			}
+		}
+
+		//The second version (2), takes as argument a specific comparison function that determine the "uniqueness" of an element.
+		// In fact, any behavior can be implemented (and not only an equality comparison), but notice that the function will
+		// call binary_pred(*i,*(i-1)) for all pairs of elements (where i is an iterator to an element, starting from the second)
+		// and remove i from the list if the predicate returns true.
+		template <class BinaryPredicate>
+		void	unique (BinaryPredicate binary_pred){
+			if (begin() == end() || _listSize == 1)
+				return ;
+			iterator currentIt = this->begin();
+			iterator next = currentIt;
+			iterator ite = end();
+			//++next;
+			while (next != ite)
+			{
+				++next;
+				if (binary_pred(*currentIt, *next)){
+					erase(next);
+					next = currentIt;
+				}
+				else
+				{
+					currentIt = next;
+					//++next;
+				}
+			}
+		}
 
 		//// merge
 
+
+
 		//// sort
+		// Sorts the elements in the list, altering their position within the container.
+		// The sorting is performed by applying an algorithm that uses either operator< (in version (1)) or comp (in version (2)) to compare elements. This comparison shall produce a strict weak ordering of the elements (i.e., a consistent transitive comparison, without considering its reflexiveness).
+		//The resulting order of equivalent elements is stable: i.e., equivalent elements preserve the relative order they had before the call.
+		//The entire operation does not involve the construction, destruction or copy of any element object. Elements are moved within the container.
+		void	sort(){
 
-		//// reverse
+		}
 
+		template <class Compare>
+		void sort (Compare comp){
+
+		}
+
+		// reverse. Reverses the order of the elements in the list container.
+		void	reverse(){
+			iterator it = begin();
+			iterator begin = it;
+			while (it != end())
+			{
+				if (it._currentNodePtr->next == end())
+				{
+					iterator tmp = it;
+					tmp._currentNodePtr->next = tmp._currentNodePtr->prev;
+					tmp._currentNodePtr->prev = NULL;
+					afterLast->next = tmp._currentNodePtr;
+				}
+				else
+				{
+					std::swap(it._currentNodePtr->prev, it._currentNodePtr->next);
+				}
+				++it;
+			}
+			afterLast->prev->prev = begin._currentNodePtr;
+			begin._currentNodePtr->next = afterLast->prev;
+		}
 
 	private:
 		//typedef Node<value_type, allocator_type> lst
 		size_type _listSize;
-		Node<T> *first;
+		//Node<T> *first;
 		Node<T> *afterLast; //специальный указатель на Node sentinal - shadow node, элемент после последнего
 		allocator_type _allocator;
 		node_allocator _node_alloc;
