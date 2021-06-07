@@ -7,15 +7,24 @@
 
 #include <stddef.h>
 
+////whenever the reverse_iterator is incremented, its base iterator is decreased, and vice versa. A copy of the base iterator with the current state can be obtained at any time by calling member base.
+/*
+ * Notice however that when an iterator is reversed, the reversed version does not point to the same element in the range,
+ * but to the one preceding it. This is so, in order to arrange for the past-the-end element of a range:
+ * An iterator pointing to a past-the-end element in a range, when reversed,
+ * is pointing to the last element (not past it) of the range (this would be the first element of the reversed range).
+ * And if an iterator to the first element in a range is reversed, the reversed iterator points to the element before the first element (this would be the past-the-end element of the reversed range).
+ */
+
 namespace ft {
 	template < class Iter>
 	class ReverseIterator {
 	private:
 		Iter _it;  //the underlying iterator of which base() returns a copy
-		ReverseIterator();
+	//	ReverseIterator();
 
 	public:
-		typedef Iter					iterator_type;
+		typedef Iter								iterator_type;
 
 		typedef typename Iter::iterator_category	iterator_category;
 		typedef typename Iter::value_type			value_type;
@@ -24,8 +33,12 @@ namespace ft {
 		typedef typename Iter::reference			reference;
 
 //// *** Member functions ***
+
+		ReverseIterator() : _it(){}
 		explicit ReverseIterator(iterator_type itr) : _it(itr){}
-		ReverseIterator(const ReverseIterator<Iter> &rhs_rev_it) : _it(rhs_rev_it.base){} //todo Iter?
+
+		template<class RevIter>
+		ReverseIterator(const ReverseIterator<RevIter> &rhs_rev_it) : _it(rhs_rev_it.base){} //todo Iter?
 		virtual ~ReverseIterator(){}
 
 		//= assigns another iterator
@@ -38,14 +51,20 @@ namespace ft {
 
 		//accesses the underlying iterator. Return base iterator
 		iterator_type	base() const{
-			return _it;
+			return this->_it;
 		}
 
 		//operator* Dereference iterator. Returns a reference to the element pointed to by the iterator.
 		// Internally, the function decreases a copy of its base iterator and returns the result of dereferencing it.
+
+		reference	operator*() {
+			//Iter iterator(_it);
+			return *this->_it;
+		}
+
 		reference	operator*() const{
-			Iter iterator(_it);
-			return *--iterator;
+			//Iter iterator(_it);
+			return *_it;
 		}
 
 		//Return value: Reference or pointer to the element previous to current.
@@ -65,8 +84,8 @@ namespace ft {
 
 		//++iterator
 		//Internally, the pre-increment version (1) decrements the base iterator kept by the object (as if applying operator-- to it).
-		ReverseIterator<Iter>	&operator++() {
-			--_it;
+		ReverseIterator<Iter>	operator++() {
+			--this->_it;
 			return *this;
 		}
 
@@ -74,7 +93,7 @@ namespace ft {
 		//The post-increment version (2) returns the value *this had before the call.
 		ReverseIterator<Iter> operator++(int) {
 			ReverseIterator<Iter> tmp(*this);
-			--_it;
+			--this->_it;
 			return tmp;
 		}
 
@@ -146,14 +165,14 @@ namespace ft {
 
 	////*** Relational Operators ***
 
-	template <typename Iter1, typename Iter2>
+	template <class Iter1, class Iter2>
 	bool operator==(const ReverseIterator<Iter1>& lhs, const ReverseIterator<Iter2>& rhs)
 	{
 		return (lhs.base() == rhs.base());
 	}
 
-	template <typename Iter1, typename Iter2>
-	bool operator!=(const ReverseIterator<Iter1>& lhs, const ReverseIterator<Iter2>& rhs)
+	template <class Iter1, class Iter2>
+	bool operator!=(const ReverseIterator<Iter1> & lhs, const ReverseIterator<Iter2> & rhs)
 	{
 		return (lhs.base() != rhs.base());
 	}

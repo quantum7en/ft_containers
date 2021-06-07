@@ -55,9 +55,7 @@ namespace ft {
 		typedef typename allocator_type::pointer                	pointer;		// for the default allocator: value_type*
 		typedef typename allocator_type::const_pointer          	const_pointer;	// for the default allocator: const value_type*
 
-
-		typedef std::allocator <Node <T> >							node_allocator; //allocator for a node
-//		typedef ft::ListIterator <T>								iterator;		// todo delete
+		typedef std::allocator <Node <T> >								node_allocator; //allocator for a node
 		typedef ft::ListIterator <T, T*, T&, Node<T> > 					iterator;
 		typedef ft::ListIterator <T, const T*, const T&, Node<T> > 		const_iterator;
 		typedef ft::ReverseIterator <iterator>                 			reverse_iterator;  // дописать реверс итератор
@@ -68,6 +66,8 @@ namespace ft {
 
 		friend class Node<T>;
 
+
+		// Asignation operator
 		List &operator=(const List &rhs)
 		{
 			clear();
@@ -164,9 +164,9 @@ namespace ft {
 //Reverse iterators iterate backwards: increasing them moves them towards the beginning of the container.
 //rbegin points to the element right before the one that would be pointed to by member end.
 		reverse_iterator		rbegin(){
-			return  _listSize==0 ? reverse_iterator (afterLast) : reverse_iterator (afterLast->prev);}
+			return  (this->_listSize == 0 ? reverse_iterator (end()) : reverse_iterator (--end()));}
 		const_reverse_iterator	rbegin() const{
-			return  _listSize==0 ? const_reverse_iterator (afterLast) : reverse_iterator (afterLast->prev);}
+			return  (this->_listSize == 0 ? const_reverse_iterator (end()) : reverse_iterator (--end()));}
 
 //std::list::rend - Return reverse iterator to reverse end
 //Returns a reverse iterator pointing to the theoretical element preceding the first element in the list container (which is considered its reverse end).
@@ -732,9 +732,9 @@ namespace ft {
 		}
 
 		ListIterator operator--(int){
-			ListIterator *tmp = this;
+			ListIterator tmp(*this);
 			_currentNodePtr = _currentNodePtr->prev;
-			return *tmp;
+			return tmp;
 		}
 
 		reference operator*(){

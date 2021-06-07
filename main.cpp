@@ -5,6 +5,7 @@
 #include <string>
 #include "classes.hpp"
 #include "ft_list.hpp"
+#include "ft_reverse_iterator.hpp"
 //#include "ft_map.hpp"
 #include <map>
 
@@ -1556,6 +1557,7 @@ void reverse_iterator_test() {
 	}
 	lib::con<int>::reverse_iterator rit(def.rbegin());
 
+	std::cout << *rit << "ggfg ";
 	while (rit != def.rend()) {
 		std::cout << *rit << " ";
 		++rit;

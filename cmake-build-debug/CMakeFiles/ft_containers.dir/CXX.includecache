@@ -57,6 +57,8 @@ classes.hpp
 /Users/pmelinda/ft_containers/classes.hpp
 ft_list.hpp
 /Users/pmelinda/ft_containers/ft_list.hpp
+ft_reverse_iterator.hpp
+/Users/pmelinda/ft_containers/ft_reverse_iterator.hpp
 map
 -
 
