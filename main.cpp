@@ -1640,9 +1640,13 @@ void ListTest(){
 	ft_unique_pred_test();
 //	//TEST_LIST
 //
-//PRINT("\n ---| from iterator |---");
-//std::list<int>  test_std_list(5,10);
-//PRINT("list")
+PRINT("\n ---| from iterator |---");
+std::list<int>  test_std_list(5,10);
+std::list<int>	test_2(1, 9);
+
+test_std_list.merge(test_2);
+
+PRINT("list")
 ////TEST_LIST
 //PRINT("ft_list")
 //std::list<int>::iterator    it1 = test_std_list.begin();

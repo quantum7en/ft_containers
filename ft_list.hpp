@@ -558,8 +558,44 @@ namespace ft {
 		}
 
 		//// merge
+		// Merges x into the list by transferring all of its elements at their respective ordered positions into the container (both containers shall already be ordered).
+		// This effectively removes all the elements in x (which becomes empty),
+		// and inserts them into their ordered position within container (which expands in size by the number of elements transferred).
+		// The operation is performed without constructing nor destroying any element: they are transferred, no matter whether x is an lvalue or an rvalue,
+		// or whether the value_type supports move-construction or not.
+		void merge (List& x){
+			if (this != std::addressof(x))
+			{
+				iterator __first1 = begin();
+				iterator __last1 = end();
+				iterator __first2 = x.begin();
+				iterator __last2 = x.end();
+				const size_t __orig_size = x.size();
+				while (__first1 != __last1 && __first2 != __last2)
+					if (*__first2 < *__first1)
+					{
+						iterator __next = __first2;
+						_M_transfer(__first1, __first2, ++__next);
+						__first2 = __next;
+					}
+				else
+					++__first1;
+				if (__first2 != __last2)
+					_M_transfer(__last1, __first2, __last2);
 
+				//this->_M_inc_size(x._M_get_size());
+				x._listSize = 0;
+			}
+		}
 
+		// The template versions with two parameters (2), have the same behavior, but take a specific predicate (comp)
+		// to perform the comparison operation between elements.
+		// This comparison shall produce a strict weak ordering of the elements (i.e., a consistent transitive comparison, without considering its reflexiveness).
+		//// This function requires that the list containers have their elements already ordered by value (or by comp) before the call.
+		template <class Compare>
+		void merge (List& x, Compare comp){
+
+		}
 
 		//// sort
 		// Sorts the elements in the list, altering their position within the container.
@@ -604,6 +640,14 @@ namespace ft {
 		Node<T> *afterLast; //специальный указатель на Node sentinal - shadow node, элемент после последнего
 		allocator_type _allocator;
 		node_allocator _node_alloc;
+
+		void
+		_M_transfer(Node<T>* const __first, Node<T>* const __last) {
+
+		};
+
+		void	_M_transfer(iterator __position, iterator __first, iterator __last)
+		{ __position._M_node->_M_transfer(__first._M_node, __last._M_node); }
 	};
 
 
