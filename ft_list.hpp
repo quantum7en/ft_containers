@@ -120,7 +120,7 @@ namespace ft {
 		//// The copy constructor (4) creates a container that keeps and uses a copy of x's allocator.
 		//// x - Another list object of the same type (with the same class template arguments), whose contents are either copied or acquired.
 		// list (const list& x); m_end(NULL), m_size(0), m_allocator(x.m_allocator){}
-		List(const List& x): _listSize(x._listSize), _allocator(x._allocator){
+		List(const List& x): _listSize(0), _allocator(x._allocator){
 			afterLast = _node_alloc.allocate(1);
 			afterLast->next = afterLast;
 			afterLast->prev = afterLast;
@@ -171,9 +171,9 @@ namespace ft {
 //std::list::rend - Return reverse iterator to reverse end
 //Returns a reverse iterator pointing to the theoretical element preceding the first element in the list container (which is considered its reverse end).
 		reverse_iterator		rend(){
-			return  _listSize==0 ? reverse_iterator (afterLast->next) : reverse_iterator (afterLast->prev);}
+			return  reverse_iterator (afterLast);}
 		const_reverse_iterator rend() const {
-			return  _listSize==0 ? const_reverse_iterator (afterLast->next) : const_reverse_iterator (afterLast->prev);}
+			return  const_reverse_iterator (afterLast);}
 
 		///****  Capacity: ****
 		//empty() Test whether container is empty (public member function ). true  if container's size = 0, otherwise false
@@ -290,7 +290,7 @@ namespace ft {
 
 			//	_allocator.construct(&newNodePtr->data, val);
 
-			++this->_listSize;
+			++_listSize;
 			return iterator(newNodePtr);
 		}
 
@@ -367,11 +367,9 @@ namespace ft {
 		// and the elements of x are those which were in this.
 		// All iterators, references and pointers remain valid for the swapped objects.
 		void	swap(List & x){
-			//	std::swap(afterLast, x.afterLast);
 			std::swap(_allocator, x._allocator);
 			std::swap(_node_alloc, x._node_alloc);
-			std::swap(afterLast->prev, x.afterLast->prev);
-			std::swap(afterLast->next, x.afterLast->next);
+			std::swap(afterLast, x.afterLast);
 			std::swap(_listSize, x._listSize);
 		}
 
@@ -414,10 +412,10 @@ namespace ft {
 			Node<T>* pos  = position.getPtr();
 			Node<T>* prev = pos->prev;
 
-			prev->next = x.afterLast->next;
-			prev->next->prev = prev;
 			pos->prev = x.afterLast->prev;
+			prev->next = x.afterLast->next;
 			pos->prev->next = pos;
+			prev->next->prev = prev;
 
 			x.afterLast->next = x.afterLast;
 			x.afterLast->prev = x.afterLast;
@@ -443,9 +441,10 @@ namespace ft {
 			if (first == last)
 				return;
 
+			iterator tmp = first;
 			size_t dist;
-			for (dist = 0; first != last; dist++)
-				++first;
+			for (dist = 0; tmp != last; dist++)
+				++tmp;
 
 			this->_listSize += dist;
 			x._listSize -= dist;
@@ -453,6 +452,8 @@ namespace ft {
 			List created_x(first, last);
 			Node<T>* firstNode = first.getPtr();
 			Node<T>* lastNode = last.getPtr();
+
+//			splice(position, created_x);
 
 			Node<T>* pos  = position.getPtr();
 			Node<T>* prev = pos->prev;
@@ -466,7 +467,7 @@ namespace ft {
 			created_x.afterLast->prev = created_x.afterLast;
 
 			firstNode->prev->next = lastNode;
-			lastNode->prev       = firstNode->prev;
+			lastNode->prev = firstNode->prev;
 			for(; first != last; first++) {
 				firstNode = first.getPtr();
 
@@ -517,7 +518,9 @@ namespace ft {
 			while (next != end())
 			{
 				if (*currentIt == *next){
+					//++next;
 					erase(next);
+					next=++currentIt;
 				}
 				else
 				{
@@ -574,31 +577,30 @@ namespace ft {
 
 		// reverse. Reverses the order of the elements in the list container.
 		void	reverse(){
-			iterator it = begin();
-			iterator begin = it;
-			while (it != end())
-			{
-				if (it._currentNodePtr->next == end())
-				{
-					iterator tmp = it;
-					tmp._currentNodePtr->next = tmp._currentNodePtr->prev;
-					tmp._currentNodePtr->prev = NULL;
-					afterLast->next = tmp._currentNodePtr;
-				}
-				else
-				{
-					std::swap(it._currentNodePtr->prev, it._currentNodePtr->next);
-				}
-				++it;
+			if( afterLast->next == afterLast || this->_listSize <= 1){
+				return;
 			}
-			afterLast->prev->prev = begin._currentNodePtr;
-			begin._currentNodePtr->next = afterLast->prev;
+
+			Node<T>* head = afterLast->next;
+			Node<T>* tmp = afterLast->next;
+			for(;;)
+			{
+				std::swap(head->prev, head->next);
+				Node<T>* prev;
+				 prev =   head->prev;
+
+				if( prev == afterLast ){
+					break;
+				}
+				head = prev;
+			}
+			afterLast->next=head;
+			afterLast->prev=tmp;
 		}
 
 	private:
 		//typedef Node<value_type, allocator_type> lst
 		size_type _listSize;
-		//Node<T> *first;
 		Node<T> *afterLast; //специальный указатель на Node sentinal - shadow node, элемент после последнего
 		allocator_type _allocator;
 		node_allocator _node_alloc;
