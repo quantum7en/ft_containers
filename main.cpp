@@ -1602,6 +1602,115 @@ void ft_reverse_test() {
 	std::cout << "empty:" << empty.empty() << std::endl;
 }
 
+void ft_merge_x_test() {
+	std::cout << "\nmerge_x_test()\n" << std::endl;
+	lib::con<int> mouse;
+	mouse.push_back(10);
+	mouse.push_back(20);
+	mouse.push_back(60);
+	mouse.push_back(90);
+	mouse.push_back(200);
+
+	lib::con<int> copy_mouse(mouse);
+
+	lib::con<int> fat_mouse;
+	fat_mouse.push_back(5);
+	fat_mouse.push_back(25);
+	fat_mouse.push_back(45);
+	fat_mouse.push_back(75);
+	fat_mouse.push_back(85);
+	fat_mouse.push_back(105);
+	fat_mouse.push_back(115);
+	fat_mouse.push_back(205);
+
+	mouse.merge(fat_mouse);
+
+	std::cout << "mouse:" << std::endl;
+	std::cout << "size:"  << mouse.size()  << std::endl;
+	std::cout << "empty:" << mouse.empty() << std::endl;
+	for (lib::con<int>::iterator it = mouse.begin(); it != mouse.end(); ++it) {
+		std::cout << *it << " ";
+	}
+	std::cout << std::endl;
+
+	mouse.merge(copy_mouse);
+
+	std::cout << "mouse:" << std::endl;
+	std::cout << "size:"  << mouse.size()  << std::endl;
+	std::cout << "empty:" << mouse.empty() << std::endl;
+	for (lib::con<int>::iterator it = mouse.begin(); it != mouse.end(); ++it) {
+		std::cout << *it << " ";
+	}
+	std::cout << std::endl;
+
+	mouse.merge(mouse);
+
+	std::cout << "mouse:" << std::endl;
+	std::cout << "size:"  << mouse.size()  << std::endl;
+	std::cout << "empty:" << mouse.empty() << std::endl;
+	for (lib::con<int>::iterator it = mouse.begin(); it != mouse.end(); ++it) {
+		std::cout << *it << " ";
+	}
+	std::cout << std::endl;
+}
+
+bool compare(int a, int b) {
+	return a < b;
+}
+
+void std_merge_x_compare_test() {
+	std::cout << "\nmerge_x_test()\n" << std::endl;
+	lib::con<int> mouse;
+	mouse.push_back(10);
+	mouse.push_back(20);
+	mouse.push_back(60);
+	mouse.push_back(90);
+	mouse.push_back(200);
+
+	lib::con<int> copy_mouse(mouse);
+
+	lib::con<int> fat_mouse;
+	fat_mouse.push_back(5);
+	fat_mouse.push_back(25);
+	fat_mouse.push_back(45);
+	fat_mouse.push_back(75);
+	fat_mouse.push_back(85);
+	fat_mouse.push_back(105);
+	fat_mouse.push_back(115);
+	fat_mouse.push_back(205);
+
+	mouse.merge(fat_mouse, compare);
+
+	std::cout << "mouse:" << std::endl;
+	std::cout << "size:"  << mouse.size()  << std::endl;
+	std::cout << "empty:" << mouse.empty() << std::endl;
+	for (lib::con<int>::iterator it = mouse.begin(); it != mouse.end(); ++it) {
+		std::cout << *it << " ";
+	}
+	std::cout << std::endl;
+
+	mouse.merge(copy_mouse, compare);
+
+	std::cout << "mouse:" << std::endl;
+	std::cout << "size:"  << mouse.size()  << std::endl;
+	std::cout << "empty:" << mouse.empty() << std::endl;
+	for (lib::con<int>::iterator it = mouse.begin(); it != mouse.end(); ++it) {
+		std::cout << *it << " ";
+	}
+	std::cout << std::endl;
+
+	mouse.merge(mouse, compare);
+
+	std::cout << "mouse:" << std::endl;
+	std::cout << "size:"  << mouse.size()  << std::endl;
+	std::cout << "empty:" << mouse.empty() << std::endl;
+	for (lib::con<int>::iterator it = mouse.begin(); it != mouse.end(); ++it) {
+		std::cout << *it << " ";
+	}
+	std::cout << std::endl;
+
+}
+
 void ListTest(){
 
 //	constructors_test();
@@ -1625,19 +1734,19 @@ void ListTest(){
 //	ft_assign_n_val_test();
 
 //	////
-//	ft_merge_x_test();
+	ft_merge_x_test();
 //	ft_merge_x_compare_test();
 //	ft_sort_test();
 //	ft_sort_comp_test();
 //	////
 //	ft_reverse_test();
 //	ft_splice_pos_lst_test();
-	ft_splice_pos_lst_i_test();
-	ft_splice_pos_lst_first_last_test();
-	ft_remove_val_test();
-	ft_remove_if_test();
-	ft_unique_test();
-	ft_unique_pred_test();
+//	ft_splice_pos_lst_i_test();
+//	ft_splice_pos_lst_first_last_test();
+//	ft_remove_val_test();
+//	ft_remove_if_test();
+//	ft_unique_test();
+//	ft_unique_pred_test();
 //	//TEST_LIST
 //
 PRINT("\n ---| from iterator |---");

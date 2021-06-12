@@ -34,6 +34,21 @@ namespace ft {
 		Node *next;
 		T data;
 
+		void	_M_transfer(Node<T>* __first, Node<T>* __last) {
+			if(this != __last){
+				// Remove [first, last) from its old position.
+				__last->prev->next  = this;
+				__first->prev->next = __last;
+				this->prev->next    = __first;
+
+				// Splice [first, last) into its new position.
+				Node<T>* const __tmp = this->prev;
+				this->prev     = __last->prev;
+				__last->prev   = __first->prev;
+				__first->prev  = __tmp;
+			}
+		};
+
 		T* valptr() { return std::addressof(data); } ////as in gnu src
 		T const* valptr() const { return std::addressof(data); }
 	};
@@ -583,7 +598,7 @@ namespace ft {
 				if (__first2 != __last2)
 					_M_transfer(__last1, __first2, __last2);
 
-				//this->_M_inc_size(x._M_get_size());
+				_listSize += x._listSize;
 				x._listSize = 0;
 			}
 		}
@@ -594,7 +609,26 @@ namespace ft {
 		//// This function requires that the list containers have their elements already ordered by value (or by comp) before the call.
 		template <class Compare>
 		void merge (List& x, Compare comp){
-
+			if (this != std::__addressof(__x))
+			{
+				iterator __first1 = begin();
+				iterator __last1 = end();
+				iterator __first2 = __x.begin();
+				iterator __last2 = __x.end();
+				const size_t __orig_size = __x.size();
+				while (__first1 != __last1 && __first2 != __last2)
+					if (comp(*__first2, *__first1)) {
+							iterator __next = __first2;
+							_M_transfer(__first1, __first2, ++__next);
+							__first2 = __next;
+					}
+				else
+					++__first1;
+				if (__first2 != __last2)
+					_M_transfer(__last1, __first2, __last2);
+				_listSize += x._listSize;
+				x._listSize = 0;
+			}
 		}
 
 		//// sort
@@ -603,6 +637,32 @@ namespace ft {
 		//The resulting order of equivalent elements is stable: i.e., equivalent elements preserve the relative order they had before the call.
 		//The entire operation does not involve the construction, destruction or copy of any element object. Elements are moved within the container.
 		void	sort(){
+			if (this->begin() != afterLast ) // _listSize <= 1
+			{
+				List __carry;
+				List __tmp[64];
+				List * __fill = __tmp;
+				List * __counter;
+				do{
+					__carry.splice(__carry.begin(), *this, begin());
+
+					for(__counter = __tmp;
+					__counter != __fill && !__counter->empty();
+							++__counter)
+						{
+							__counter->merge(__carry);
+							__carry.swap(*__counter);
+						}
+						__carry.swap(*__counter);
+						if (__counter == __fill)
+							++__fill;
+					}
+					while ( !empty() );
+
+					for (__counter = __tmp + 1; __counter != __fill; ++__counter)
+						__counter->merge(*(__counter - 1));
+					swap( *(__fill - 1) );
+				}
 
 		}
 
@@ -634,20 +694,31 @@ namespace ft {
 			afterLast->prev=tmp;
 		}
 
+	protected:
+//		void	_M_transfer(Node<T>* __first, Node<T>* __last) {
+//			if(*this != __last){
+//				// Remove [first, last) from its old position.
+//				__last->prev->next  = this;
+//				__first->prev->next = __last;
+//				this->prev->next    = __first;
+//
+//				// Splice [first, last) into its new position.
+//				Node<T>* const __tmp = this->prev;
+//				this->prev     = __last->prev;
+//				__last->prev   = __first->prev;
+//				__first->prev  = __tmp;
+//			}
+//		};
+
+		void	_M_transfer(iterator __position, iterator __first, iterator __last){
+			__position.getPtr()->Node<T>::_M_transfer(__first.getPtr(), __last.getPtr()); }
+
 	private:
 		//typedef Node<value_type, allocator_type> lst
 		size_type _listSize;
 		Node<T> *afterLast; //специальный указатель на Node sentinal - shadow node, элемент после последнего
 		allocator_type _allocator;
 		node_allocator _node_alloc;
-
-		void
-		_M_transfer(Node<T>* const __first, Node<T>* const __last) {
-
-		};
-
-		void	_M_transfer(iterator __position, iterator __first, iterator __last)
-		{ __position._M_node->_M_transfer(__first._M_node, __last._M_node); }
 	};
 
 

@@ -12,10 +12,6 @@ namespace ft{
 	struct enable_if <true, T> {
 		typedef T type;
 	};
-
-	void
-	_M_transfer(iterator __position, iterator __first, iterator __last)
-	{ __position._M_node->_M_transfer(__first._M_node, __last._M_node); }
 }
 
 
