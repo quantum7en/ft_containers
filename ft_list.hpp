@@ -28,29 +28,27 @@ namespace ft {
 		Node(const value_type &value) : prev(NULL), next(NULL), data(value) {} //constructor with value for data
 		Node(const Node &rhs) : data(rhs.data) {} //copy constructor
 
-		~Node() {} //virt?
+		~Node() {}
 
 		Node *prev;
 		Node *next;
 		T data;
 
-		void	_M_transfer(Node<T>* __first, Node<T>* __last) {
-			if(this != __last){
+		void	transfer(Node<T>* first, Node<T>* last) {
+			if(this != last){
 				// Remove [first, last) from its old position.
-				__last->prev->next  = this;
-				__first->prev->next = __last;
-				this->prev->next    = __first;
+				last->prev->next  = this;
+				first->prev->next = last;
+				this->prev->next    = first;
 
 				// Splice [first, last) into its new position.
-				Node<T>* const __tmp = this->prev;
-				this->prev     = __last->prev;
-				__last->prev   = __first->prev;
-				__first->prev  = __tmp;
+				Node<T>* const tmp = this->prev;
+				this->prev     = last->prev;
+				last->prev   = first->prev;
+				first->prev  = tmp;
 			}
 		};
 
-		T* valptr() { return std::addressof(data); } ////as in gnu src
-		T const* valptr() const { return std::addressof(data); }
 	};
 
 	template < class T, class Pointer, class Reference, class Node>
@@ -363,8 +361,6 @@ namespace ft {
 			Node<T>* fst = first.getPtr();
 			while (fst != last.getPtr()) {
 				current = fst;
-				//_allocator.destroy(&current->data);
-
 				current->prev->next = current->next;
 				current->next->prev = current->prev;
 
@@ -464,33 +460,7 @@ namespace ft {
 			this->_listSize += dist;
 			x._listSize -= dist;
 
-			List created_x(first, last);
-			Node<T>* firstNode = first.getPtr();
-			Node<T>* lastNode = last.getPtr();
-
-//			splice(position, created_x);
-
-			Node<T>* pos  = position.getPtr();
-			Node<T>* prev = pos->prev;
-
-			pos->prev         = created_x.afterLast->prev;
-			pos->prev->next   = pos;
-			prev->next        = created_x.afterLast->next;
-			prev->next->prev  = prev;
-
-			created_x.afterLast->next = created_x.afterLast;
-			created_x.afterLast->prev = created_x.afterLast;
-
-			firstNode->prev->next = lastNode;
-			lastNode->prev = firstNode->prev;
-			for(; first != last; first++) {
-				firstNode = first.getPtr();
-
-				_allocator.destroy(&firstNode->data);
-				firstNode->prev->next = firstNode->next;
-				firstNode->next->prev = firstNode->prev;
-				_node_alloc.deallocate(firstNode, 1);
-			}
+			this->transfer(position, first, last);
 		}
 
 		//Remove elements with specific value. Removes from the container all the elements that compare equal to val.
@@ -516,8 +486,6 @@ namespace ft {
 			for(iterator it = begin(); it != end(); ++it){
 				if(pred(*it))
 					it = erase(it);
-//				else
-//					++it;
 			}
 		}
 
@@ -581,25 +549,25 @@ namespace ft {
 		void merge (List& x){
 			if (this != std::addressof(x))
 			{
-				iterator __first1 = begin();
-				iterator __last1 = end();
-				iterator __first2 = x.begin();
-				iterator __last2 = x.end();
-				const size_t __orig_size = x.size();
-				while (__first1 != __last1 && __first2 != __last2)
-					if (*__first2 < *__first1)
+				iterator first1 = begin();
+				iterator last1 = end();
+				iterator first2 = x.begin();
+				iterator last2 = x.end();
+
+				_listSize += x.size();
+				x._listSize = 0;
+
+				while (first1 != last1 && first2 != last2)
+					if (*first2 < *first1)
 					{
-						iterator __next = __first2;
-						_M_transfer(__first1, __first2, ++__next);
-						__first2 = __next;
+						iterator next = first2;
+						transfer(first1, first2, ++next);
+						first2 = next;
 					}
 				else
-					++__first1;
-				if (__first2 != __last2)
-					_M_transfer(__last1, __first2, __last2);
-
-				_listSize += x._listSize;
-				x._listSize = 0;
+					++first1;
+				if (first2 != last2)
+					transfer(last1, first2, last2);
 			}
 		}
 
@@ -609,25 +577,26 @@ namespace ft {
 		//// This function requires that the list containers have their elements already ordered by value (or by comp) before the call.
 		template <class Compare>
 		void merge (List& x, Compare comp){
-			if (this != std::__addressof(__x))
+			if (this != std::addressof(x))
 			{
-				iterator __first1 = begin();
-				iterator __last1 = end();
-				iterator __first2 = __x.begin();
-				iterator __last2 = __x.end();
-				const size_t __orig_size = __x.size();
-				while (__first1 != __last1 && __first2 != __last2)
-					if (comp(*__first2, *__first1)) {
-							iterator __next = __first2;
-							_M_transfer(__first1, __first2, ++__next);
-							__first2 = __next;
+				iterator first1 = begin();
+				iterator last1 = end();
+				iterator first2 = x.begin();
+				iterator last2 = x.end();
+
+				_listSize += x.size();
+				x._listSize = 0;
+
+				while (first1 != last1 && first2 != last2)
+					if (comp(*first2, *first1)) {
+							iterator next = first2;
+							transfer(first1, first2, ++next);
+							first2 = next;
 					}
 				else
-					++__first1;
-				if (__first2 != __last2)
-					_M_transfer(__last1, __first2, __last2);
-				_listSize += x._listSize;
-				x._listSize = 0;
+					++first1;
+				if (first2 != last2)
+					transfer(last1, first2, last2);
 			}
 		}
 
@@ -639,36 +608,52 @@ namespace ft {
 		void	sort(){
 			if (this->begin() != afterLast ) // _listSize <= 1
 			{
-				List __carry;
-				List __tmp[64];
-				List * __fill = __tmp;
-				List * __counter;
-				do{
-					__carry.splice(__carry.begin(), *this, begin());
+				List carry;
+				List tmp[64];
+				List * fill = tmp;
+				List * counter;
+				while ( !empty() ){
+					carry.splice(carry.begin(), *this, begin());
 
-					for(__counter = __tmp;
-					__counter != __fill && !__counter->empty();
-							++__counter)
-						{
-							__counter->merge(__carry);
-							__carry.swap(*__counter);
+					for(counter = tmp; counter != fill && !counter->empty(); ++counter){
+							counter->merge(carry);
+							carry.swap(*counter);
 						}
-						__carry.swap(*__counter);
-						if (__counter == __fill)
-							++__fill;
+						carry.swap(*counter);
+						if (counter == fill)
+							++fill;
 					}
-					while ( !empty() );
 
-					for (__counter = __tmp + 1; __counter != __fill; ++__counter)
-						__counter->merge(*(__counter - 1));
-					swap( *(__fill - 1) );
+					for (counter = tmp + 1; counter != fill; ++counter)
+						counter->merge(*(counter - 1));
+					swap( *(fill - 1) );
 				}
 
 		}
 
 		template <class Compare>
 		void sort (Compare comp){
+			if (this->begin() != afterLast )
+			{
+				List carry;
+				List tmp[64];
+				List * fill = tmp;
+				List * counter;
+				while ( !empty() ) {
+					carry.splice(carry.begin(), *this, begin());
+					for(counter = tmp; counter != fill && !counter->empty(); ++counter){
+							counter->merge(carry, comp);
+							carry.swap(*counter);
+						}
+						carry.swap(*counter);
+					if (counter == fill)
+						++fill;
+					}
 
+				for (counter = tmp + 1; counter != fill; ++counter)
+						counter->merge(*(counter - 1), comp);
+				swap(*(fill - 1));
+			}
 		}
 
 		// reverse. Reverses the order of the elements in the list container.
@@ -695,23 +680,8 @@ namespace ft {
 		}
 
 	protected:
-//		void	_M_transfer(Node<T>* __first, Node<T>* __last) {
-//			if(*this != __last){
-//				// Remove [first, last) from its old position.
-//				__last->prev->next  = this;
-//				__first->prev->next = __last;
-//				this->prev->next    = __first;
-//
-//				// Splice [first, last) into its new position.
-//				Node<T>* const __tmp = this->prev;
-//				this->prev     = __last->prev;
-//				__last->prev   = __first->prev;
-//				__first->prev  = __tmp;
-//			}
-//		};
-
-		void	_M_transfer(iterator __position, iterator __first, iterator __last){
-			__position.getPtr()->Node<T>::_M_transfer(__first.getPtr(), __last.getPtr()); }
+		void	transfer(iterator position, iterator first, iterator last){
+			position.getPtr()->Node<T>::transfer(first.getPtr(), last.getPtr()); }
 
 	private:
 		//typedef Node<value_type, allocator_type> lst
@@ -725,7 +695,18 @@ namespace ft {
 	//// ***** Non-member functions *****
 	template< class T, class Alloc>
 	bool operator == (const List<T, Alloc> &lhs, const List<T, Alloc> &rhs){
+		if (lhs.size() != rhs.size())
+			return false;
 
+		typedef typename ft::List<T, Alloc>::const_iterator const_iterator;
+		const_iterator end1 = lhs.end();
+		const_iterator end2 = rhs.end();
+
+		const_iterator i1 = lhs.begin();
+		const_iterator i2 = rhs.begin();
+		for (; i1 != end1 && i2 != end2 && *i1 == *i2; ++i1, ++i2){
+		}
+		return i1 == end1 && i2 == end2;
 	}
 
 	template<class T, class Alloc>
@@ -735,6 +716,7 @@ namespace ft {
 
 	template<class T, class Alloc>
 	bool operator < (const List<T, Alloc> &lhs, const List<T, Alloc> &rhs) {
+
 		typedef typename List<T, Alloc>::const_iterator it;
 		it lIt = lhs.begin();
 		it lIte = lhs.end();
@@ -747,63 +729,34 @@ namespace ft {
 				return false;
 		}
 	}
-/*
+
 	template<class T, class Alloc>
-	bool operator <= (const List<T, Alloc> &lhs, const List<T, Alloc> &rhs) {
-		ListIterator<T>:: iterator lIt = lhs.begin();
-		it lIte = lhs.end();
-		it rIt = rhs.begin();
-		it rIte = rhs.end();
-		for (; lIt != lIte && rIt != rIte; ++lIt, ++rIt){
-			if(*lIt <= *rIt)
-				return true;
-			if(*rIt <= *lIt) //?
-				return false;
+	bool operator <= (const ft::List<T, Alloc> &lhs, const ft::List<T, Alloc> &rhs) {
+		return !(lhs > rhs);
 		}
-	}
-*/
 
 	template<class T, class Alloc>
 	bool operator > (const List<T, Alloc> &lhs, const List<T, Alloc> &rhs) {
-		typedef typename List<T, Alloc>::const_iterator it;
-		it lIt = lhs.begin();
-		it lIte = lhs.end();
-		it rIt = rhs.begin();
-		it rIte = rhs.end();
-		for (; lIt != lIte && rIt != rIte; ++lIt, ++rIt){
-			if(*lIt > *rIt)
-				return true;
-			if(*rIt > *lIt)
-				return false;
-		}
-	}
+		return (rhs < lhs); }
 
 	template<class T, class Alloc>
 	bool operator >= (const List<T, Alloc> &lhs, const List<T, Alloc> &rhs) {
-		typedef typename List<T, Alloc>::const_iterator it;
-		it lIt = lhs.begin();
-		it lIte = lhs.end();
-		it rIt = rhs.begin();
-		it rIte = rhs.end();
-		for (; lIt != lIte && rIt != rIte; ++lIt, ++rIt){
-			if(*lIt >= *rIt)
-				return true;
-			if(*rIt >= *lIt)
-				return false;
-		}
+		return (!(lhs < rhs));
 	}
 
+	//todo swap
 	template<class T, class Alloc>
-	void swap(const List<T, Alloc> &x, const List<T, Alloc> &y){}
-
-//TODO all list iterators
+	void swap(const List<T, Alloc> &x, const List<T, Alloc> &y){
+		x.swap(y);
+	}
 
 	template < class T, class Pointer, class Reference, class Node>
-//	template < T, T*, T&, Node>
+
 	class ListIterator
 	{
 	private:
 		Node *_currentNodePtr; //указатель на текущую ноду листа
+		//ListIterator() : _currentNodePtr(NULL){};
 
 	public:
 		typedef T			value_type;
@@ -814,7 +767,6 @@ namespace ft {
 		typedef const T &	const_reference;
 		typedef const T &	const_pointer;
 
-		//ListIterator() : _currentNodePtr(NULL){}; // ?
 		ListIterator(Node *ptr = 0) : _currentNodePtr(ptr) {};
 		ListIterator(const Node  *ptr) : _currentNodePtr(const_cast<Node *>(ptr)) {};
 		ListIterator(const ListIterator &rhs) : _currentNodePtr(rhs._currentNodePtr) {};

@@ -509,7 +509,7 @@ namespace __gnu_cxx __attribute__ ((__visibility__ ("default")))
 
   template<>
     struct __add_unsigned<bool>;
-
+	lexicographical_compare
   template<>
     struct __add_unsigned<wchar_t>;
 

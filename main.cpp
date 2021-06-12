@@ -9,8 +9,11 @@
 //#include "ft_map.hpp"
 #include <map>
 
-#define lib ft
+//#define lib ft
 #define con List
+
+#define lib ft
+#define con Stack
 
 #define DarkGreen "\033[32m"
 #define Red "\033[31m"
@@ -86,7 +89,7 @@ void            printValues(iterator begin, iterator end)
 
 void ft_default_constructor_test() {
 	std::cout << "\nstd_default_constructor\n" << std::endl;
-	lib::con<Test> useless;
+	lib::con <Test> useless;
 
 	std::cout << "empty() : " << useless.empty()    << std::endl;
 	std::cout << "size    : " << useless.size()     << std::endl;
@@ -94,12 +97,12 @@ void ft_default_constructor_test() {
 
 void ft_n_val_constructor_test() {
 	std::cout << "\nstd_n_val_constructor\n" << std::endl;
-	lib::con<Test> useless(10, 8);
+	lib::con <Test> useless(10, 8);
 
 	std::cout << "empty() : " << useless.empty()    << std::endl;
 	std::cout << "size    : " << useless.size()     << std::endl;
 
-	lib::con<Test>::iterator first = useless.begin();
+	lib::con<Test>::iterator first = useless.begin() ;
 
 	for (size_t i = 0; first != useless.end(); ++i, ++first) {
 		if (i % 32 == 0 && i != 0)
@@ -1711,42 +1714,222 @@ void std_merge_x_compare_test() {
 
 }
 
+void ft_merge_x_compare_test() {
+	std::cout << "\nmerge_x_test()\n" << std::endl;
+	lib::con<int> mouse;
+	mouse.push_back(10);
+	mouse.push_back(20);
+	mouse.push_back(60);
+	mouse.push_back(90);
+	mouse.push_back(200);
+
+	lib::con<int> copy_mouse(mouse);
+
+	lib::con<int> fat_mouse;
+	fat_mouse.push_back(5);
+	fat_mouse.push_back(25);
+	fat_mouse.push_back(45);
+	fat_mouse.push_back(75);
+	fat_mouse.push_back(85);
+	fat_mouse.push_back(105);
+	fat_mouse.push_back(115);
+	fat_mouse.push_back(205);
+
+	mouse.merge(fat_mouse, compare);
+
+	std::cout << "mouse:" << std::endl;
+	std::cout << "size:"  << mouse.size()  << std::endl;
+	std::cout << "empty:" << mouse.empty() << std::endl;
+	for (lib::con<int>::iterator it = mouse.begin(); it != mouse.end(); ++it) {
+		std::cout << *it << " ";
+	}
+	std::cout << std::endl;
+
+	mouse.merge(copy_mouse, compare);
+
+	std::cout << "mouse:" << std::endl;
+	std::cout << "size:"  << mouse.size()  << std::endl;
+	std::cout << "empty:" << mouse.empty() << std::endl;
+	for (lib::con<int>::iterator it = mouse.begin(); it != mouse.end(); ++it) {
+		std::cout << *it << " ";
+	}
+	std::cout << std::endl;
+
+	mouse.merge(mouse, compare);
+
+	std::cout << "mouse:" << std::endl;
+	std::cout << "size:"  << mouse.size()  << std::endl;
+	std::cout << "empty:" << mouse.empty() << std::endl;
+	for (lib::con<int>::iterator it = mouse.begin(); it != mouse.end(); ++it) {
+		std::cout << *it << " ";
+	}
+	std::cout << std::endl;
+
+}
+
+void ft_sort_test() {
+	std::cout << "sort_test" << std::endl;
+	lib::con<int> mouse;
+	mouse.push_back(7);
+	mouse.push_back(3);
+	mouse.push_back(5);
+	mouse.push_back(13);
+	mouse.push_back(9);
+	mouse.push_back(6);
+
+	mouse.sort();
+	std::cout << "mouse:" << std::endl;
+	std::cout << "size:"  << mouse.size()  << std::endl;
+	std::cout << "empty:" << mouse.empty() << std::endl;
+	for (lib::con<int>::iterator it = mouse.begin(); it != mouse.end(); ++it) {
+		std::cout << *it << " ";
+	}
+	std::cout << std::endl;
+
+	lib::con<int> empty;
+
+	empty.sort();
+	for (lib::con<int>::iterator it = empty.begin(); it != empty.end(); ++it) {
+		std::cout << *it << " ";
+	}
+	std::cout << std::endl;
+
+	lib::con<int> reverse;
+	reverse.push_back(10);
+	reverse.push_back(9);
+	reverse.push_back(8);
+	reverse.push_back(7);
+	reverse.push_back(6);
+	reverse.push_back(5);
+
+	reverse.sort();
+	for (lib::con<int>::iterator it = reverse.begin(); it != reverse.end(); ++it) {
+		std::cout << *it << " ";
+	}
+	std::cout << std::endl;
+}
+
+bool comp(int a, int b) {
+	return a < b;
+}
+
+void ft_sort_comp_test() {
+	std::cout << "sort_comp_test" << std::endl;
+	lib::con<int> mouse;
+	mouse.push_back(7);
+	mouse.push_back(3);
+	mouse.push_back(5);
+	mouse.push_back(13);
+	mouse.push_back(9);
+	mouse.push_back(6);
+
+	mouse.sort(comp);
+	for (lib::con<int>::iterator it = mouse.begin(); it != mouse.end(); ++it) {
+		std::cout << *it << " ";
+	}
+	std::cout << std::endl;
+
+	lib::con<int> empty;
+
+	empty.sort(comp);
+	for (lib::con<int>::iterator it = empty.begin(); it != empty.end(); ++it) {
+		std::cout << *it << " ";
+	}
+	std::cout << std::endl;
+
+	lib::con<int> reverse;
+	reverse.push_back(10);
+	reverse.push_back(9);
+	reverse.push_back(8);
+	reverse.push_back(7);
+	reverse.push_back(6);
+	reverse.push_back(5);
+
+	reverse.sort(comp);
+	for (lib::con<int>::iterator it = reverse.begin(); it != reverse.end(); ++it) {
+		std::cout << *it << " ";
+	}
+	std::cout << std::endl;
+
+	reverse.reverse();
+	reverse.sort(comp);
+	for (lib::con<int>::iterator it = reverse.begin(); it != reverse.end(); ++it) {
+		std::cout << *it << " ";
+	}
+	std::cout << std::endl;
+}
+
+void relational_operators() {
+	std::cout << "relational_operators" << std::endl;
+	lib::con<int> def1;
+	lib::con<int> def2;
+	lib::con<int> big_def;
+	for (int i = 0; i < 10; ++i) {
+		def1.push_back(i);
+		def2.push_back(i);
+	}
+	for (int i = 10; i < 20; ++i) {
+		big_def.push_back(i);
+	}
+
+	std::cout << (def1 == def2)    << std::endl;
+	std::cout << (def1 == big_def) << std::endl;
+
+	std::cout << (def1 != def2)    << std::endl;
+	std::cout << (def1 != big_def) << std::endl;
+
+	std::cout << (def1 < def2)    << std::endl;
+	std::cout << (def1 < big_def) << std::endl;
+
+	std::cout << (def1 <= def2)    << std::endl;
+	std::cout << (def1 <= big_def) << std::endl;
+
+	std::cout << (def1 > def2)    << std::endl;
+	std::cout << (def1 > big_def) << std::endl;
+
+	std::cout << (def1 >= def2)    << std::endl;
+	std::cout << (def1 >= big_def) << std::endl;
+}
+
 void ListTest(){
 
-//	constructors_test();
-//	ft_iterator_test();
-//	reverse_iterator_test();
-//	ft_constructors_capacity_test();
-//	ft_element_access_test();
-//
-//	////
-//	ft_push_front_test();
-//	ft_pop_front_test();
-//	ft_erase_position_test();
-//	ft_erase_iter_iter_test();
-//	ft_swap_test();
-//	ft_resize_test();
-//	ft_clear_test();
-//	ft_insert_iter_val_test();
-//	ft_insert_iter_n_val_test();
-//	ft_insert_iter_iter_iter_test();
-//	ft_assign_iter_iter_test();
-//	ft_assign_n_val_test();
+	constructors_test();
+	ft_iterator_test();
+	reverse_iterator_test();
+	ft_constructors_capacity_test();
+	ft_element_access_test();
 
-//	////
+	////
+	ft_push_front_test();
+	ft_pop_front_test();
+	ft_erase_position_test();
+	ft_erase_iter_iter_test();
+	ft_swap_test();
+	ft_resize_test();
+	ft_clear_test();
+	ft_insert_iter_val_test();
+	ft_insert_iter_n_val_test();
+	ft_insert_iter_iter_iter_test();
+	ft_assign_iter_iter_test();
+	ft_assign_n_val_test();
+
+	////
 	ft_merge_x_test();
-//	ft_merge_x_compare_test();
-//	ft_sort_test();
-//	ft_sort_comp_test();
-//	////
-//	ft_reverse_test();
-//	ft_splice_pos_lst_test();
-//	ft_splice_pos_lst_i_test();
-//	ft_splice_pos_lst_first_last_test();
-//	ft_remove_val_test();
-//	ft_remove_if_test();
-//	ft_unique_test();
-//	ft_unique_pred_test();
+	ft_merge_x_compare_test();
+	ft_sort_test();
+	ft_sort_comp_test();
+	//
+	ft_reverse_test();
+	ft_splice_pos_lst_test();
+	ft_splice_pos_lst_i_test();
+	ft_splice_pos_lst_first_last_test();
+	ft_remove_val_test();
+	ft_remove_if_test();
+	ft_unique_test();
+	ft_unique_pred_test();
+
+	relational_operators();
+
 //	//TEST_LIST
 //
 PRINT("\n ---| from iterator |---");
@@ -1772,7 +1955,27 @@ PRINT("list")
 
 int main() {
 
-	ListTest();
+//	ListTest();
+
+	lib::con <int> def;
+
+	std::cout << def.empty() << std::endl;
+	std::cout << def.size() << std::endl;
+
+	for (int i = 0; i < 10; ++i) {
+		def.push(i);
+	}
+
+	std::cout << def.empty() << std::endl;
+	std::cout << def.size() << std::endl;
+	for (int i = 0; i < 10; ++i) {
+		std::cout << def.top() << " ";
+		def.pop();
+	}
+
+	std::cout << def.empty() << std::endl;
+	std::cout << def.size() << std::endl;
+	return 0;
 
 //	example ex;
 //	ex.setStr("hello");
