@@ -37,10 +37,30 @@ namespace ft {
 		typedef VectorIterator<T, T *, T &>::difference_type	difference_type;
 
 
-		vector(const allocator_type& __a)
-				: _Base(__a) { }
+		// default (1) empty container constructor (default constructor)
+		//Constructs an empty container, with no elements.
+		explicit Vector(const allocator_type& alloc = allocator_type())
+		: _allocator(NULL),
+		_arrPtr(NULL),
+		_arrBegin(NULL),
+		_size(0),
+		_capacity(0)
+		{}
 
-		vector(_InputIterator __first, _InputIterator __last,
+		//(2) fill constructor
+		//Constructs a container with n elements. Each element is a copy of val.
+		explicit Vector (size_type n, const value_type& val = value_type(),
+		const allocator_type& alloc = allocator_type())
+		: _allocator(alloc),
+		_arrPtr(_arrBegin),
+		_arrBegin(),
+		_size(n),
+		_capacity(n){
+
+		}
+
+
+		Vector(_InputIterator __first, _InputIterator __last,
 		const allocator_type& __a = allocator_type())
 		: _Base(__a)
 				{
