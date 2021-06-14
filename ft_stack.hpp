@@ -9,13 +9,13 @@
 #include "ft_reverse_iterator.hpp"
 #include <algorithm>
 
-namespace ft{
+namespace ft {
 	////A container adaptor keeps internally a container object as data.
 	/// This container object is a copy of the ctnr argument passed to the constructor,
 	/// if any, otherwise it is an empty container.
 
-	template <class T, class Container = List<T> >
-	class Stack{
+	template <class T, class Container = List <T> >
+	class Stack {
 	public:
 		typedef T			value_type;	//The first template parameter (T)	Type of the elements
 		typedef Container	container_type;	//The second template parameter (Container)	Type of the underlying container
@@ -23,19 +23,16 @@ namespace ft{
 		typedef typename Container::reference reference;
 		typedef typename Container::const_reference const_reference;
 
-		
+
 		//Constructs a stack container adaptor object.
-		//
 		explicit Stack(const container_type& ctnr = container_type()) : _ctnr(ctnr){}
 
 		Stack(const Stack& x) : _ctnr(x._ctnr){}
 
-		~Stack() {} //todo
+		~Stack() {}
 
 		Stack& operator=(const Stack& x) {
 			if (this != &x) {
-				//const size_type len = size();
-
 				_ctnr = x._ctnr;
 				return *this;
 			}
@@ -68,14 +65,9 @@ namespace ft{
 			_ctnr.pop_back();
 		}
 
-	private:
+	protected:
 		container_type _ctnr;
 
-		template<typename T, typename Container>
-		friend bool operator==(const stack<T, Container>&, const stack<T, Container>&);
-
-		template<typename T, typename Container>
-		friend bool operator<(const stack<T, Container>&, const stack<T, Container>&);
 	};
 
 	template <class T, class Container>

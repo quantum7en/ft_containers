@@ -13,6 +13,8 @@ namespace ft {
 
 	template < class T, class Alloc = allocator<T> > class Vector;
 
+
+
 	int& operator[](int idx){
 		assert(idx >= 0 && idx < m_len);
 		return m_data[idx];

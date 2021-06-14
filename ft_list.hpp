@@ -13,6 +13,7 @@
 #include <utility>
 
 #include "ft_reverse_iterator.hpp"
+
 #include "enable_if.hpp"
 
 namespace ft {
@@ -55,9 +56,9 @@ namespace ft {
 	class ListIterator;
 
 	//template < class T, class Alloc = std::allocator<T> > class List;
-	template < class T, class Alloc = std::allocator<T> > // Allocator object. The container keeps and uses an internal copy of this allocator.
 	// Member type allocator_type is the internal allocator type used by the container, defined in list as an alias of its second template parameter (Alloc).
 	// If allocator_type is an instantiation of the default allocator (which has no state), this is not relevant.
+	template < class T, class Alloc = std::allocator<T> > // Allocator object. The container keeps and uses an internal copy of this allocator.
 	class List{
 	public:
 
@@ -263,7 +264,7 @@ namespace ft {
 
 		// Delete last element. Removes the last element in the list container, effectively reducing the container size by one.
 		// This destroys the removed element.
-		void 	pop_back(value_type const & val){
+		void 	pop_back(){
 			iterator it = end();
 			--it;
 			erase(it);
@@ -492,24 +493,20 @@ namespace ft {
 		//The version with no parameters (1), removes all but the first element from every consecutive group of equal elements in the container.
 		// Notice that an element is only removed from the list container if it compares equal to the element immediately preceding it.
 		// Thus, this function is especially useful for sorted lists.
-		void	unique(){
-			if (begin() == end() || _listSize == 1)
-				return ;
-			iterator currentIt = this->begin();
-			iterator next = currentIt;
-			++next;
-			while (next != end())
-			{
-				if (*currentIt == *next){
-					//++next;
+		void	unique() {
+			iterator first = begin();
+			iterator last = end();
+
+			if (first == last || _listSize == 1)
+				return;
+
+			iterator next = first;
+			while (++next != last) {
+				if (*first == *next) {
 					erase(next);
-					next=++currentIt;
-				}
-				else
-				{
-					currentIt = next;
-					++next;
-				}
+				} else
+					first = next;
+				next = first;
 			}
 		}
 
@@ -728,6 +725,7 @@ namespace ft {
 			if(*rIt < *lIt)
 				return false;
 		}
+		return lIt == lIte && rIt != rIte;
 	}
 
 	template<class T, class Alloc>
@@ -744,7 +742,6 @@ namespace ft {
 		return (!(lhs < rhs));
 	}
 
-	//todo swap
 	template<class T, class Alloc>
 	void swap(const List<T, Alloc> &x, const List<T, Alloc> &y){
 		x.swap(y);

@@ -8,6 +8,26 @@ set (CMAKE_LINKER_FLAGS_DEBUG "${CMAKE_LINKER_FLAGS_DEBUG} -fno-omit-frame-point
 #'-DFOR(X,Y,Z)=for(X;Y;Z){' '-DFOR=}
 
 add_executable(ft_containers
-        #ft_list.hpp
-        #ft_list.cpp
-        main.cpp ft_vector.hpp ft_map.hpp ft_stack.hpp ft_queue.hpp ft_reverse_iterator.hpp enable_if.hpp)
+       # ft_list.hpp
+
+
+        # main.cpp
+
+        # ft_vector.hpp
+
+        # ft_map.hpp
+
+        #test QUEUE
+        # ft_queue.hpp
+        # test_queue.cpp
+        # *********
+
+        #test STACK
+        ft_stack.hpp
+        test_stack.cpp
+        # *********
+
+        ft_reverse_iterator.hpp
+
+        #enable if
+        enable_if.hpp)

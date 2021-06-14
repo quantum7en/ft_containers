@@ -4,16 +4,17 @@
 #include <stack>
 #include <string>
 #include "classes.hpp"
+//#include "ft_stack.hpp"
 #include "ft_list.hpp"
 #include "ft_reverse_iterator.hpp"
 //#include "ft_map.hpp"
+
 #include <map>
 
-//#define lib ft
-#define con List
 
 #define lib ft
-#define con Stack
+#define con List
+
 
 #define DarkGreen "\033[32m"
 #define Red "\033[31m"
@@ -786,246 +787,243 @@ void ft_assign_n_val_test() {
 	//std::cout <<"HERE " <<std::endl;
 }
 
-// =============================================================================
 
-// Operations ==================================================================
+void ft_merge_x_test() {
+	std::cout << "\nmerge_x_test()\n" << std::endl;
+	lib::con<int> mouse;
+	mouse.push_back(10);
+	mouse.push_back(20);
+	mouse.push_back(60);
+	mouse.push_back(90);
+	mouse.push_back(200);
 
-//void ft_merge_x_test() {
-//	std::cout << "\nmerge_x_test()\n" << std::endl;
-//	lib::con<int> mouse;
-//	mouse.push_back(10);
-//	mouse.push_back(20);
-//	mouse.push_back(60);
-//	mouse.push_back(90);
-//	mouse.push_back(200);
-//
-//	lib::con<int> copy_mouse(mouse);
-//
-//	lib::con<int> fat_mouse;
-//	fat_mouse.push_back(5);
-//	fat_mouse.push_back(25);
-//	fat_mouse.push_back(45);
-//	fat_mouse.push_back(75);
-//	fat_mouse.push_back(85);
-//	fat_mouse.push_back(105);
-//	fat_mouse.push_back(115);
-//	fat_mouse.push_back(205);
-//
-//	mouse.merge(fat_mouse);
-//
-//	std::cout << "mouse:" << std::endl;
-//	std::cout << "size:"  << mouse.size()  << std::endl;
-//	std::cout << "empty:" << mouse.empty() << std::endl;
-//	for (lib::con<int>::iterator it = mouse.begin(); it != mouse.end(); ++it) {
-//		std::cout << *it << " ";
-//	}
-//	std::cout << std::endl;
-//
-//	mouse.merge(copy_mouse);
-//
-//	std::cout << "mouse:" << std::endl;
-//	std::cout << "size:"  << mouse.size()  << std::endl;
-//	std::cout << "empty:" << mouse.empty() << std::endl;
-//	for (lib::con<int>::iterator it = mouse.begin(); it != mouse.end(); ++it) {
-//		std::cout << *it << " ";
-//	}
-//	std::cout << std::endl;
-//
-//	mouse.merge(mouse);
-//
-//	std::cout << "mouse:" << std::endl;
-//	std::cout << "size:"  << mouse.size()  << std::endl;
-//	std::cout << "empty:" << mouse.empty() << std::endl;
-//	for (lib::con<int>::iterator it = mouse.begin(); it != mouse.end(); ++it) {
-//		std::cout << *it << " ";
-//	}
-//	std::cout << std::endl;
-//}
-//
-//
-//bool compare(int a, int b) {
-//	return a < b;
-//}
-//
-//void ft_merge_x_compare_test() {
-//	std::cout << "\nmerge_x_test()\n" << std::endl;
-//	lib::con<int> mouse;
-//	mouse.push_back(10);
-//	mouse.push_back(20);
-//	mouse.push_back(60);
-//	mouse.push_back(90);
-//	mouse.push_back(200);
-//
-//	lib::con<int> copy_mouse(mouse);
-//
-//	lib::con<int> fat_mouse;
-//	fat_mouse.push_back(5);
-//	fat_mouse.push_back(25);
-//	fat_mouse.push_back(45);
-//	fat_mouse.push_back(75);
-//	fat_mouse.push_back(85);
-//	fat_mouse.push_back(105);
-//	fat_mouse.push_back(115);
-//	fat_mouse.push_back(205);
-//
-//	mouse.merge(fat_mouse, compare);
-//
-//	std::cout << "mouse:" << std::endl;
-//	std::cout << "size:"  << mouse.size()  << std::endl;
-//	std::cout << "empty:" << mouse.empty() << std::endl;
-//	for (lib::con<int>::iterator it = mouse.begin(); it != mouse.end(); ++it) {
-//		std::cout << *it << " ";
-//	}
-//	std::cout << std::endl;
-//
-//	mouse.merge(copy_mouse, compare);
-//
-//	std::cout << "mouse:" << std::endl;
-//	std::cout << "size:"  << mouse.size()  << std::endl;
-//	std::cout << "empty:" << mouse.empty() << std::endl;
-//	for (lib::con<int>::iterator it = mouse.begin(); it != mouse.end(); ++it) {
-//		std::cout << *it << " ";
-//	}
-//	std::cout << std::endl;
-//
-//	mouse.merge(mouse, compare);
-//
-//	std::cout << "mouse:" << std::endl;
-//	std::cout << "size:"  << mouse.size()  << std::endl;
-//	std::cout << "empty:" << mouse.empty() << std::endl;
-//	for (lib::con<int>::iterator it = mouse.begin(); it != mouse.end(); ++it) {
-//		std::cout << *it << " ";
-//	}
-//	std::cout << std::endl;
-//
-//}
-//
-//void ft_sort_test() {
-//	std::cout << "sort_test" << std::endl;
-//	lib::con<int> mouse;
-//	mouse.push_back(7);
-//	mouse.push_back(3);
-//	mouse.push_back(5);
-//	mouse.push_back(13);
-//	mouse.push_back(9);
-//	mouse.push_back(6);
-//
-//	mouse.sort();
-//	std::cout << "mouse:" << std::endl;
-//	std::cout << "size:"  << mouse.size()  << std::endl;
-//	std::cout << "empty:" << mouse.empty() << std::endl;
-//	for (lib::con<int>::iterator it = mouse.begin(); it != mouse.end(); ++it) {
-//		std::cout << *it << " ";
-//	}
-//	std::cout << std::endl;
-//
-//	lib::con<int> empty;
-//
-//	empty.sort();
-//	for (lib::con<int>::iterator it = empty.begin(); it != empty.end(); ++it) {
-//		std::cout << *it << " ";
-//	}
-//	std::cout << std::endl;
-//
-//	lib::con<int> reverse;
-//	reverse.push_back(10);
-//	reverse.push_back(9);
-//	reverse.push_back(8);
-//	reverse.push_back(7);
-//	reverse.push_back(6);
-//	reverse.push_back(5);
-//
-//	reverse.sort();
-//	for (lib::con<int>::iterator it = reverse.begin(); it != reverse.end(); ++it) {
-//		std::cout << *it << " ";
-//	}
-//	std::cout << std::endl;
-//}
-//
-//bool comp(int a, int b) {
-//	return a < b;
-//}
-//
-//void ft_sort_comp_test() {
-//	std::cout << "sort_comp_test" << std::endl;
-//	lib::con<int> mouse;
-//	mouse.push_back(7);
-//	mouse.push_back(3);
-//	mouse.push_back(5);
-//	mouse.push_back(13);
-//	mouse.push_back(9);
-//	mouse.push_back(6);
-//
-//	mouse.sort(comp);
-//	for (lib::con<int>::iterator it = mouse.begin(); it != mouse.end(); ++it) {
-//		std::cout << *it << " ";
-//	}
-//	std::cout << std::endl;
-//
-//	lib::con<int> empty;
-//
-//	empty.sort(comp);
-//	for (lib::con<int>::iterator it = empty.begin(); it != empty.end(); ++it) {
-//		std::cout << *it << " ";
-//	}
-//	std::cout << std::endl;
-//
-//	lib::con<int> reverse;
-//	reverse.push_back(10);
-//	reverse.push_back(9);
-//	reverse.push_back(8);
-//	reverse.push_back(7);
-//	reverse.push_back(6);
-//	reverse.push_back(5);
-//
-//	reverse.sort(comp);
-//	for (lib::con<int>::iterator it = reverse.begin(); it != reverse.end(); ++it) {
-//		std::cout << *it << " ";
-//	}
-//	std::cout << std::endl;
-//
-//	reverse.reverse();
-//	reverse.sort(comp);
-//	for (lib::con<int>::iterator it = reverse.begin(); it != reverse.end(); ++it) {
-//		std::cout << *it << " ";
-//	}
-//	std::cout << std::endl;
-//}
-//
-//void ft_reverse_test() {
-//	lib::con<int> empty;
-//	lib::con<int> reverse;
-//	reverse.push_back(10);
-//	reverse.push_back(9);
-//	reverse.push_back(8);
-//	reverse.push_back(7);
-//	reverse.push_back(6);
-//	reverse.push_back(5);
-//
-//	reverse.reverse();
-//	for (lib::con<int>::iterator it = reverse.begin(); it != reverse.end(); ++it) {
-//		std::cout << *it << " ";
-//	}
-//	std::cout << std::endl;
-//	std::cout << "mouse:" << std::endl;
-//	std::cout << "size:"  << reverse.size()  << std::endl;
-//	std::cout << "empty:" << reverse.empty() << std::endl;
-//
-//	empty.reverse();
-//	for (lib::con<int>::iterator it = empty.begin(); it != empty.end(); ++it) {
-//		std::cout << *it << " ";
-//	}
-//	std::cout << std::endl;
-//	std::cout << "mouse:" << std::endl;
-//	std::cout << "size:"  << empty.size()  << std::endl;
-//	std::cout << "empty:" << empty.empty() << std::endl;
-//}
+	lib::con<int> copy_mouse(mouse);
+
+	lib::con<int> fat_mouse;
+	fat_mouse.push_back(5);
+	fat_mouse.push_back(25);
+	fat_mouse.push_back(45);
+	fat_mouse.push_back(75);
+	fat_mouse.push_back(85);
+	fat_mouse.push_back(105);
+	fat_mouse.push_back(115);
+	fat_mouse.push_back(205);
+
+	mouse.merge(fat_mouse);
+
+	std::cout << "mouse:" << std::endl;
+	std::cout << "size:"  << mouse.size()  << std::endl;
+	std::cout << "empty:" << mouse.empty() << std::endl;
+	for (lib::con<int>::iterator it = mouse.begin(); it != mouse.end(); ++it) {
+		std::cout << *it << " ";
+	}
+	std::cout << std::endl;
+
+	mouse.merge(copy_mouse);
+
+	std::cout << "mouse:" << std::endl;
+	std::cout << "size:"  << mouse.size()  << std::endl;
+	std::cout << "empty:" << mouse.empty() << std::endl;
+	for (lib::con<int>::iterator it = mouse.begin(); it != mouse.end(); ++it) {
+		std::cout << *it << " ";
+	}
+	std::cout << std::endl;
+
+	mouse.merge(mouse);
+
+	std::cout << "mouse:" << std::endl;
+	std::cout << "size:"  << mouse.size()  << std::endl;
+	std::cout << "empty:" << mouse.empty() << std::endl;
+	for (lib::con<int>::iterator it = mouse.begin(); it != mouse.end(); ++it) {
+		std::cout << *it << " ";
+	}
+	std::cout << std::endl;
+}
+
+
+bool compare(int a, int b) {
+	return a < b;
+}
+
+void ft_merge_x_compare_test() {
+	std::cout << "\nmerge_x_test()\n" << std::endl;
+	lib::con<int> mouse;
+	mouse.push_back(10);
+	mouse.push_back(20);
+	mouse.push_back(60);
+	mouse.push_back(90);
+	mouse.push_back(200);
+
+	lib::con<int> copy_mouse(mouse);
+
+	lib::con<int> fat_mouse;
+	fat_mouse.push_back(5);
+	fat_mouse.push_back(25);
+	fat_mouse.push_back(45);
+	fat_mouse.push_back(75);
+	fat_mouse.push_back(85);
+	fat_mouse.push_back(105);
+	fat_mouse.push_back(115);
+	fat_mouse.push_back(205);
+
+	mouse.merge(fat_mouse, compare);
+
+	std::cout << "mouse:" << std::endl;
+	std::cout << "size:"  << mouse.size()  << std::endl;
+	std::cout << "empty:" << mouse.empty() << std::endl;
+	for (lib::con<int>::iterator it = mouse.begin(); it != mouse.end(); ++it) {
+		std::cout << *it << " ";
+	}
+	std::cout << std::endl;
+
+	mouse.merge(copy_mouse, compare);
+
+	std::cout << "mouse:" << std::endl;
+	std::cout << "size:"  << mouse.size()  << std::endl;
+	std::cout << "empty:" << mouse.empty() << std::endl;
+	for (lib::con<int>::iterator it = mouse.begin(); it != mouse.end(); ++it) {
+		std::cout << *it << " ";
+	}
+	std::cout << std::endl;
+
+	mouse.merge(mouse, compare);
+
+	std::cout << "mouse:" << std::endl;
+	std::cout << "size:"  << mouse.size()  << std::endl;
+	std::cout << "empty:" << mouse.empty() << std::endl;
+	for (lib::con<int>::iterator it = mouse.begin(); it != mouse.end(); ++it) {
+		std::cout << *it << " ";
+	}
+	std::cout << std::endl;
+
+}
+
+void ft_sort_test() {
+	std::cout << "sort_test" << std::endl;
+	lib::con<int> mouse;
+	mouse.push_back(7);
+	mouse.push_back(3);
+	mouse.push_back(5);
+	mouse.push_back(13);
+	mouse.push_back(9);
+	mouse.push_back(6);
+
+	mouse.sort();
+	std::cout << "mouse:" << std::endl;
+	std::cout << "size:"  << mouse.size()  << std::endl;
+	std::cout << "empty:" << mouse.empty() << std::endl;
+	for (lib::con<int>::iterator it = mouse.begin(); it != mouse.end(); ++it) {
+		std::cout << *it << " ";
+	}
+	std::cout << std::endl;
+
+	lib::con<int> empty;
+
+	empty.sort();
+	for (lib::con<int>::iterator it = empty.begin(); it != empty.end(); ++it) {
+		std::cout << *it << " ";
+	}
+	std::cout << std::endl;
+
+	lib::con<int> reverse;
+	reverse.push_back(10);
+	reverse.push_back(9);
+	reverse.push_back(8);
+	reverse.push_back(7);
+	reverse.push_back(6);
+	reverse.push_back(5);
+
+	reverse.sort();
+	for (lib::con<int>::iterator it = reverse.begin(); it != reverse.end(); ++it) {
+		std::cout << *it << " ";
+	}
+	std::cout << std::endl;
+}
+
+bool comp(int a, int b) {
+	return a < b;
+}
+
+void ft_sort_comp_test() {
+	std::cout << "sort_comp_test" << std::endl;
+	lib::con<int> mouse;
+	mouse.push_back(7);
+	mouse.push_back(3);
+	mouse.push_back(5);
+	mouse.push_back(13);
+	mouse.push_back(9);
+	mouse.push_back(6);
+
+	mouse.sort(comp);
+	for (lib::con<int>::iterator it = mouse.begin(); it != mouse.end(); ++it) {
+		std::cout << *it << " ";
+	}
+	std::cout << std::endl;
+
+	lib::con<int> empty;
+
+	empty.sort(comp);
+	for (lib::con<int>::iterator it = empty.begin(); it != empty.end(); ++it) {
+		std::cout << *it << " ";
+	}
+	std::cout << std::endl;
+
+	lib::con<int> reverse;
+	reverse.push_back(10);
+	reverse.push_back(9);
+	reverse.push_back(8);
+	reverse.push_back(7);
+	reverse.push_back(6);
+	reverse.push_back(5);
+
+	reverse.sort(comp);
+	for (lib::con<int>::iterator it = reverse.begin(); it != reverse.end(); ++it) {
+		std::cout << *it << " ";
+	}
+	std::cout << std::endl;
+
+	reverse.reverse();
+	reverse.sort(comp);
+	for (lib::con<int>::iterator it = reverse.begin(); it != reverse.end(); ++it) {
+		std::cout << *it << " ";
+	}
+	std::cout << std::endl;
+}
+
+void ft_reverse_test() {
+	lib::con<int> empty;
+	lib::con<int> reverse;
+	reverse.push_back(10);
+	reverse.push_back(9);
+	reverse.push_back(8);
+	reverse.push_back(7);
+	reverse.push_back(6);
+	reverse.push_back(5);
+
+	reverse.reverse();
+	for (lib::con<int>::iterator it = reverse.begin(); it != reverse.end(); ++it) {
+		std::cout << *it << " ";
+	}
+	std::cout << std::endl;
+	std::cout << "mouse:" << std::endl;
+	std::cout << "size:"  << reverse.size()  << std::endl;
+	std::cout << "empty:" << reverse.empty() << std::endl;
+
+	empty.reverse();
+	for (lib::con<int>::iterator it = empty.begin(); it != empty.end(); ++it) {
+		std::cout << *it << " ";
+	}
+	std::cout << std::endl;
+	std::cout << "mouse:" << std::endl;
+	std::cout << "size:"  << empty.size()  << std::endl;
+	std::cout << "empty:" << empty.empty() << std::endl;
+}
 
 void ft_splice_pos_lst_test() {
-	lib::con<Test>           empty;
-	lib::con<Test>           mouse;
-	lib::con<Test>           fat_mouse;
-	lib::con<Test>::iterator it;
+	lib::con <Test>           empty;
+	lib::con <Test>           mouse;
+	lib::con <Test>           fat_mouse;
+	lib::con <Test>::iterator it;
 	for (int i = 0; i < 10; ++i) {
 		mouse.push_back(i + 10);
 	}
@@ -1574,92 +1572,6 @@ void reverse_iterator_test() {
 	std::cout << std::endl;
 }
 
-void ft_reverse_test() {
-
-	std::cout << "REVERSE" << std::endl;
-	lib::con<int> empty;
-	lib::con<int> reverse;
-	reverse.push_back(10);
-	reverse.push_back(9);
-	reverse.push_back(8);
-	reverse.push_back(7);
-	reverse.push_back(6);
-	reverse.push_back(5);
-
-	reverse.reverse();
-	for (lib::con<int>::iterator it = reverse.begin(); it != reverse.end(); ++it) {
-		std::cout << *it << " ";
-	}
-	std::cout << std::endl;
-	std::cout << "mouse:" << std::endl;
-	std::cout << "size:"  << reverse.size()  << std::endl;
-	std::cout << "empty:" << reverse.empty() << std::endl;
-
-	empty.reverse();
-	for (lib::con<int>::iterator it = empty.begin(); it != empty.end(); ++it) {
-		std::cout << *it << " ";
-	}
-	std::cout << std::endl;
-	std::cout << "mouse:" << std::endl;
-	std::cout << "size:"  << empty.size()  << std::endl;
-	std::cout << "empty:" << empty.empty() << std::endl;
-}
-
-void ft_merge_x_test() {
-	std::cout << "\nmerge_x_test()\n" << std::endl;
-	lib::con<int> mouse;
-	mouse.push_back(10);
-	mouse.push_back(20);
-	mouse.push_back(60);
-	mouse.push_back(90);
-	mouse.push_back(200);
-
-	lib::con<int> copy_mouse(mouse);
-
-	lib::con<int> fat_mouse;
-	fat_mouse.push_back(5);
-	fat_mouse.push_back(25);
-	fat_mouse.push_back(45);
-	fat_mouse.push_back(75);
-	fat_mouse.push_back(85);
-	fat_mouse.push_back(105);
-	fat_mouse.push_back(115);
-	fat_mouse.push_back(205);
-
-	mouse.merge(fat_mouse);
-
-	std::cout << "mouse:" << std::endl;
-	std::cout << "size:"  << mouse.size()  << std::endl;
-	std::cout << "empty:" << mouse.empty() << std::endl;
-	for (lib::con<int>::iterator it = mouse.begin(); it != mouse.end(); ++it) {
-		std::cout << *it << " ";
-	}
-	std::cout << std::endl;
-
-	mouse.merge(copy_mouse);
-
-	std::cout << "mouse:" << std::endl;
-	std::cout << "size:"  << mouse.size()  << std::endl;
-	std::cout << "empty:" << mouse.empty() << std::endl;
-	for (lib::con<int>::iterator it = mouse.begin(); it != mouse.end(); ++it) {
-		std::cout << *it << " ";
-	}
-	std::cout << std::endl;
-
-	mouse.merge(mouse);
-
-	std::cout << "mouse:" << std::endl;
-	std::cout << "size:"  << mouse.size()  << std::endl;
-	std::cout << "empty:" << mouse.empty() << std::endl;
-	for (lib::con<int>::iterator it = mouse.begin(); it != mouse.end(); ++it) {
-		std::cout << *it << " ";
-	}
-	std::cout << std::endl;
-}
-
-bool compare(int a, int b) {
-	return a < b;
-}
 
 void std_merge_x_compare_test() {
 	std::cout << "\nmerge_x_test()\n" << std::endl;
@@ -1712,151 +1624,6 @@ void std_merge_x_compare_test() {
 	}
 	std::cout << std::endl;
 
-}
-
-void ft_merge_x_compare_test() {
-	std::cout << "\nmerge_x_test()\n" << std::endl;
-	lib::con<int> mouse;
-	mouse.push_back(10);
-	mouse.push_back(20);
-	mouse.push_back(60);
-	mouse.push_back(90);
-	mouse.push_back(200);
-
-	lib::con<int> copy_mouse(mouse);
-
-	lib::con<int> fat_mouse;
-	fat_mouse.push_back(5);
-	fat_mouse.push_back(25);
-	fat_mouse.push_back(45);
-	fat_mouse.push_back(75);
-	fat_mouse.push_back(85);
-	fat_mouse.push_back(105);
-	fat_mouse.push_back(115);
-	fat_mouse.push_back(205);
-
-	mouse.merge(fat_mouse, compare);
-
-	std::cout << "mouse:" << std::endl;
-	std::cout << "size:"  << mouse.size()  << std::endl;
-	std::cout << "empty:" << mouse.empty() << std::endl;
-	for (lib::con<int>::iterator it = mouse.begin(); it != mouse.end(); ++it) {
-		std::cout << *it << " ";
-	}
-	std::cout << std::endl;
-
-	mouse.merge(copy_mouse, compare);
-
-	std::cout << "mouse:" << std::endl;
-	std::cout << "size:"  << mouse.size()  << std::endl;
-	std::cout << "empty:" << mouse.empty() << std::endl;
-	for (lib::con<int>::iterator it = mouse.begin(); it != mouse.end(); ++it) {
-		std::cout << *it << " ";
-	}
-	std::cout << std::endl;
-
-	mouse.merge(mouse, compare);
-
-	std::cout << "mouse:" << std::endl;
-	std::cout << "size:"  << mouse.size()  << std::endl;
-	std::cout << "empty:" << mouse.empty() << std::endl;
-	for (lib::con<int>::iterator it = mouse.begin(); it != mouse.end(); ++it) {
-		std::cout << *it << " ";
-	}
-	std::cout << std::endl;
-
-}
-
-void ft_sort_test() {
-	std::cout << "sort_test" << std::endl;
-	lib::con<int> mouse;
-	mouse.push_back(7);
-	mouse.push_back(3);
-	mouse.push_back(5);
-	mouse.push_back(13);
-	mouse.push_back(9);
-	mouse.push_back(6);
-
-	mouse.sort();
-	std::cout << "mouse:" << std::endl;
-	std::cout << "size:"  << mouse.size()  << std::endl;
-	std::cout << "empty:" << mouse.empty() << std::endl;
-	for (lib::con<int>::iterator it = mouse.begin(); it != mouse.end(); ++it) {
-		std::cout << *it << " ";
-	}
-	std::cout << std::endl;
-
-	lib::con<int> empty;
-
-	empty.sort();
-	for (lib::con<int>::iterator it = empty.begin(); it != empty.end(); ++it) {
-		std::cout << *it << " ";
-	}
-	std::cout << std::endl;
-
-	lib::con<int> reverse;
-	reverse.push_back(10);
-	reverse.push_back(9);
-	reverse.push_back(8);
-	reverse.push_back(7);
-	reverse.push_back(6);
-	reverse.push_back(5);
-
-	reverse.sort();
-	for (lib::con<int>::iterator it = reverse.begin(); it != reverse.end(); ++it) {
-		std::cout << *it << " ";
-	}
-	std::cout << std::endl;
-}
-
-bool comp(int a, int b) {
-	return a < b;
-}
-
-void ft_sort_comp_test() {
-	std::cout << "sort_comp_test" << std::endl;
-	lib::con<int> mouse;
-	mouse.push_back(7);
-	mouse.push_back(3);
-	mouse.push_back(5);
-	mouse.push_back(13);
-	mouse.push_back(9);
-	mouse.push_back(6);
-
-	mouse.sort(comp);
-	for (lib::con<int>::iterator it = mouse.begin(); it != mouse.end(); ++it) {
-		std::cout << *it << " ";
-	}
-	std::cout << std::endl;
-
-	lib::con<int> empty;
-
-	empty.sort(comp);
-	for (lib::con<int>::iterator it = empty.begin(); it != empty.end(); ++it) {
-		std::cout << *it << " ";
-	}
-	std::cout << std::endl;
-
-	lib::con<int> reverse;
-	reverse.push_back(10);
-	reverse.push_back(9);
-	reverse.push_back(8);
-	reverse.push_back(7);
-	reverse.push_back(6);
-	reverse.push_back(5);
-
-	reverse.sort(comp);
-	for (lib::con<int>::iterator it = reverse.begin(); it != reverse.end(); ++it) {
-		std::cout << *it << " ";
-	}
-	std::cout << std::endl;
-
-	reverse.reverse();
-	reverse.sort(comp);
-	for (lib::con<int>::iterator it = reverse.begin(); it != reverse.end(); ++it) {
-		std::cout << *it << " ";
-	}
-	std::cout << std::endl;
 }
 
 void relational_operators() {
@@ -1953,29 +1720,11 @@ PRINT("list")
 //	std::cout << DarkGreen << "ft:: List test" << RESET << std::endl;
 }
 
+
 int main() {
 
-//	ListTest();
+	ListTest();
 
-	lib::con <int> def;
-
-	std::cout << def.empty() << std::endl;
-	std::cout << def.size() << std::endl;
-
-	for (int i = 0; i < 10; ++i) {
-		def.push(i);
-	}
-
-	std::cout << def.empty() << std::endl;
-	std::cout << def.size() << std::endl;
-	for (int i = 0; i < 10; ++i) {
-		std::cout << def.top() << " ";
-		def.pop();
-	}
-
-	std::cout << def.empty() << std::endl;
-	std::cout << def.size() << std::endl;
-	return 0;
 
 //	example ex;
 //	ex.setStr("hello");
