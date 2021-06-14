@@ -293,17 +293,6 @@ namespace ft {
 			pos->prev->next = newNodePtr;
 			pos->prev = newNodePtr;
 
-//			newNodePtr->next = position.getPtr();
-//			newNodePtr->prev =position.getPtr()->prev;
-////			newNodePtr->next = position.getPtr();
-//			position.getPtr()->prev->next = newNodePtr;
-//			position.getPtr()->prev = newNodePtr;
-
-			//	_allocator.construct(&newNodePtr->data);
-			//	newNodePtr->data = _allocator.allocate(1);
-
-			//	_allocator.construct(&newNodePtr->data, val);
-
 			++_listSize;
 			return iterator(newNodePtr);
 		}
@@ -333,8 +322,7 @@ namespace ft {
 		iterator erase(iterator position) {
 			Node<T> *ptr = position.getPtr();
 			Node<T> *tmp = ptr->next;
-//			ptr->prev->next = ptr->next;
-//			ptr->next->prev = ptr->prev;
+
 			if (ptr == afterLast->next){
 				afterLast->next = afterLast->next->next;
 				afterLast->next = afterLast->next->next;

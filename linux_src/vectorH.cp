@@ -428,7 +428,7 @@ namespace std __attribute__ ((__visibility__ ("default")))
 
 
 
-  template<typename _Iterator>
+  template<typename _Iterator> //todo
     inline _Iterator
     __miter_base(_Iterator __it)
     { return __it; }
