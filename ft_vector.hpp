@@ -52,11 +52,14 @@ namespace ft {
 		explicit Vector (size_type n, const value_type& val = value_type(),
 		const allocator_type& alloc = allocator_type())
 		: _allocator(alloc),
-		_arrPtr(_arrBegin),
-		_arrBegin(),
+		_arrPtr(NULL),
+		_arrBegin(NULL),
 		_size(n),
 		_capacity(n){
-
+			_arrPtr = _allocator.allocate(n);
+			_arrBegin = _arrPtr;
+			for (; n > 0; --n, (void) ++__cur)
+					__traits::construct(__alloc, std::__addressof(*__cur), __x);
 		}
 
 
@@ -71,6 +74,8 @@ namespace ft {
 
 		virtual ~Vector(){
 
+			static void deallocate(_Alloc& __a, pointer __p, size_type __n)
+			{ __a.deallocate(__p, __n); }
 
 			std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish, _M_get_Tp_allocator());
 		}
