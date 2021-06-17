@@ -58,8 +58,8 @@ namespace ft {
 		_capacity(n){
 			_arrPtr = _allocator.allocate(n);
 			_arrBegin = _arrPtr;
-			for (; n > 0; --n, (void) ++__cur)
-					__traits::construct(__alloc, std::__addressof(*__cur), __x);
+			for (; n > 0; --n, (void) ++_arrPtr)
+					_allocator.construct(_arrPtr, val);
 		}
 
 
@@ -87,6 +87,32 @@ namespace ft {
 		template<typename P>
 		const value_type* get_data_ptr(P ptr) const{
 			return empty() ? (const value_type*)0 : ptr.operator->(); }
+
+		// Return size of allocated storage capacity
+		//Returns the size of the storage space currently allocated for the vector, expressed in terms of elements.
+		// This capacity is not necessarily equal to the vector size.
+		// It can be equal or greater, with the extra space allowing to accommodate for growth without the need to reallocate on each insertion.
+		// Notice that this capacity does not suppose a limit on the size of the vector.
+		// When this capacity is exhausted and more is needed, it is automatically expanded by the container (reallocating it storage space).
+		// The theoretical limit on the size of a vector is given by member max_size.
+		// return val: The size of the currently allocated storage capacity in the vector, measured in terms of the number elements it can hold.
+		size_type capacity() const{
+			return _capacity;
+		}
+
+		//Test whether vector is empty
+		//Returns whether the vector is empty (i.e. whether its size is 0).
+		bool empty() const{
+			return (_size == 0 ? true : false);
+		}
+
+		// Returns the number of elements in the vector.
+		//This is the number of actual objects held in the vector,
+		// which is not necessarily equal to its storage capacity.
+		size_type size() const{
+			return _size;
+		}
+
 
 //		template<typename _Up>
 //		_Up*
