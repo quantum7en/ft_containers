@@ -16,15 +16,14 @@ namespace ft {
 ////	queues are implemented as containers adaptors, which are classes that use an encapsulated object of a specific container class as its underlying container, providing a specific set of member functions to access its elements.
 /// 	Elements are pushed into the "back" of the specific container and popped from its "front".
 
-template <class T, class Container = List<T> >
+template <class T, class Container = std::deque<T> >
 	class Queue {
 	public:
 		typedef typename Container::value_type value_type;// The first template parameter (T)	Type of the elements
-		typedef typename Container::reference reference;
-		typedef typename Container::const_reference const_reference;
 		typedef typename Container::size_type size_type;//	an unsigned integral type	usually the same as size_t
 		typedef Container container_type;            //	The second template parameter (Container)	Type of the underlying container
-
+		typedef typename container_type::reference reference;
+		typedef typename container_type::const_reference const_reference;
 
 		container_type get_container_type() const { return _c;}
 

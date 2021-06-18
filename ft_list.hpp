@@ -99,8 +99,6 @@ namespace ft {
 		explicit List(const allocator_type& alloc = allocator_type()) : _listSize(0), _allocator(alloc), _node_alloc(node_allocator()){
 
 			afterLast = _node_alloc.allocate(1);
-//			first = _node_alloc.allocate(1);
-//			afterLast = first;
 			afterLast->next = afterLast;
 			afterLast->prev = afterLast;
 		}
@@ -110,8 +108,6 @@ namespace ft {
 		// explicit list (size_type n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type());
 		explicit List(size_type n, const value_type &val = value_type(), const allocator_type& alloc = allocator_type()) : _listSize(0), _allocator(alloc),  _node_alloc(node_allocator()){
 			afterLast = _node_alloc.allocate(1);
-//			for(size_type i = 0; i < n; i++)
-//				push_back(val);
 			afterLast->next = afterLast;
 			afterLast->prev = afterLast;
 			insert(begin(), n, val);
@@ -309,7 +305,7 @@ namespace ft {
 		// first, last : Iterators specifying a range of elements. Copies of the elements in the range [first,last) are inserted at position (in the same order).
 		// Notice that the range includes all the elements between first and last, including the element pointed by first but not the one pointed by last.
 		template<class InputIterator>
-		void	insert(iterator position, InputIterator first, InputIterator last, typename enable_if
+		void	insert(iterator position, InputIterator first, InputIterator last, typename std::enable_if
 				< !std::numeric_limits<InputIterator>::is_specialized >::type* = NULL){
 			for (; first != last; first++, position++)
 				position = insert(position, *first);

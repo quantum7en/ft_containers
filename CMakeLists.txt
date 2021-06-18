@@ -13,7 +13,6 @@ add_executable(ft_containers
 
         # main.cpp
 
-        # ft_vector.hpp
 
         # ft_map.hpp
 
@@ -27,7 +26,7 @@ add_executable(ft_containers
         #test_stack.cpp
         # *********
 
-        #ft_reverse_iterator.hpp
+        ft_reverse_iterator.hpp
 
         #enable if
         enable_if.hpp
