@@ -120,8 +120,8 @@ namespace ft {
 		//Returns an iterator which is advanced by -n positions.
 		// Internally, the function applies the binary operator+ on the base iterator and returns a reverse iterator constructed with the resulting iterator value.
 		ReverseIterator<Iter> operator-( difference_type n ) const{
-			_it += n;
-			return ReverseIterator(_it);
+			//_it += n;
+			return ReverseIterator(_it + n);
 		}
 
 		//*** operator+= and operator-= Advances the iterator by n or -n positions respectively.

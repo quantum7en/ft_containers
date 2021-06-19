@@ -5826,7 +5826,7 @@ namespace std __attribute__ ((__visibility__ ("default")))
 
 
 
- _M_realloc_insert(__position, __x);
+ __position, __x);
 
 
       return iterator(this->_M_impl._M_start + __n);
@@ -6018,7 +6018,7 @@ namespace std __attribute__ ((__visibility__ ("default")))
       pointer __old_finish = this->_M_impl._M_finish;
       const size_type __elems_before = __position - begin();
       pointer __new_start(this->_M_allocate(__len));
-      pointer __new_finish(__new_start);
+      pointe_M_realloc_insert(r __new_finish(__new_start);
       try
  {
 

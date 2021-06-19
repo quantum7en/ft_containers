@@ -127,7 +127,7 @@ void ft_copy_constructor() {
 	std::cout << std::endl;
 
 }
-/*
+
 void ft_resize_test() {
 	std::cout << "\nresize_test\n" << std::endl;
 	lib::con<Test> mouse(128);
@@ -340,7 +340,7 @@ void ft_reserve_test() {
 
 
 }
-
+/*
 void ft_constructors_capacity_test() {
 	ft_defoult_constructor();
 	ft_n_constructor();
@@ -380,7 +380,7 @@ void ft_operator_assignment() {
 
 // Iterators ===================================================================
 
-/*
+
 void ft_iterator_test() {
 	std::cout << "\niterator_test\n" << std::endl;
 	lib::con<Test> mouse(128);
@@ -438,7 +438,7 @@ void ft_el_access_test() {
 	std::cout << one.back().some_   << std::endl;
 	std::cout << mouse.back().some_ << std::endl;
 }
-
+/*
 // =============================================================================
 
 // Modifiers ===================================================================
@@ -611,7 +611,7 @@ void ft_assign_iter_iter_1280b_leaks_test() {
 	std::cout << std::endl;
 
 }
-
+*/
 void ft_assign_n_val_test() {
 	std::cout << "\nassign_n_val\n" << std::endl;
 	lib::con<Test> mouse(128);
@@ -669,7 +669,7 @@ void ft_assign_n_val_test() {
 	std::cout << std::endl;
 
 }
-
+/*/
 void ft_push_back_test() {
 	std::cout << "\npush_back\n" << std::endl;
 	lib::con<Test> mouse(128);
@@ -1493,4 +1493,8 @@ int		main(){
 	ft_n_val_constructor();
 	ft_copy_constructor();
 	ft_operator_assignment();
+	ft_iterator_test();
+	ft_resize_test();
+	ft_reserve_test();
+	ft_assign_n_val_test();
 }
