@@ -13,8 +13,8 @@
 #include <utility>
 
 #include "ft_reverse_iterator.hpp"
-
 #include "enable_if.hpp"
+
 
 namespace ft {
 
@@ -118,8 +118,8 @@ namespace ft {
 		//// The function template argument InputIterator shall be an input iterator type that points to elements of a type from which value_type objects can be constructed.
 		// list (InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type());
 		template <class InputIterator>
-		List (InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type(), typename std::enable_if
-				< !std::numeric_limits<InputIterator>::is_specialized >::type* = NULL) : _listSize(0), _allocator(alloc), _node_alloc(node_allocator()){
+		List (InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type(), typename enable_if
+		        < !std::numeric_limits<InputIterator>::is_specialized >::type* = NULL) : _listSize(0), _allocator(alloc), _node_alloc(node_allocator()){
 			afterLast = _node_alloc.allocate(1);
 			//last = first;
 			afterLast->next = afterLast;
@@ -305,7 +305,7 @@ namespace ft {
 		// first, last : Iterators specifying a range of elements. Copies of the elements in the range [first,last) are inserted at position (in the same order).
 		// Notice that the range includes all the elements between first and last, including the element pointed by first but not the one pointed by last.
 		template<class InputIterator>
-		void	insert(iterator position, InputIterator first, InputIterator last, typename std::enable_if
+		void	insert(iterator position, InputIterator first, InputIterator last, typename enable_if
 				< !std::numeric_limits<InputIterator>::is_specialized >::type* = NULL){
 			for (; first != last; first++, position++)
 				position = insert(position, *first);

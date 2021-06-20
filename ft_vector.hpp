@@ -327,6 +327,7 @@ namespace ft {
 				_arrBegin = _start;
 				_arrPtr = _arrBegin;
 				_capacity = n;
+				////_size = _size;
 			}
 		}
 
@@ -348,13 +349,13 @@ namespace ft {
 		reference at (size_type n){
 			if (n >= size())
 				throw Vector::ExeptionOutOfRange();
-			return (*this)[n];
+			return _arrPtr[n];
 		}
 
 		const_reference at (size_type n) const{
 			if (n >= size())
 				throw Vector::ExeptionOutOfRange();
-			return (*this)[n];
+			return _arrPtr[n];
 		}
 
 		// Access first element
@@ -410,30 +411,34 @@ namespace ft {
 		// In the fill version (2), the new contents are n elements, each initialized to a copy of val.
 		//If a reallocation happens,the storage needed is allocated using the internal allocator.
 		void assign (size_type n, const value_type& val){
-			if (n > _capacity){
-				Vector _tmp(n, val, _allocator);
-				_tmp.swap_data(*this);
-			}
-			else if (n > _size){
-				ft::fill(begin(), end(), val); //todo
-				size_type add = n - size();
-				size_type save = add;
-				pointer finish = _arrPtr + _size ;
-				// finish = ft::fill_n(finish, add, val, _allocator);
-				iterator _cur = finish;
-				for (size_type i = 0; i < n - size(); ++i){
-					push_back(val);
-				}
-//				for (size_type i = 0; add > 0; ++i, --add, (void) ++_cur)
-//					_allocator.construct(_arrBegin + save + i, *_cur);
-//				_M_erase_at_end(begin() + n);
-//				_M_initialize_value(val);
-			}
-			else if (n < _size)
-				// erase_at_end(ft::fill_n(_arrBegin, n, val));
-				for (size_type i = _size; i > n ; --i){
-					pop_back();
-				}
+//			if (n > _capacity){
+//				Vector _tmp(n, val, _allocator);
+//				_tmp.swap_data(*this);
+//			}
+//			else if (n > _size){
+//				ft::fill(begin(), end(), val); //todo
+//				size_type add = n - size();
+//				size_type save = add;
+//				pointer finish = _arrPtr + _size ;
+//				// finish = ft::fill_n(finish, add, val, _allocator);
+//				iterator _cur = finish;
+//				for (size_type i = 0; i < n - size(); ++i){
+//					push_back(val);
+//				}
+////				for (size_type i = 0; add > 0; ++i, --add, (void) ++_cur)
+////					_allocator.construct(_arrBegin + save + i, *_cur);
+////				_M_erase_at_end(begin() + n);
+////				_M_initialize_value(val);
+//			}
+//			else if (n < _size)
+//				// erase_at_end(ft::fill_n(_arrBegin, n, val));
+//				for (size_type i = _size; i > n ; --i){
+//					pop_back();
+//				}
+			value_type save = val;
+			this->clear();
+			this->reserve(n);
+			this->insert(this->begin(), n, save);
 		}
 
 		// Add element at the end
@@ -470,18 +475,22 @@ namespace ft {
 
 		// fill (2)
 		void insert (iterator position, size_type n, const value_type& val){
-			const size_type pre_position = position - begin();
+			size_type pre_position = position - begin();
+			size_type last = (_size == 0) ? 0 : _size - 1;
 			if (_size != _capacity)
 				if (position == end()){
 					_allocator.construct(_arrPtr, val);
-					//_Alloc_traits::construct(this->_M_impl, this->_M_impl._M_finish, val);
-					++_size;
+					//++_size;
+					_size += n;
+					for (size_type i = pre_position; i < _size; ++i, --last)
+						std::copy_backward(position.get_arrPtr(), this->end().get_arrPtr() - 2, this->end().get_arrPtr() - 1 );
+					std::copy_backward(position.get_arrPtr(), this->end().get_arrPtr() - 1, this->end().get_arrPtr() );
 				}
 				else{
 					//_M_insert_aux(position, val);
-					_allocator.construct(this, this->end(), (*(this->end() - 1)));
-					++_size;
-
+					_allocator.construct(this->end().base(), (*(this->end() - 1)));
+					//++_size;
+					_size += n;
 					value_type val_copy = val;
 					std::copy_backward(position.get_arrPtr(), this->end().get_arrPtr() - 2, this->end().get_arrPtr() - 1 );
 					*position = val_copy;
@@ -502,12 +511,13 @@ namespace ft {
 				pointer _new_start(_allocator.allocate(len));
 				pointer _new_finish(_new_start);
 
-				_allocator.construct(this, _new_start + _elems_before, val);
+				_allocator.construct(_new_start + _elems_before, val);
 				_new_finish = pointer();
 //				_new_finish = std::__uninitialized_move_if_noexcept_a (_old_start, __position.base(),
 //								 _new_start, _M_get_Tp_allocator());
 
-				++_size;
+				////++_size;
+				_size += n;
 
 //						_new_finish
 //								= std::__uninitialized_move_if_noexcept_a
@@ -526,13 +536,111 @@ namespace ft {
 
 		// range (3)
 		template <class InputIterator>
-		void insert (iterator position, InputIterator first, InputIterator last){
+		void insert (iterator position, InputIterator first, InputIterator last, typename enable_if
+				< !std::numeric_limits<InputIterator>::is_specialized >::type* = NULL){
 
+			if (first != last)
+			{
+				size_type n = std::distance(first, last);
+				size_type pre_position = position - begin();
+				if (n <= 0) {
+					return ;
+				}
+				
+				if (_capacity - _size >= n)
+				{
+					while (first != last) {
+						insert(position, *first);
+						++first;
+						++position;
+					}
+					return ;
+//					const size_type elems_after = end() - position;
+//					pointer old_finish(this->_size);
+//					if (elems_after > n)
+//					{
+//						std::uninitialized_move_a(this->_M_impl._M_finish - n,
+//													this->_M_impl._M_finish,
+//													this->_M_impl._M_finish,
+//													_M_get_Tp_allocator());
+//						_size += n;
+//						std::copy_backward(position.base(), old_finish - n, old_finish);
+//						std::copy(first, last, position);
+//					}
+//					else
+//					{
+//						_ForwardIterator mid = first;
+//						std::advance(mid, elems_after);
+//						std::uninitialized_copy_a(mid, last,
+//													this->_M_impl._M_finish,
+//													_M_get_Tp_allocator());
+//						this->_M_impl._M_finish += n - elems_after;
+//						;
+//						std::uninitialized_move_a(position.base(),
+//													old_finish,
+//													this->_M_impl._M_finish,
+//													_M_get_Tp_allocator());
+//						this->_M_impl._M_finish += elems_after;
+//						;
+//						std::copy(first, mid, position);
+//					}
+				}
+				else
+				{
+					pointer _q;
+					size_type new_capacity = _capacity * 2;
+
+					if (new_capacity < _size + n) {
+						new_capacity = _size + n;
+					}
+
+					_q = _allocator.allocate(new_capacity);
+
+					memmove(_q, _arrPtr, sizeof(value_type) * pre_position);
+					std::copy(first, last, _q + pre_position);
+					memmove(_q + pre_position + n,_arrPtr + pre_position, sizeof(value_type) * (_size - pre_position));
+
+					if (_arrBegin != NULL)
+						_allocator.deallocate(_arrBegin, _capacity);
+
+					_size	+= n;
+					_arrPtr	= _q;
+					_arrBegin	= _arrPtr;
+					_capacity	= new_capacity;
+//					const size_type len =
+//							_M_check_len(n, "vector::_M_range_insert");
+//					pointer new_start(this->_M_allocate(len));
+//					pointer new_finish(new_start);
+//					
+//					{
+//						new_finish
+//								= std::uninitialized_move_if_noexcept_a
+//								(this->_M_impl._M_start, position.base(),
+//								 new_start, _M_get_Tp_allocator());
+//						new_finish
+//								= std::uninitialized_copy_a(first, last,
+//															  new_finish,
+//															  _M_get_Tp_allocator());
+//						new_finish
+//								= std::uninitialized_move_if_noexcept_a
+//								(position.base(), this->_M_impl._M_finish,
+//								 new_finish, _M_get_Tp_allocator());
+//					}
+//
+//					std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
+//								  _M_get_Tp_allocator());
+//					;
+//					_M_deallocate(this->_M_impl._M_start,
+//								  this->_M_impl._M_end_of_storage
+//								  - this->_M_impl._M_start);
+//					this->_M_impl._M_start = new_start;
+////					this->_M_impl._M_finish = new_finish;
+////					this->_M_impl._M_end_of_storage = new_start + len;
+				}
+			}
 		}
 
-
-
-		iterator erase (iterator position){
+		iterator	erase(iterator position){
 			_allocator.destroy(position.get_arrPtr());
 			iterator it = position;
 			while (it != end()) {
@@ -544,8 +652,7 @@ namespace ft {
 			return position;
 		}
 
-
-		iterator erase (iterator first, iterator last){
+		iterator	erase(iterator first, iterator last){
 			size_type begin = first - _arrBegin;
 
 			while (first != last) {
@@ -609,14 +716,46 @@ namespace ft {
 		{
 			if (size_type _n = _arrBegin + _size - _pos)
 			{
-//				std::_Destroy(_pos, this->_M_impl._M_finish,
-//							  _M_get_Tp_allocator());
 				pointer _last = _arrBegin + _size;
 				for (; _pos != _last; ++_pos)
 					_allocator.destroy(_pos);
 			}
 		}
 	};
+
+	//// **** Relation operators ****
+
+	template <class T, class Alloc>
+	bool operator==(const Vector<T,Alloc>& lhs, const Vector<T,Alloc>& rhs) {
+		return (lhs.size() == rhs.size() && std::equal(lhs.begin(), lhs.end(), rhs.begin()));
+	}
+
+	template <class T, class Alloc>
+	bool operator!=(const Vector<T,Alloc>& lhs, const Vector<T,Alloc>& rhs) {
+		return !(lhs == rhs);
+	}
+
+	template <class T, class Alloc>
+	bool operator<(const Vector<T,Alloc>& lhs, const Vector<T,Alloc>& rhs) {
+		return std::lexicographical_compare(lhs.begin(),lhs.end(),rhs.begin(),rhs.end());
+	}
+
+	template <class T, class Alloc>
+	bool operator<=(const Vector<T,Alloc>& lhs, const Vector<T,Alloc>& rhs) {
+		return !(rhs < lhs);
+	}
+
+	template <class T, class Alloc>
+	bool operator>(const Vector<T,Alloc>& lhs, const Vector<T,Alloc>& rhs) {
+		return rhs < lhs;
+	}
+
+	template <class T, class Alloc>
+	bool operator>=(const Vector<T,Alloc>& lhs, const Vector<T,Alloc>& rhs) {
+		return !std::lexicographical_compare(lhs.begin(),lhs.end(),rhs.begin(),rhs.end());
+	}
+
+	//// **** VectorIterator ****
 
 	template < class T, class P, class R >
 	class VectorIterator{
@@ -652,7 +791,7 @@ namespace ft {
 			return _arrPtr;
 		}
 
-		const VectorIterator& base() const{
+		const pointer base() const{
 			return _arrPtr; }
 		////
 
@@ -713,8 +852,8 @@ namespace ft {
 	{ return lhs.get_arrPtr() == rhs.get_arrPtr(); }
 
 	template <class lT, class lP, class lR, class rT, class rP, class rR>
-	bool operator!=(const VectorIterator<lT, lP, lR>& lhs,
-					const VectorIterator<rT, rP, rR>& rhs)
+	bool operator!=( VectorIterator<lT, lP, lR>& lhs,
+					 VectorIterator<rT, rP, rR>& rhs)
 
 	{ return lhs.base() != rhs.base(); }
 
@@ -789,15 +928,6 @@ namespace ft {
 	
 	//// Iterator bool end
 
-//	int& operator[](int idx){
-//		assert(idx >= 0 && idx < m_len);
-//		return m_data[idx];
-//	}
-//
-//	int *end{
-//		&array[0] + std::size(array)
-//	};
-	//нельзя после v.erase(it) сделать ++it || разыменовать
 }
 
 #endif //FTContainerS_FT_VECTOR_HPP

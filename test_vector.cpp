@@ -669,7 +669,7 @@ void ft_assign_n_val_test() {
 	std::cout << std::endl;
 
 }
-/*/
+
 void ft_push_back_test() {
 	std::cout << "\npush_back\n" << std::endl;
 	lib::con<Test> mouse(128);
@@ -1086,7 +1086,7 @@ void ft_insert_iter_iter_iter_8390_leaks_test() {
 	std::cout << std::endl;
 
 }
-
+/*
 void ft_erase_2540_leaks_test() {
 	std::cout << "erase_2540_leaks_test" << std::endl;
 	lib::con<Test> mouse(129);
@@ -1157,7 +1157,7 @@ void ft_erase_2540_leaks_test() {
 	}
 	std::cout << std::endl;
 }
-
+*/
 void ft_swap_test() {
 	std::cout << "swap_test" << std::endl;
 	lib::con<Test> mouse(129);
@@ -1358,6 +1358,7 @@ void ft_relational_operators() {
 	std::cout << (big_mouse <= mouse) << std::endl;
 }
 
+/*
 void const_iterators() {
 	std::cout << "const_iterators" << std::endl;
 	lib::con<int> src;
@@ -1423,7 +1424,7 @@ void reverse_iterators() {
 	std::cout << std::endl;
 	// *rcit_src = 6; // DOES NOT COMPILE
 }
-
+*/
 void relational_operators() {
 	std::cout << "relational_operators" << std::endl;
 	lib::con<int> def;
@@ -1442,6 +1443,7 @@ void relational_operators() {
 	std::cout << (def != def2) << std::endl;
 }
 
+/*
 void const_iter_with_iter() {
 	std::cout << "const_iter_with_iter" << std::endl;
 	lib::con<int> def;
@@ -1470,8 +1472,8 @@ void const_iter_with_iter() {
 }
 
 void ft_modifiers_test() {
-	ft_assign_iter_iter_leaks_test();
-	ft_assign_iter_iter_1280b_leaks_test();
+//	ft_assign_iter_iter_leaks_test();
+//	ft_assign_iter_iter_1280b_leaks_test();
 
 	ft_assign_n_val_test();
 	ft_push_back_test();
@@ -1481,20 +1483,52 @@ void ft_modifiers_test() {
 	ft_insert_iter_iter_iter_test();
 	ft_insert_iter_iter_iter_8390_leaks_test();
 
-	ft_erase_2540_leaks_test();
+	//ft_erase_2540_leaks_test();
 	ft_swap_test();
 	ft_clear_test();
 	ft_relational_operators();
 }
 */
-int		main(){
+
+void std_constructors_capacity_test() {
 	ft_defoult_constructor();
 	ft_n_constructor();
 	ft_n_val_constructor();
 	ft_copy_constructor();
-	ft_operator_assignment();
-	ft_iterator_test();
 	ft_resize_test();
 	ft_reserve_test();
+}
+
+void std_operator_assignment_test() {
+	std::cout << "\noperator_assignment\n" << std::endl;
+	lib::con<Test> base(128);
+	for (size_t i = 0; i < base.size(); ++i) {
+		base[i].some_ = i;
+	}
+
+	lib::con<Test> copy;
+	copy = base;
+
+	std::cout << "size    : " << copy.size()     << std::endl;
+	std::cout << "capacity: " << copy.capacity() << std::endl;
+	std::cout << "arr     :" << std::endl;
+	for (size_t i = 0; i < copy.size(); ++i) {
+		if (i != 0 && i % 32 == 0)
+			std::cout << std::endl;
+		std::cout << copy[i].some_ << " ";
+	}
+	std::cout << std::endl;
+
+}
+
+int		main(){
+	
+	std_constructors_capacity_test();
+	std_operator_assignment_test();
+
+
+	ft_iterator_test();
+
 	ft_assign_n_val_test();
+
 }

@@ -140,10 +140,11 @@ namespace ft {
 		//// *** Non-member functions ***
 
 		//booleans
-		bool operator==(const ReverseIterator<Iter>& rhs)
-		{
-			return (_it.base() == rhs.base());
-		}
+//		template<class lIterator, class rIterator>
+//		bool operator ==(const ReverseIterator<lIterator> & lhs,const ReverseIterator<Iter>& rhs)
+//		{
+//			return (lhs.base() == rhs.base());
+//		}
 
 		bool	operator<(ReverseIterator<Iter> const & rhs) const {
 			return _it > rhs.base();
