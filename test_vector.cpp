@@ -438,7 +438,7 @@ void ft_el_access_test() {
 	std::cout << one.back().some_   << std::endl;
 	std::cout << mouse.back().some_ << std::endl;
 }
-/*
+
 // =============================================================================
 
 // Modifiers ===================================================================
@@ -611,7 +611,7 @@ void ft_assign_iter_iter_1280b_leaks_test() {
 	std::cout << std::endl;
 
 }
-*/
+
 void ft_assign_n_val_test() {
 	std::cout << "\nassign_n_val\n" << std::endl;
 	lib::con<Test> mouse(128);
@@ -1086,7 +1086,7 @@ void ft_insert_iter_iter_iter_8390_leaks_test() {
 	std::cout << std::endl;
 
 }
-/*
+
 void ft_erase_2540_leaks_test() {
 	std::cout << "erase_2540_leaks_test" << std::endl;
 	lib::con<Test> mouse(129);
@@ -1157,7 +1157,7 @@ void ft_erase_2540_leaks_test() {
 	}
 	std::cout << std::endl;
 }
-*/
+
 void ft_swap_test() {
 	std::cout << "swap_test" << std::endl;
 	lib::con<Test> mouse(129);
@@ -1470,7 +1470,7 @@ void const_iter_with_iter() {
 	std::cout << (rit == rcit) << std::endl;
 	std::cout << (rit != rcit) << std::endl;
 }
-
+*/
 void ft_modifiers_test() {
 //	ft_assign_iter_iter_leaks_test();
 //	ft_assign_iter_iter_1280b_leaks_test();
@@ -1481,14 +1481,14 @@ void ft_modifiers_test() {
 	ft_insert_iter_val_test();
 	ft_insert_iter_n_val_test();
 	ft_insert_iter_iter_iter_test();
-	ft_insert_iter_iter_iter_8390_leaks_test();
+//	ft_insert_iter_iter_iter_8390_leaks_test();
 
-	//ft_erase_2540_leaks_test();
+	ft_erase_2540_leaks_test();
 	ft_swap_test();
 	ft_clear_test();
 	ft_relational_operators();
 }
-*/
+
 
 void std_constructors_capacity_test() {
 	ft_defoult_constructor();
@@ -1525,10 +1525,8 @@ int		main(){
 	
 	std_constructors_capacity_test();
 	std_operator_assignment_test();
-
-
 	ft_iterator_test();
-
-	ft_assign_n_val_test();
-
+	ft_el_access_test();
+	ft_modifiers_test();
+	relational_operators();
 }

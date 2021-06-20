@@ -128,11 +128,6 @@ namespace ft {
 			_arrBegin = _arrPtr;
 			for (; first != last; ++first, (void) ++_arrPtr)
 				_allocator.construct(_arrPtr, *first);
-
-//			for (size_type i = 0; i < _size; ++i) {
-//				_allocator.construct(_arrPtr + i, *first);
-//				++first;
-//			}
 		}
 
 		// copy (4) vector (const vector& x)
@@ -150,7 +145,7 @@ namespace ft {
 				_allocator.construct(_arrBegin + i, x[i]);
 		}
 
-		virtual ~Vector(){
+		 ~Vector(){
 			pointer end = _arrBegin + this->_size;
 			for (; _arrPtr != end; (void) ++_arrPtr)
 				_allocator.destroy(_arrPtr);
@@ -327,7 +322,6 @@ namespace ft {
 				_arrBegin = _start;
 				_arrPtr = _arrBegin;
 				_capacity = n;
-				////_size = _size;
 			}
 		}
 
@@ -403,42 +397,18 @@ namespace ft {
 				reserve(new_size);
 				insert(this->begin(), _tmp.begin(), _tmp.end());
 			}
-
-			~Vector();
+			Vector tmp;
+			this->swap(tmp);
 			throw Vector::ExeptionLengthError();
 		}
 
 		// In the fill version (2), the new contents are n elements, each initialized to a copy of val.
 		//If a reallocation happens,the storage needed is allocated using the internal allocator.
 		void assign (size_type n, const value_type& val){
-//			if (n > _capacity){
-//				Vector _tmp(n, val, _allocator);
-//				_tmp.swap_data(*this);
-//			}
-//			else if (n > _size){
-//				ft::fill(begin(), end(), val); //todo
-//				size_type add = n - size();
-//				size_type save = add;
-//				pointer finish = _arrPtr + _size ;
-//				// finish = ft::fill_n(finish, add, val, _allocator);
-//				iterator _cur = finish;
-//				for (size_type i = 0; i < n - size(); ++i){
-//					push_back(val);
-//				}
-////				for (size_type i = 0; add > 0; ++i, --add, (void) ++_cur)
-////					_allocator.construct(_arrBegin + save + i, *_cur);
-////				_M_erase_at_end(begin() + n);
-////				_M_initialize_value(val);
-//			}
-//			else if (n < _size)
-//				// erase_at_end(ft::fill_n(_arrBegin, n, val));
-//				for (size_type i = _size; i > n ; --i){
-//					pop_back();
-//				}
-			value_type save = val;
-			this->clear();
-			this->reserve(n);
-			this->insert(this->begin(), n, save);
+			clear();
+			reserve(n);
+			value_type save_val = val;
+			insert(begin(), n, save_val);
 		}
 
 		// Add element at the end
@@ -455,7 +425,6 @@ namespace ft {
 		// Removes the last element in the vector, effectively reducing the container size by one.
 		// This destroys the removed element.
 		void	pop_back(){
-			//--this->_size;
 			_allocator.destroy(_arrPtr + _size - 1);
 			--_size;
 		}
@@ -470,69 +439,45 @@ namespace ft {
 		iterator insert (iterator position, const value_type& val){
 			const size_type pre_pos = position - begin();
 			insert(position, 1, val);
-			return iterator(_arrBegin + pre_pos);
+			return iterator(this->_arrBegin + pre_pos);
 		}
 
 		// fill (2)
 		void insert (iterator position, size_type n, const value_type& val){
-			size_type pre_position = position - begin();
-			size_type last = (_size == 0) ? 0 : _size - 1;
-			if (_size != _capacity)
-				if (position == end()){
-					_allocator.construct(_arrPtr, val);
-					//++_size;
-					_size += n;
-					for (size_type i = pre_position; i < _size; ++i, --last)
-						std::copy_backward(position.get_arrPtr(), this->end().get_arrPtr() - 2, this->end().get_arrPtr() - 1 );
-					std::copy_backward(position.get_arrPtr(), this->end().get_arrPtr() - 1, this->end().get_arrPtr() );
+			if (n == 0)
+				return;
+
+			const size_type pre_pos = position - begin();
+			if (_capacity >= _size + n) {
+				size_type last = (_size == 0) ? 0 : _size - 1;
+
+				for (size_type i = pre_pos; i < _size; ++i, --last) {
+					memmove
+							(
+									_arrPtr + last + n,
+									_arrPtr + last,
+									sizeof(value_type)
+							);
 				}
-				else{
-					//_M_insert_aux(position, val);
-					_allocator.construct(this->end().base(), (*(this->end() - 1)));
-					//++_size;
-					_size += n;
-					value_type val_copy = val;
-					std::copy_backward(position.get_arrPtr(), this->end().get_arrPtr() - 2, this->end().get_arrPtr() - 1 );
-					*position = val_copy;
+				for (size_type i = 0; i < n; ++i) {
+					_allocator.construct(_arrPtr + pre_pos + i, val);
 				}
-			else{
-				//_M_realloc_insert(position, val);
-
-				if (max_size() - size() < 1)
-					throw ExeptionLengthError();
-
-				size_type len = size() + std::max(size(), (size_type)1);
-				len = (len < size() || len > max_size()) ? max_size() : len;
-
-				pointer _old_start = _arrBegin;
-				pointer _old_finish = _arrBegin + size();
-
-				const size_type _elems_before = position - begin();
-				pointer _new_start(_allocator.allocate(len));
-				pointer _new_finish(_new_start);
-
-				_allocator.construct(_new_start + _elems_before, val);
-				_new_finish = pointer();
-//				_new_finish = std::__uninitialized_move_if_noexcept_a (_old_start, __position.base(),
-//								 _new_start, _M_get_Tp_allocator());
-
-				////++_size;
 				_size += n;
+				return;
+			}
+			size_type new_capacity = _capacity * 2;
 
-//						_new_finish
-//								= std::__uninitialized_move_if_noexcept_a
-//								(__position.base(), _old_finish,
-//								 _new_finish, _M_get_Tp_allocator());
-
-				_allocator.destroy(_old_start);
-				//std::_Destroy(_old_start, _old_finish, _M_get_Tp_allocator());
-				_allocator.deallocate(_old_start, _arrBegin + this->_capacity - _old_start);
-				this->_arrBegin = _new_start;
-//				this->_M_impl._M_finish = _new_finish;
-//				this->_M_impl._M_end_of_storage = _new_start + _len;
+			if (new_capacity < _size + n) {
+				new_capacity = _size + n;
 			}
 
-		}
+			value_type      save_val(val);
+			difference_type save_pos(position - this->begin());
+
+			this->reserve(new_capacity);
+			this->insert(iterator(_arrPtr + save_pos), n, save_val);
+			return;
+			}
 
 		// range (3)
 		template <class InputIterator>
@@ -555,35 +500,6 @@ namespace ft {
 						++position;
 					}
 					return ;
-//					const size_type elems_after = end() - position;
-//					pointer old_finish(this->_size);
-//					if (elems_after > n)
-//					{
-//						std::uninitialized_move_a(this->_M_impl._M_finish - n,
-//													this->_M_impl._M_finish,
-//													this->_M_impl._M_finish,
-//													_M_get_Tp_allocator());
-//						_size += n;
-//						std::copy_backward(position.base(), old_finish - n, old_finish);
-//						std::copy(first, last, position);
-//					}
-//					else
-//					{
-//						_ForwardIterator mid = first;
-//						std::advance(mid, elems_after);
-//						std::uninitialized_copy_a(mid, last,
-//													this->_M_impl._M_finish,
-//													_M_get_Tp_allocator());
-//						this->_M_impl._M_finish += n - elems_after;
-//						;
-//						std::uninitialized_move_a(position.base(),
-//													old_finish,
-//													this->_M_impl._M_finish,
-//													_M_get_Tp_allocator());
-//						this->_M_impl._M_finish += elems_after;
-//						;
-//						std::copy(first, mid, position);
-//					}
 				}
 				else
 				{
@@ -607,53 +523,48 @@ namespace ft {
 					_arrPtr	= _q;
 					_arrBegin	= _arrPtr;
 					_capacity	= new_capacity;
-//					const size_type len =
-//							_M_check_len(n, "vector::_M_range_insert");
-//					pointer new_start(this->_M_allocate(len));
-//					pointer new_finish(new_start);
-//					
-//					{
-//						new_finish
-//								= std::uninitialized_move_if_noexcept_a
-//								(this->_M_impl._M_start, position.base(),
-//								 new_start, _M_get_Tp_allocator());
-//						new_finish
-//								= std::uninitialized_copy_a(first, last,
-//															  new_finish,
-//															  _M_get_Tp_allocator());
-//						new_finish
-//								= std::uninitialized_move_if_noexcept_a
-//								(position.base(), this->_M_impl._M_finish,
-//								 new_finish, _M_get_Tp_allocator());
-//					}
-//
-//					std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
-//								  _M_get_Tp_allocator());
-//					;
-//					_M_deallocate(this->_M_impl._M_start,
-//								  this->_M_impl._M_end_of_storage
-//								  - this->_M_impl._M_start);
-//					this->_M_impl._M_start = new_start;
-////					this->_M_impl._M_finish = new_finish;
-////					this->_M_impl._M_end_of_storage = new_start + len;
 				}
 			}
 		}
 
 		iterator	erase(iterator position){
-			_allocator.destroy(position.get_arrPtr());
-			iterator it = position;
-			while (it != end()) {
-				_allocator.construct(it.get_arrPtr, *(it + 1));
-				_allocator.destroy(it.get_arrPtr + 1);
-				++it;
-			}
+			difference_type index = std::distance(this->begin(), position);
+
+			iterator it = iterator(_arrPtr + index);
+			if (_size == 0)
+				return it;
+
+			_allocator.destroy(it.get_arrPtr());
 			--_size;
-			return position;
+
+			size_type n_size = sizeof(value_type) * (_size - index);
+			size_type 				i;
+			unsigned char		*ptr_dest;
+			const unsigned char	*ptr_src;
+
+			ptr_dest = (unsigned char *)(_arrPtr + index);
+			ptr_src = (unsigned char *)(_arrPtr + index + 1);
+			i = 0;
+			if (ptr_src < ptr_dest)
+			{
+				while (n_size> 0)
+				{
+					n_size--;
+					ptr_dest[n_size] = ptr_src[n_size];
+				}
+			}
+			else
+				while (n_size> i)
+				{
+					ptr_dest[i] = ptr_src[i];
+					i++;
+				}
+
+			return iterator(_arrPtr + index);
 		}
 
 		iterator	erase(iterator first, iterator last){
-			size_type begin = first - _arrBegin;
+			size_type begin = first.get_arrPtr() - _arrBegin;
 
 			while (first != last) {
 				erase(first);
@@ -691,25 +602,26 @@ namespace ft {
 
 		void swap_data(Vector& _x)
 		{
-			Vector _tmp;
-			// _tmp.std::copy_data(*this);
-			_tmp._arrBegin = this->_arrBegin;
-			_tmp._arrPtr = this->_arrPtr;
-			_tmp._size = this->_size;
-			_tmp._capacity = this->_capacity;
-			//_M_copy_data(_x);
+			pointer _tmp_Begin;
+			pointer _tmp_Ptr;
+			size_type _tmp_size;
+			size_type _tmp_capacity;
 
-			//// allocator
+			_tmp_Begin = this->_arrBegin;
+			_tmp_Ptr = this->_arrPtr;
+			_tmp_size = this->_size;
+			_tmp_capacity = this->_capacity;
+
 			this->_arrBegin =_x._arrBegin;
 			this->_arrPtr = _x._arrPtr;
 			this->_size = _x._size;
 			this->_capacity = _x._capacity;
 
-			//_x._M_copy_data(_tmp);
-			_x._arrBegin = _tmp._arrBegin;
-			_x._arrPtr = _tmp._arrPtr;
-			_x._size = _tmp._size;
-			_x._capacity = _tmp._capacity;
+			_x._arrBegin = _tmp_Begin;
+			_x._arrPtr =_tmp_Ptr;
+			_x._size = _tmp_size;
+			_x._capacity = _tmp_capacity;
+
 		}
 
 		void erase_at_end(pointer _pos)
@@ -852,28 +764,16 @@ namespace ft {
 	{ return lhs.get_arrPtr() == rhs.get_arrPtr(); }
 
 	template <class lT, class lP, class lR, class rT, class rP, class rR>
-	bool operator!=( VectorIterator<lT, lP, lR>& lhs,
-					 VectorIterator<rT, rP, rR>& rhs)
+	bool operator!=( const VectorIterator<lT, lP, lR>& lhs,
+					 const VectorIterator<rT, rP, rR>& rhs)
 
 	{ return lhs.base() != rhs.base(); }
-
-//	template <class lT, class lP, class lR, class rT, class rP, class rR>	bool
-//	operator!=(const VectorIterator<lT, lP, lR>& lhs,
-//			   const VectorIterator<rT, rP, rR>& rhs)
-//	{ return lhs.get_arrPtr() != rhs.get_arrPtr(); }
-
 
 	template <class lT, class lP, class lR, class rT, class rP, class rR>
 	bool operator<(const VectorIterator<lT, lP, lR>& lhs,
 				   const VectorIterator<rT, rP, rR>& rhs)
 	{ return lhs.base() < rhs.base(); }
 
-//	template<typename _Iterator, typename Container>
-//	bool
-//	operator<(const VectorIterator<_Iterator, Container>& lhs,
-//			  const VectorIterator<_Iterator, Container>& rhs)
-//
-//	{ return lhs.base() < rhs.base(); }
 
 	template <class lT, class lP, class lR, class rT, class rP, class rR>
 	bool operator>(const VectorIterator<lT, lP, lR>& lhs,
@@ -881,12 +781,6 @@ namespace ft {
 
 	{ return lhs.base() > rhs.base(); }
 
-//	template<typename _Iterator, typename Container>
-//	bool
-//	operator>(const VectorIterator<_Iterator, Container>& lhs,
-//			  const VectorIterator<_Iterator, Container>& rhs)
-//
-//	{ return lhs.base() > rhs.base(); }
 
 	template <class lT, class lP, class lR, class rT, class rP, class rR>
 	bool operator<=(const VectorIterator<lT, lP, lR>& lhs,
@@ -894,25 +788,12 @@ namespace ft {
 
 	{ return lhs.base() <= rhs.base(); }
 
-//	template<typename _Iterator, typename Container>
-//	bool
-//	operator<=(const VectorIterator<_Iterator, Container>& lhs,
-//			   const VectorIterator<_Iterator, Container>& rhs)
-//
-//	{ return lhs.base() <= rhs.base(); }
 
 	template <class lT, class lP, class lR, class rT, class rP, class rR>
 	bool operator>=(const VectorIterator<lT, lP, lR>& lhs,
 			   const VectorIterator<rT, rP, rR>& rhs)
 
 	{ return lhs.base() >= rhs.base(); }
-//
-//	template<typename _Iterator, typename Container>
-//	bool
-//	operator>=(const VectorIterator<_Iterator, Container>& lhs,
-//			   const VectorIterator<_Iterator, Container>& rhs)
-//
-//	{ return lhs.base() >= rhs.base(); }
 
 	template <class T, class P, class R>
 	typename VectorIterator<T, P, R>::difference_type
