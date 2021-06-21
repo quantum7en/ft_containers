@@ -142,32 +142,32 @@ ft_containers/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/ft_containers.dir/build.make CMakeFiles/ft_containers.dir/build
 .PHONY : ft_containers/fast
 
-test_vector.o: test_vector.cpp.o
+test_map.o: test_map.cpp.o
 
-.PHONY : test_vector.o
+.PHONY : test_map.o
 
 # target to build an object file
-test_vector.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ft_containers.dir/build.make CMakeFiles/ft_containers.dir/test_vector.cpp.o
-.PHONY : test_vector.cpp.o
+test_map.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ft_containers.dir/build.make CMakeFiles/ft_containers.dir/test_map.cpp.o
+.PHONY : test_map.cpp.o
 
-test_vector.i: test_vector.cpp.i
+test_map.i: test_map.cpp.i
 
-.PHONY : test_vector.i
+.PHONY : test_map.i
 
 # target to preprocess a source file
-test_vector.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ft_containers.dir/build.make CMakeFiles/ft_containers.dir/test_vector.cpp.i
-.PHONY : test_vector.cpp.i
+test_map.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ft_containers.dir/build.make CMakeFiles/ft_containers.dir/test_map.cpp.i
+.PHONY : test_map.cpp.i
 
-test_vector.s: test_vector.cpp.s
+test_map.s: test_map.cpp.s
 
-.PHONY : test_vector.s
+.PHONY : test_map.s
 
 # target to generate assembly for a file
-test_vector.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ft_containers.dir/build.make CMakeFiles/ft_containers.dir/test_vector.cpp.s
-.PHONY : test_vector.cpp.s
+test_map.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ft_containers.dir/build.make CMakeFiles/ft_containers.dir/test_map.cpp.s
+.PHONY : test_map.cpp.s
 
 # Help Target
 help:
@@ -178,9 +178,9 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... ft_containers"
-	@echo "... test_vector.o"
-	@echo "... test_vector.i"
-	@echo "... test_vector.s"
+	@echo "... test_map.o"
+	@echo "... test_map.i"
+	@echo "... test_map.s"
 .PHONY : help
 
 

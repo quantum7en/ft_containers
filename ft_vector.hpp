@@ -103,8 +103,6 @@ namespace ft {
 		_capacity(n){
 			_arrPtr = _allocator.allocate(n);
 			_arrBegin = _arrPtr;
-//			for (; n > 0 && _arrPtr ; --n, (void) ++_arrPtr)
-//					_allocator.construct(_arrBegin + n, val);
 
 			for (size_type i = 0; i < n; ++i)
 				_allocator.construct(_arrBegin + i, val);
@@ -266,17 +264,14 @@ namespace ft {
 				ptr_dest = (unsigned char *)arr_reallocated;
 				ptr_src = (unsigned char *)_arrPtr;
 				i = 0;
-				if (ptr_src < ptr_dest)
-				{
-					while (n_size> 0)
-					{
+				if (ptr_src < ptr_dest){
+					while (n_size> 0){
 						n_size--;
 						ptr_dest[n_size] = ptr_src[n_size];
 					}
 				}
 				else
-					while (n_size> i)
-					{
+					while (n_size> i){
 						ptr_dest[i] = ptr_src[i];
 						i++;
 					}
@@ -448,16 +443,11 @@ namespace ft {
 				return;
 
 			const size_type pre_pos = position - begin();
-			if (_capacity >= _size + n) {
+			if (_size + n <= _capacity) {
 				size_type last = (_size == 0) ? 0 : _size - 1;
 
 				for (size_type i = pre_pos; i < _size; ++i, --last) {
-					memmove
-							(
-									_arrPtr + last + n,
-									_arrPtr + last,
-									sizeof(value_type)
-							);
+					memmove(_arrPtr + last + n, _arrPtr + last, sizeof(value_type));
 				}
 				for (size_type i = 0; i < n; ++i) {
 					_allocator.construct(_arrPtr + pre_pos + i, val);
@@ -465,19 +455,19 @@ namespace ft {
 				_size += n;
 				return;
 			}
-			size_type new_capacity = _capacity * 2;
-
-			if (new_capacity < _size + n) {
+			else {
+				size_type new_capacity = _capacity * 2;
+				if (new_capacity < _size + n) {
 				new_capacity = _size + n;
-			}
+				}
 
-			value_type      save_val(val);
-			difference_type save_pos(position - this->begin());
-
-			this->reserve(new_capacity);
-			this->insert(iterator(_arrPtr + save_pos), n, save_val);
-			return;
+				value_type      save_val(val);
+				difference_type save_pos(position - begin());
+				reserve(new_capacity);
+				insert(iterator(_arrPtr + save_pos), n, save_val);
+				return;
 			}
+		}
 
 		// range (3)
 		template <class InputIterator>
@@ -506,9 +496,8 @@ namespace ft {
 					pointer _q;
 					size_type new_capacity = _capacity * 2;
 
-					if (new_capacity < _size + n) {
+					if (new_capacity < _size + n)
 						new_capacity = _size + n;
-					}
 
 					_q = _allocator.allocate(new_capacity);
 
@@ -679,7 +668,7 @@ namespace ft {
 		typedef std::random_access_iterator_tag iterator_category;
 		typedef const T &	const_reference;
 		typedef const T &	const_pointer;
-		typedef VectorIterator<T, P, R> this_type; //todo ?
+		typedef VectorIterator<T, P, R> this_type;
 
 
 		VectorIterator() : _arrPtr(NULL) {};
@@ -705,7 +694,7 @@ namespace ft {
 
 		const pointer base() const{
 			return _arrPtr; }
-		////
+		//// operators
 
 
 		reference operator*(){
@@ -742,7 +731,7 @@ namespace ft {
 			return *this; }
 
 		VectorIterator operator+(difference_type n) const{
-			return VectorIterator(_arrPtr + n); } //todo
+			return VectorIterator(_arrPtr + n); }
 
 		VectorIterator &operator-=(difference_type n){
 			_arrPtr -= n;
@@ -759,52 +748,47 @@ namespace ft {
 	//// Iterator bool
 
 	template <class lT, class lP, class lR, class rT, class rP, class rR>
-	bool operator==(const VectorIterator<lT, lP, lR>& lhs,
-			   const VectorIterator<rT, rP, rR>& rhs)
-	{ return lhs.get_arrPtr() == rhs.get_arrPtr(); }
+	bool operator==(const VectorIterator<lT, lP, lR>& lhs, const VectorIterator<rT, rP, rR>& rhs){
+		return lhs.get_arrPtr() == rhs.get_arrPtr();
+	}
 
 	template <class lT, class lP, class lR, class rT, class rP, class rR>
-	bool operator!=( const VectorIterator<lT, lP, lR>& lhs,
-					 const VectorIterator<rT, rP, rR>& rhs)
-
-	{ return lhs.base() != rhs.base(); }
-
-	template <class lT, class lP, class lR, class rT, class rP, class rR>
-	bool operator<(const VectorIterator<lT, lP, lR>& lhs,
-				   const VectorIterator<rT, rP, rR>& rhs)
-	{ return lhs.base() < rhs.base(); }
-
+	bool operator!=( const VectorIterator<lT, lP, lR>& lhs, const VectorIterator<rT, rP, rR>& rhs){
+		return lhs.base() != rhs.base();
+	}
 
 	template <class lT, class lP, class lR, class rT, class rP, class rR>
-	bool operator>(const VectorIterator<lT, lP, lR>& lhs,
-				   const VectorIterator<rT, rP, rR>& rhs)
-
-	{ return lhs.base() > rhs.base(); }
+	bool operator<(const VectorIterator<lT, lP, lR>& lhs, const VectorIterator<rT, rP, rR>& rhs){
+		return lhs.base() < rhs.base();
+	}
 
 
 	template <class lT, class lP, class lR, class rT, class rP, class rR>
-	bool operator<=(const VectorIterator<lT, lP, lR>& lhs,
-					const VectorIterator<rT, rP, rR>& rhs)
-
-	{ return lhs.base() <= rhs.base(); }
+	bool operator>(const VectorIterator<lT, lP, lR>& lhs, const VectorIterator<rT, rP, rR>& rhs){
+		return lhs.base() > rhs.base();
+	}
 
 
 	template <class lT, class lP, class lR, class rT, class rP, class rR>
-	bool operator>=(const VectorIterator<lT, lP, lR>& lhs,
-			   const VectorIterator<rT, rP, rR>& rhs)
+	bool operator<=(const VectorIterator<lT, lP, lR>& lhs, const VectorIterator<rT, rP, rR>& rhs){
+		return lhs.base() <= rhs.base();
+	}
 
-	{ return lhs.base() >= rhs.base(); }
+
+	template <class lT, class lP, class lR, class rT, class rP, class rR>
+	bool operator>=(const VectorIterator<lT, lP, lR>& lhs, const VectorIterator<rT, rP, rR>& rhs){
+		return lhs.base() >= rhs.base();
+	}
 
 	template <class T, class P, class R>
 	typename VectorIterator<T, P, R>::difference_type
-	operator-(const VectorIterator<T, P, R>& lhs,
-			  const VectorIterator<T, P, R>& rhs)
-	{ return lhs.base() - rhs.base(); }
+	operator-(const VectorIterator<T, P, R>& lhs, const VectorIterator<T, P, R>& rhs){
+		return lhs.base() - rhs.base();
+	}
 
 	template <class T, class P, class R>
 	inline VectorIterator<T, P, R>
-	operator+(typename VectorIterator<T, P, R>::difference_type
-			  n, const VectorIterator<T, P, R>& i)
+	operator+(typename VectorIterator<T, P, R>::difference_type n, const VectorIterator<T, P, R>& i)
 	{ return VectorIterator<T, P, R>(i.base() + n); }
 	
 	//// Iterator bool end

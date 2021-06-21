@@ -75,7 +75,6 @@ namespace ft {
 		typedef ft::ReverseIterator <iterator>                 			reverse_iterator;  // дописать реверс итератор
 		typedef ft::ReverseIterator <const_iterator>     				const_reverse_iterator;
 		typedef typename ft::ListIterator<T, T*, T&, Node <T> >::difference_type difference_type;
-//todo		typedef std::ptrdiff_t										difference_type; // std::ptrdiff_t is the signed integer type of the result of subtracting two pointers.
 		typedef std::size_t											size_type;
 
 		friend class Node<T>;
@@ -146,7 +145,7 @@ namespace ft {
 		//In the default allocator, the block of storage is at some point deallocated using ::operator delete (either during the function call, or later).
 		virtual ~List(){
 			if(_listSize > 0)
-				erase(begin(), end()); // || в цикле pop_back
+				erase(begin(), end());
 			_node_alloc.deallocate(afterLast, 1);
 		};
 
@@ -205,8 +204,8 @@ namespace ft {
 		}
 
 		/**** Element access ****/
-//// front - access the first element
-//// back - access the last element
+		//// front - access the first element
+		//// back - access the last element
 
 		reference       front() {
 			return afterLast->next->data;
@@ -265,8 +264,6 @@ namespace ft {
 			--it;
 			erase(it);
 		}
-
-//splice - перемещает из одного контейнера в другой, ничего там не удаляя - сменить указатели в одном контейнере другими
 
 		// The container is extended by inserting new elements before the element at the specified position.
 		// This effectively increases the list size by the amount of elements inserted.
@@ -457,8 +454,6 @@ namespace ft {
 			for (iterator it = begin(); it != end(); ++it){
 				if (it.getPtr()->data == val)
 					it = erase(it);
-//				else
-//					++it;
 			}
 		}
 
@@ -516,7 +511,6 @@ namespace ft {
 				else
 				{
 					currentIt = next;
-					//++next;
 				}
 			}
 		}
@@ -665,7 +659,6 @@ namespace ft {
 			position.getPtr()->Node<T>::transfer(first.getPtr(), last.getPtr()); }
 
 	private:
-		//typedef Node<value_type, allocator_type> lst
 		size_type _listSize;
 		Node<T> *afterLast; //специальный указатель на Node sentinal - shadow node, элемент после последнего
 		allocator_type _allocator;
@@ -820,7 +813,6 @@ namespace ft {
 		}
 
 		friend class List<T>;
-		//const iterator - мы не можем разыменовать константный итератор и присвоить какое-то значение
 
 	};
 
