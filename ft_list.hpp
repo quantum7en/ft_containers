@@ -737,7 +737,7 @@ namespace ft {
 		typedef T *			pointer;
 		typedef T &			reference;
 		typedef ptrdiff_t	difference_type;
-		typedef std::bidirectional_iterator_tag iterator_category; //works??
+		typedef std::bidirectional_iterator_tag iterator_category;
 		typedef const T &	const_reference;
 		typedef const T &	const_pointer;
 

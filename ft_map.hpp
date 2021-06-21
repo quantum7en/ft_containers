@@ -7,6 +7,7 @@
 
 #include <string>
 #include <iostream>
+#include "ft_vector.hpp"
 
 namespace ft {
 
@@ -26,12 +27,59 @@ namespace ft {
 	/// The mapped values in a map can be accessed directly by their corresponding key using the bracket operator ((operator[]).
 	/// Maps are typically implemented as binary search trees.
 
-	template < class Key,                                     // map::key_type
-			class T,                                       // map::mapped_type
-			class Compare = std::less<Key>,                     // map::key_compare
-			class Alloc = std::allocator<std::pair<const Key,T> >    // map::allocator_type
+	/// Associative
+	// Elements in associative containers are referenced by their key and not by their absolute position in the container.
+	/// Ordered
+	// The elements in the container follow a strict order at all times. All inserted elements are given a position in this order.
+	/// Map
+	// Each element associates a key to a mapped value: Keys are meant to identify the elements whose main content is the mapped value.
+	/// Unique keys
+	// No two elements in the container can have equivalent keys.
+	/// Allocator-aware
+	// The container uses an allocator object to dynamically handle its storage needs.
+
+	template < class Key,											// map::key_type
+			class T,												// map::mapped_type
+			class Compare = std::less<Key>,							// map::key_compare
+			class Alloc = std::allocator<std::pair<const Key,T> >	// map::allocator_type
 	>
 	class Map {
+
+	public:
+		typedef Key 					key_type;
+		typedef T						mapped_type;
+		typedef std::pair<const Key, T> value_type;
+		typedef Compare					key_compare;
+//		typedef Compare					value_compare;
+		typedef Alloc					allocator_type;
+		typedef typename allocator_type::pointer			pointer;
+		typedef typename allocator_type::pointer			const_pointer;
+		typedef typename allocator_type::reference			reference;
+		typedef typename allocator_type::const_reference	const_reference;
+		typedef size_t					size_type;
+		typedef typename ft::MapIterator<
+		        ft::VectorIterator<value_type, value_type*, value_type&>>	difference_type;
+
+		typedef ft::MapIterator<ft::VectorIterator<value_type, value_type*, value_type&>> iterator;
+		typedef ft::MapIterator<ft::VectorIterator<value_type, const value_type*, const value_type&>> const_iterator;
+		typedef ft::ReverseIterator<iterator>		reverse_iterator;
+		typedef ft::ReverseIterator<const_iterator>	const_reverse_iterator;
+//		typedef node_type              = /* unspecified */;
+//		typedef insert_return_type     = /*insert-return-type*/<iterator, node_type>;
+
+		typedef class value_compare {
+			friend class Map;
+
+		protected:
+			Compare comp;
+			explicit value_compare(Compare c) : comp(c) {}
+		public:
+			bool operator()(const value_type& x, const value_type& y) const {
+				return comp(x.first, y.first);
+			}
+		};
+
+
 
 
 		struct Node {
@@ -448,10 +496,95 @@ namespace ft {
 	template <class Iterator>
 	class MapIterator{
 
-
 	public:
+		typedef Iterator	iterator_type;
+		typedef T			value_type;
+		typedef T *			pointer;
+		typedef T &			reference;
+		typedef ptrdiff_t	difference_type;
+		typedef std::bidirectional_iterator_tag iterator_category;
+		typedef const T &	const_reference;
+		typedef const T &	const_pointer;
 
 	private:
+		iterator_type _it;
+
+	public:
+		MapIterator() : _it() {};
+		explicit MapIterator(iterator_type it) : _it(it) {};
+
+		template <class Iter>
+		explicit MapIterator(const MapIterator &rhs) : _it(rhs._it) {};
+
+		virtual ~MapIterator(){};
+
+		//assignation =
+		MapIterator& operator = (const MapIterator &rhs){
+			if (this == &rhs)
+				return *this;
+			_it = rhs._it;
+			return *this;
+		}
+
+		// ++iterator
+		MapIterator operator++(){
+			++_it;
+			return *this;
+		}
+
+		// iterator++
+		MapIterator operator++(int){
+			MapIterator tmp(*this);
+			++_it;
+			return tmp;
+		}
+
+		//
+		MapIterator operator--(){
+			--_it;
+			return *this;
+		}
+
+		MapIterator operator--(int){
+			MapIterator tmp(*this);
+			--_it;
+			return tmp;
+		}
+
+		reference operator*(){
+			return *_it;
+		}
+
+		const_reference operator*() const{
+			if (_it)
+				return *_it;
+		}
+
+		pointer operator->(){
+			return _it.base().get_arrPtr();
+		}
+
+		const_pointer operator->() const{
+			return _it.base().get_arrPtr();
+		}
+
+
+		bool operator==( const MapIterator &rhs){
+			return (_it == rhs._it);
+		}
+
+		bool operator!=( const MapIterator &rhs){
+			return (_it != rhs._it);
+		}
+
+
+		//// *** Getter for private field _it
+		iterator_type base() const {
+			return _it;
+		}
+
+		// friend class Map<class Key, class T,class Compare = std::less<Key>, class Alloc = std::allocator<std::pair<const Key,T>>;
+
 
 	};
 
