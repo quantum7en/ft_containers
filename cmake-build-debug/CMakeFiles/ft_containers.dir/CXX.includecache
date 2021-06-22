@@ -38,11 +38,21 @@ ft_reverse_iterator.hpp
 enable_if.hpp
 /Users/pmelinda/ft_containers/enable_if.hpp
 
+/Users/pmelinda/ft_containers/ft_queue.hpp
+ft_list.hpp
+/Users/pmelinda/ft_containers/ft_list.hpp
+ft_reverse_iterator.hpp
+/Users/pmelinda/ft_containers/ft_reverse_iterator.hpp
+algorithm
+-
+deque
+-
+
 /Users/pmelinda/ft_containers/ft_reverse_iterator.hpp
 stddef.h
 -
 
-/Users/pmelinda/ft_containers/main.cpp
+/Users/pmelinda/ft_containers/test_queue.cpp
 iostream
 -
 vector
@@ -59,6 +69,8 @@ ft_list.hpp
 /Users/pmelinda/ft_containers/ft_list.hpp
 ft_reverse_iterator.hpp
 /Users/pmelinda/ft_containers/ft_reverse_iterator.hpp
-map
+queue
 -
+ft_queue.hpp
+/Users/pmelinda/ft_containers/ft_queue.hpp
 
