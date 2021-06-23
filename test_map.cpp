@@ -5,6 +5,7 @@
 #include <iostream>
 #include <map>
 #include <string>
+//#include "RBTree.hpp"
 #include "ft_map.hpp"
 #include "classes.hpp"
 
@@ -55,6 +56,29 @@ public:
 
 int		main(){
 
+
+		ft::RedBlackTree bst;
+//		bst.insert(55);
+//		bst.insert(40);
+//		bst.insert(65);
+//		bst.insert(60);
+//		bst.insert(75);
+//		bst.insert(57);
+
+for(int i = 1; i < 15; i++)
+	bst.insert(i);
+//	bst.insert(-1);
+//	bst.insert(0);
+//	bst.insert(-15);
+//	bst.insert(-2);
+
+		bst.deleteNode(1);
+		bst.show();
+		bst.traversal();
+//		cout << endl
+//			 << "After deleting" << endl;
+//		bst.deleteNode(40);
+//		bst.printTree();
 
 
 	return 0;

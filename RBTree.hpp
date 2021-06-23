@@ -11,27 +11,31 @@
 
 namespace ft {
 
+	template <class T>
 	struct Node {
-		int data;
+		T data; //T //int
 		Node *parent;
 		Node *left;
 		Node *right;
 		int color;
 	};
 
-	typedef Node *NodePtr;
 
+	template < class T, class Compare >
 	class RedBlackTree {
+		typedef Node<T> *NodePtr;
 	private:
 		NodePtr root;
 		NodePtr TNULL;
+//		NodePtr _first;
+//		NodePtr _last;
 
 		void initializeNULLNode(NodePtr node, NodePtr parent) {
 			node->data = 0;
 			node->parent = parent;
 			node->left = NULL;
 			node->right = NULL;
-			node->color = 0;
+			node->color = 0; // 0 -black
 		}
 
 		// Preorder
@@ -260,7 +264,7 @@ namespace ft {
 
 	public:
 		RedBlackTree() {
-			TNULL = new Node;
+			TNULL = new Node<T>;
 			TNULL->color = 0;
 			TNULL->left = NULL;
 			TNULL->right = NULL;
@@ -361,45 +365,46 @@ namespace ft {
 		}
 
 		// Inserting a node
-		void insert(int key) {
-			NodePtr node = new Node;
-			node->parent = NULL;
-			node->data = key;
-			node->left = TNULL;
-			node->right = TNULL;
-			node->color = 1;
+		// int key
+		void insert(NodePtr nodePtr) {
+			//NodePtr node = new Node;
+//			nodePtr->parent = NULL;
+//			nodePtr->data = key;
+//			nodePtr->left = TNULL;
+//			nodePtr->right = TNULL;
+			nodePtr->color = 1;
 
 			NodePtr y = NULL;
 			NodePtr x = this->root;
 
 			while (x != TNULL) {
 				y = x;
-				if (node->data < x->data) {
+				if (nodePtr->data < x->data) {
 					x = x->left;
 				} else {
 					x = x->right;
 				}
 			}
 
-			node->parent = y;
+			nodePtr->parent = y;
 			if (y == NULL) {
-				root = node;
-			} else if (node->data < y->data) {
-				y->left = node;
+				root = nodePtr;
+			} else if (nodePtr->data < y->data) {
+				y->left = nodePtr;
 			} else {
-				y->right = node;
+				y->right = nodePtr;
 			}
 
-			if (node->parent == NULL) {
-				node->color = 0;
+			if (nodePtr->parent == NULL) {
+				nodePtr->color = 0;
 				return;
 			}
 
-			if (node->parent->parent == NULL) {
+			if (nodePtr->parent->parent == NULL) {
 				return;
 			}
 
-			insertFix(node);
+			insertFix(nodePtr);
 		}
 
 		NodePtr getRoot() {
@@ -416,24 +421,45 @@ namespace ft {
 			}
 		}
 
-//		void traversal(Node* x) const
-//		{
-//			if (x == NULL)
-//				return ;
-//			traversal(x->left);
-//			traversal(x->right);
-//			std::string color = x->color == YELLOW ? "\e[33m" : "\e[34m";
-//			if (x != this->_first && x != this->_last)
-//				std::cout << "node: " << color << "[" << x->data.first << "]" << "\e[0m" << "    addr: " << x << ", left: "
-//						  << x->left << ", right: " << x->right << ", parent: " << x->parent << std::endl;
-//			else
-//				std::cout << "found limit node, with addr: " << x << std::endl;
-//		}
-//
-//		void traversal() const{
-//			std::cout << "tree with size: " << this->_size << std::endl;
-//			traversal(this->root);
-//		}
+		void traversal(Node<T>* x) const
+		{
+			if (x == NULL  && x != TNULL)
+				return ;
+			traversal(x->left);
+			traversal(x->right);
+			std::string color = x->color == 0 ? "\e[33m" : "\e[34m";
+			if (x != this->TNULL)
+				std::cout << "node: " << color << "[" << x->data << "]" << "\e[0m" << "    addr: " << x << ", left: "
+						  << x->left << ", right: " << x->right << ", parent: " << x->parent << std::endl;
+			else
+				std::cout << "found limit node, with addr: " << x << std::endl;
+		}
+
+		void traversal() const{
+		//	std::cout << "tree with size: " << this->_size << std::endl; // _size кол-во нод в дереве без пустых нод
+			traversal(this->root);
+		}
+
+		void print(Node<T>* root, int deep)
+		{
+			if (root != NULL && root != TNULL) {
+				print(root->right, deep + 1);
+				if (root->color == 1)
+					std::cout << "\e[34m";
+				else if (root->color == 0)
+					std::cout << "\e[33m";
+				for (int i = 0; i < deep; i++)
+					std::cout << "    ";
+				if (root != this->TNULL )
+					std::cout << root->data << "\e[0m" << "\n";
+				print(root->left, deep + 1);
+			}
+			std::cout << "\e[0m";
+		}
+
+		void show()
+		{ std::cout << this->root->data;
+			print(this->root, 10); }
 	};
 
 }

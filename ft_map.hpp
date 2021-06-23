@@ -44,9 +44,9 @@ namespace ft {
 	template < class Key,											// map::key_type
 			class T,												// map::mapped_type
 			class Compare = std::less<Key>,							// map::key_compare
-			class Alloc = std::allocator<std::pair<const Key,T> >	// map::allocator_type
+			class Alloc = std::allocator<std::pair<const Key, T> >	// map::allocator_type
 	>
-	class Map : public RedBlackTree{
+class Map : public RedBlackTree< class std::pair<const Key, T> , Compare >{
 
 	public:
 		typedef Key 					key_type;
@@ -82,11 +82,57 @@ namespace ft {
 			}
 		};
 
+		// (1) empty container constructor (default constructor)
+		//Constructs an empty container, with no elements.
+		explicit Map(const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()):
+		_allocator(alloc), _compare(comp),
+		{}
+
+		// (2) range constructor
+		//Constructs a container with as many elements as the range [first,last),
+		// with each element constructed from its corresponding element in that range.
+		template <class InputIterator>
+		Map (InputIterator first, InputIterator last,
+		const key_compare& comp = key_compare(),
+		const allocator_type& alloc = allocator_type()):
+		_allocator(alloc), _compare(comp), _valuesRBT(){
+			iterator it = begin();
+			iterator ite = end();
+
+			while(it != ite)
+			{
+				RedBlackTree<T, Compare>::insert(*it);
+				++it;
+			}
+
+		}
+
+		// (3) copy constructor
+		//Constructs a container with a copy of each of the elements in x.
+		Map (const Map& x): _allocator(x._allocator), _compare(x._compare), _valuesRBT(x._valuesRBT){}
+
+		// Assignation. Assigns new contents to the container, replacing its current content.
+		// The container preserves its current allocator, which is used to allocate additional storage if needed.
+		// The elements stored in the container before the call are either assigned to or destroyed.
+		Map &	operator=(const Map & x) {
+			if (this == &x) {
+				return *this;
+			}
+			//_valuesRBT = x._valuesRBT;
+			_compare   = x._compare;
+			return *this;
+		}
+
+
+
 	protected:
 		//virual key_type getKey(pointer node){ return Node->value.first}
 
 
-
+	private:
+		Alloc _allocator;
+		key_compare _compare;
+		//RedBlackTree<value_type, Compare> _valuesRBT; //
 
 	};
 
@@ -98,14 +144,14 @@ namespace ft {
 	class MapIterator{
 
 	public:
-		typedef Iterator	iterator_type;
-		typedef T			value_type;
-		typedef T *			pointer;
-		typedef T &			reference;
-		typedef ptrdiff_t	difference_type;
+		typedef Iterator						iterator_type;
+		typedef typename Iterator::value_type	value_type;
+		typedef typename Iterator::pointer		pointer;
+		typedef typename Iterator::reference	reference;
+		typedef typename Iterator::difference_type	difference_type;
 		typedef std::bidirectional_iterator_tag iterator_category;
-		typedef const T &	const_reference;
-		typedef const T &	const_pointer;
+		typedef typename Iterator::const_reference	const_reference;
+		typedef typename Iterator::const_pointer	const_pointer;
 
 	private:
 		iterator_type _it;
@@ -184,7 +230,7 @@ namespace ft {
 			return _it;
 		}
 
-		// friend class Map<class Key, class T,class Compare = std::less<Key>, class Alloc = std::allocator<std::pair<const Key,T>>;
+		 friend class Map<class Key, class T,class Compare = std::less<Key>, class Alloc = std::allocator<std::pair<const Key,T>>;
 
 
 	};
