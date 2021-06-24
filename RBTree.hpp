@@ -9,6 +9,7 @@
 #define YELLOW  "\033[33m"      /* Yellow */
 #define RESET   "\033[0m"
 
+
 namespace ft {
 
 	template <class T>
@@ -17,25 +18,38 @@ namespace ft {
 		Node *parent;
 		Node *left;
 		Node *right;
+
+		bool is_tnull;
 		int color;
 	};
 
 
-	template < class T, class Compare >
+	template < class T> // class Compare
 	class RedBlackTree {
-		typedef Node<T> *NodePtr;
+	public:
+		typedef Node<T> * NodePtr;
+
 	private:
 		NodePtr root;
 		NodePtr TNULL;
 //		NodePtr _first;
 //		NodePtr _last;
 
-		void initializeNULLNode(NodePtr node, NodePtr parent) {
-			node->data = 0;
-			node->parent = parent;
-			node->left = NULL;
-			node->right = NULL;
+	public:
+	NodePtr getTNULL() const{
+		return this->TNULL;
+	}
+
+	void initializeNULLNode(NodePtr node) {
+		//	node->data = 0;
+			node->parent = NULL;
+
+			node->left = node; // root = root
+			// node->left = NULL;
+			node->right = node;
+			//node->right = NULL;
 			node->color = 0; // 0 -black
+			node->is_tnull = true;
 		}
 
 		// Preorder
@@ -265,11 +279,18 @@ namespace ft {
 	public:
 		RedBlackTree() {
 			TNULL = new Node<T>;
-			TNULL->color = 0;
-			TNULL->left = NULL;
-			TNULL->right = NULL;
+
+			initializeNULLNode(TNULL);
 			root = TNULL;
 		}
+
+//		NodePtr get_first(){
+//			return _first;
+//		}
+//
+//		NodePtr get_last(){
+//			return _last;
+//		}
 
 		void preorder() {
 			preOrderHelper(this->root);
@@ -364,47 +385,56 @@ namespace ft {
 			x->parent = y;
 		}
 
+
+		void upDate_TNULL_node(){
+			TNULL->left = minimum(this->root);
+			TNULL->right = maximum(this->root);
+		}
 		// Inserting a node
 		// int key
-		void insert(NodePtr nodePtr) {
-			//NodePtr node = new Node;
-//			nodePtr->parent = NULL;
-//			nodePtr->data = key;
-//			nodePtr->left = TNULL;
-//			nodePtr->right = TNULL;
-			nodePtr->color = 1;
+		void insert(const T &data) {
+			NodePtr node = new Node<T>;
+			node->parent = NULL;
+			node->data.first = data.first;
+			node->data.second = data.second;
+
+			node->left = TNULL;
+			node->right = TNULL;
+			node->color = 1;
+			node->is_tnull = false;
 
 			NodePtr y = NULL;
 			NodePtr x = this->root;
 
 			while (x != TNULL) {
 				y = x;
-				if (nodePtr->data < x->data) {
+				if (node->data < x->data) {
 					x = x->left;
 				} else {
 					x = x->right;
 				}
 			}
 
-			nodePtr->parent = y;
+			node->parent = y;
 			if (y == NULL) {
-				root = nodePtr;
-			} else if (nodePtr->data < y->data) {
-				y->left = nodePtr;
+				root = node;
+			} else if (node->data < y->data) {
+				y->left = node;
 			} else {
-				y->right = nodePtr;
+				y->right = node;
 			}
 
-			if (nodePtr->parent == NULL) {
-				nodePtr->color = 0;
+			if (node->parent == NULL) {
+				node->color = 0;
 				return;
 			}
 
-			if (nodePtr->parent->parent == NULL) {
+			if (node->parent->parent == NULL) {
 				return;
 			}
 
-			insertFix(nodePtr);
+			insertFix(node);
+			upDate_TNULL_node(); //todo
 		}
 
 		NodePtr getRoot() {

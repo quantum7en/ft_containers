@@ -14,11 +14,15 @@
 
 namespace ft {
 
+//	template < class T>
+//	class RedBlackTree;
 	/// Bidirectional iterators are iterators that can be used to access the sequence of elements
 	/// in a range in both directions (towards the end and towards the beginning).
-	template <class Iterator>
+	template <class T>
 	class MapIterator;
 
+	template <class T>
+	struct Node;
 	/// Maps are associative containers that store elements formed by a combination of a key value and a mapped value, following a specific order.
 	/// In a map, the key values are generally used to sort and uniquely identify the elements,
 	/// while the mapped values store the content associated to this key.
@@ -44,9 +48,9 @@ namespace ft {
 	template < class Key,											// map::key_type
 			class T,												// map::mapped_type
 			class Compare = std::less<Key>,							// map::key_compare
-			class Alloc = std::allocator<std::pair<const Key, T> >	// map::allocator_type
+			class Alloc = std::allocator<std::pair< Key, T> >	// map::allocator_type
 	>
-class Map : public RedBlackTree< class std::pair<const Key, T> , Compare >{
+class Map : public ft::RedBlackTree< std::pair<Key, T> >{
 
 	public:
 		typedef Key 					key_type;
@@ -63,8 +67,8 @@ class Map : public RedBlackTree< class std::pair<const Key, T> , Compare >{
 		typedef typename ft::MapIterator<
 		        ft::VectorIterator<value_type, value_type*, value_type&>>	difference_type;
 
-		typedef ft::MapIterator<ft::VectorIterator<value_type, value_type*, value_type&>> iterator;
-		typedef ft::MapIterator<ft::VectorIterator<value_type, const value_type*, const value_type&>> const_iterator;
+		typedef ft::MapIterator<value_type> iterator;
+		typedef ft::MapIterator<value_type> const_iterator;
 		typedef ft::ReverseIterator<iterator>		reverse_iterator;
 		typedef ft::ReverseIterator<const_iterator>	const_reverse_iterator;
 //		typedef node_type              = /* unspecified */;
@@ -84,8 +88,8 @@ class Map : public RedBlackTree< class std::pair<const Key, T> , Compare >{
 
 		// (1) empty container constructor (default constructor)
 		//Constructs an empty container, with no elements.
-		explicit Map(const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()):
-		_allocator(alloc), _compare(comp),
+		explicit Map(const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()): RedBlackTree<class std::pair<Key, T>>(),
+		_allocator(alloc), _compare(comp)
 		{}
 
 		// (2) range constructor
@@ -95,21 +99,23 @@ class Map : public RedBlackTree< class std::pair<const Key, T> , Compare >{
 		Map (InputIterator first, InputIterator last,
 		const key_compare& comp = key_compare(),
 		const allocator_type& alloc = allocator_type()):
-		_allocator(alloc), _compare(comp), _valuesRBT(){
-			iterator it = begin();
-			iterator ite = end();
-
-			while(it != ite)
-			{
-				RedBlackTree<T, Compare>::insert(*it);
-				++it;
-			}
-
+		_allocator(alloc), _compare(comp){
+//			//iterator it = begin();
+//			//iterator ite = end();
+//
+//			while(it != ite){
+//				RedBlackTree<T, Compare>::insert(*it);
+//				++it;
+//			}
 		}
+
+
 
 		// (3) copy constructor
 		//Constructs a container with a copy of each of the elements in x.
-		Map (const Map& x): _allocator(x._allocator), _compare(x._compare), _valuesRBT(x._valuesRBT){}
+		Map (const Map& x): _allocator(x._allocator), _compare(x._compare){
+			rbt = new RedBlackTree<value_type>;
+		}
 
 		// Assignation. Assigns new contents to the container, replacing its current content.
 		// The container preserves its current allocator, which is used to allocate additional storage if needed.
@@ -123,15 +129,41 @@ class Map : public RedBlackTree< class std::pair<const Key, T> , Compare >{
 			return *this;
 		}
 
+		//// **** Iterators: *****
+
+		// Return iterator to beginning
+		// Returns an iterator referring to the first element in the map container.
+		// Because map containers keep their elements ordered at all times,
+		// begin points to the element that goes first following the container's sorting criterion.
+		// If the container is empty, the returned iterator value shall not be dereferenced.
+
+		iterator begin() {
+
+			return iterator (rbt.getTNULL()->left);
+		}
+
+		const_iterator begin() const{
+			return const_iterator (RedBlackTree<T>::getTNULL()->left);
+		}
+
+
+		// todo inserrt проверить циклом по итератору что унивкальное значение
+
+
 
 
 	protected:
+//		void traversal() const{
+//			//	std::cout << "tree with size: " << this->_size << std::endl; // _size кол-во нод в дереве без пустых нод
+//			traversal(this->root);
+//		}
 		//virual key_type getKey(pointer node){ return Node->value.first}
 
 
 	private:
 		Alloc _allocator;
 		key_compare _compare;
+		RedBlackTree<value_type> rbt;
 		//RedBlackTree<value_type, Compare> _valuesRBT; //
 
 	};
@@ -140,28 +172,45 @@ class Map : public RedBlackTree< class std::pair<const Key, T> , Compare >{
 
 	//// **** MapIterator ****
 
-	template <class Iterator>
+	template <class T>
 	class MapIterator{
 
 	public:
-		typedef Iterator						iterator_type;
-		typedef typename Iterator::value_type	value_type;
-		typedef typename Iterator::pointer		pointer;
-		typedef typename Iterator::reference	reference;
-		typedef typename Iterator::difference_type	difference_type;
+	
+		typedef ft::Node<T>						*Node_pointer;
+		typedef T	value_type;
+		typedef T *		pointer;
+		typedef T &	reference;
+		
 		typedef std::bidirectional_iterator_tag iterator_category;
-		typedef typename Iterator::const_reference	const_reference;
-		typedef typename Iterator::const_pointer	const_pointer;
+		typedef const T &	const_reference;
+		typedef const T *	const_pointer;
 
 	private:
-		iterator_type _it;
+		//iterator_type _it;
+		Node_pointer NodePtr;
+
+		Node_pointer minimum(Node_pointer node) {
+			while (!node->left->is_tnull) {
+				node = node->left;
+			}
+			return node;
+		}
+
+		Node_pointer maximum(Node_pointer node) {
+			while (!node->right->is_tnull) {
+				node = node->right;
+			}
+			return node;
+		}
 
 	public:
-		MapIterator() : _it() {};
-		explicit MapIterator(iterator_type it) : _it(it) {};
+		MapIterator() : NodePtr(NULL) {
+		};
+		explicit MapIterator(Node_pointer ptr) : NodePtr(ptr) {};
 
 		template <class Iter>
-		explicit MapIterator(const MapIterator &rhs) : _it(rhs._it) {};
+		explicit MapIterator(const MapIterator &rhs) : NodePtr(rhs.NodePtr) {};
 
 		virtual ~MapIterator(){};
 
@@ -169,68 +218,126 @@ class Map : public RedBlackTree< class std::pair<const Key, T> , Compare >{
 		MapIterator& operator = (const MapIterator &rhs){
 			if (this == &rhs)
 				return *this;
-			_it = rhs._it;
+			NodePtr = rhs.NodePtr;
 			return *this;
 		}
 
 		// ++iterator
 		MapIterator operator++(){
-			++_it;
+			if (this->NodePtr->is_tnull)
+				this->NodePtr = this->NodePtr->left;
+
+			else if (!this->NodePtr->right->is_tnull)
+				this->NodePtr = minimum(this->NodePtr->right);
+
+			else if (this->NodePtr->parent)
+			{
+				Node_pointer curr_parent = this->NodePtr->parent;
+				while (curr_parent->data.first <= this->NodePtr->data.first)
+					curr_parent = curr_parent->parent;
+				this->NodePtr = curr_parent;
+			}
+
+			//++_it;
 			return *this;
 		}
 
 		// iterator++
 		MapIterator operator++(int){
 			MapIterator tmp(*this);
-			++_it;
+			//++_it;
+			if (this->NodePtr->is_tnull)
+				this->NodePtr = this->NodePtr->left;
+
+			else if (!this->NodePtr->right->is_tnull)
+				this->NodePtr = minimum(this->NodePtr->right);
+
+			else if (this->NodePtr->parent)
+			{
+				Node_pointer curr_parent = this->NodePtr->parent;
+				while (curr_parent->data.first <= this->NodePtr->data.first)
+					curr_parent = curr_parent->parent;
+				this->NodePtr = curr_parent;
+			}
+
 			return tmp;
 		}
 
 		//
 		MapIterator operator--(){
-			--_it;
+
+			if (this->NodePtr->is_tnull)
+				this->NodePtr = this->NodePtr->right;
+
+			else if (!this->NodePtr->left->is_tnull)
+				this->NodePtr = maximum(this->NodePtr->left);
+
+			else if (this->NodePtr->parent)
+			{
+				Node_pointer curr_parent = this->NodePtr->parent;
+				while (curr_parent->data.first >= this->NodePtr->data.first)
+					curr_parent = curr_parent->parent;
+				this->NodePtr = curr_parent;
+			}
+
+			//--_it;
 			return *this;
 		}
 
 		MapIterator operator--(int){
 			MapIterator tmp(*this);
-			--_it;
+
+			if (this->NodePtr->is_tnull)
+				this->NodePtr = this->NodePtr->right;
+
+			else if (!this->NodePtr->left->is_tnull)
+				this->NodePtr = maximum(this->NodePtr->left);
+
+			else if (this->NodePtr->parent)
+			{
+				Node_pointer curr_parent = this->NodePtr->parent;
+				while (curr_parent->data.first >= this->NodePtr->data.first)
+					curr_parent = curr_parent->parent;
+				this->NodePtr = curr_parent;
+			}
+			
+			//--_it;
 			return tmp;
 		}
 
 		reference operator*(){
-			return *_it;
+			
+			return this->NodePtr->data;
 		}
 
 		const_reference operator*() const{
-			if (_it)
-				return *_it;
+				return this->NodePtr->data;
 		}
 
 		pointer operator->(){
-			return _it.base().get_arrPtr();
+			return &this->NodePtr->data;
 		}
 
 		const_pointer operator->() const{
-			return _it.base().get_arrPtr();
+			return  &this->NodePtr->data;
 		}
 
 
 		bool operator==( const MapIterator &rhs){
-			return (_it == rhs._it);
+			return (NodePtr == rhs.NodePtr);
 		}
 
 		bool operator!=( const MapIterator &rhs){
-			return (_it != rhs._it);
+			return (NodePtr != rhs.NodePtr);
 		}
 
 
-		//// *** Getter for private field _it
-		iterator_type base() const {
-			return _it;
-		}
+//		//// *** Getter for private field _it
+//		iterator_type base() const {
+//			return _it;
+//		}
 
-		 friend class Map<class Key, class T,class Compare = std::less<Key>, class Alloc = std::allocator<std::pair<const Key,T>>;
+	//	 friend class Map<class Key, class T,class Compare = std::less<Key>, class Alloc = std::allocator<std::pair<const Key,T>>;
 
 
 	};

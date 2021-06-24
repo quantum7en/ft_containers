@@ -3,5 +3,9 @@
 
 CMakeFiles/ft_containers.dir/test_map.cpp.o: ../RBTree.hpp
 CMakeFiles/ft_containers.dir/test_map.cpp.o: ../classes.hpp
+CMakeFiles/ft_containers.dir/test_map.cpp.o: ../enable_if.hpp
+CMakeFiles/ft_containers.dir/test_map.cpp.o: ../ft_map.hpp
+CMakeFiles/ft_containers.dir/test_map.cpp.o: ../ft_reverse_iterator.hpp
+CMakeFiles/ft_containers.dir/test_map.cpp.o: ../ft_vector.hpp
 CMakeFiles/ft_containers.dir/test_map.cpp.o: ../test_map.cpp
 

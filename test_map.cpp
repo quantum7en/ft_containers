@@ -5,9 +5,10 @@
 #include <iostream>
 #include <map>
 #include <string>
-//#include "RBTree.hpp"
+#include "RBTree.hpp"
 #include "ft_map.hpp"
 #include "classes.hpp"
+#include <utility>
 
 class Test {
 public:
@@ -57,7 +58,7 @@ public:
 int		main(){
 
 
-		ft::RedBlackTree bst;
+		ft::Map<int, int > bst;
 //		bst.insert(55);
 //		bst.insert(40);
 //		bst.insert(65);
@@ -66,15 +67,21 @@ int		main(){
 //		bst.insert(57);
 
 for(int i = 1; i < 15; i++)
-	bst.insert(i);
+	bst.insert(std::make_pair(i, i));
 //	bst.insert(-1);
 //	bst.insert(0);
 //	bst.insert(-15);
 //	bst.insert(-2);
 
-		bst.deleteNode(1);
-		bst.show();
-		bst.traversal();
+
+
+//ft::Map<int, int>::iterator it;
+//it = bst.begin();
+//it++;
+//std::cout << it->first <<" "<< it->second;
+//		bst.deleteNode(1);
+//		bst.show();
+//		bst.traversal();
 //		cout << endl
 //			 << "After deleting" << endl;
 //		bst.deleteNode(40);
