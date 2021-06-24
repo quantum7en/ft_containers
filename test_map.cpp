@@ -67,7 +67,7 @@ int		main(){
 //		bst.insert(57);
 
 for(int i = 1; i < 15; i++)
-	bst.insert(std::make_pair(i, i));
+	bst.insert(std::make_pair(i, i+1));
 //	bst.insert(-1);
 //	bst.insert(0);
 //	bst.insert(-15);
@@ -75,13 +75,23 @@ for(int i = 1; i < 15; i++)
 
 
 
-//ft::Map<int, int>::iterator it;
-//it = bst.begin();
+ft::Map<int, int>::iterator it;
+it = bst.begin();
 //it++;
-//std::cout << it->first <<" "<< it->second;
+std::cout <<"Begin "<< it->first <<" "<< it->second << "\n";
+
+ft::Map<int, int>::iterator ite = bst.end();
+std::cout << "End "<<  ite->first <<" "<< ite->second << "\n";
+
+ft::Map<int, int>::reverse_iterator  rit = bst.rbegin();
+	std::cout <<"Rbegin " <<rit->first <<" "<< rit->second << "\n";
+
+	ft::Map<int, int>::reverse_iterator  rit1 = bst.rend();
+	std::cout <<"Rend " <<rit1->first <<" "<< rit1->second << "\n";
+
 //		bst.deleteNode(1);
-//		bst.show();
-//		bst.traversal();
+		bst.show();
+		bst.traversal();
 //		cout << endl
 //			 << "After deleting" << endl;
 //		bst.deleteNode(40);

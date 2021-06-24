@@ -36,8 +36,12 @@ namespace ft {
 //		NodePtr _last;
 
 	public:
-	NodePtr getTNULL() const{
+	NodePtr getTNULL(){
 		return this->TNULL;
+	}
+
+	NodePtr get_root() const{
+		return this->root;
 	}
 
 	void initializeNULLNode(NodePtr node) {
@@ -161,12 +165,12 @@ namespace ft {
 			}
 			v->parent = u->parent;
 		}
-
-		void deleteNodeHelper(NodePtr node, int key) {
+// clear key->pair
+		void deleteNodeHelper(NodePtr node, T key) {
 			NodePtr z = TNULL;
 			NodePtr x, y;
 			while (node != TNULL) {
-				if (node->data == key) {
+				if (node->data == key.first) {
 					z = node;
 				}
 
@@ -284,14 +288,6 @@ namespace ft {
 			root = TNULL;
 		}
 
-//		NodePtr get_first(){
-//			return _first;
-//		}
-//
-//		NodePtr get_last(){
-//			return _last;
-//		}
-
 		void preorder() {
 			preOrderHelper(this->root);
 		}
@@ -396,7 +392,10 @@ namespace ft {
 			NodePtr node = new Node<T>;
 			node->parent = NULL;
 			node->data.first = data.first;
+
 			node->data.second = data.second;
+
+			std::cout <<"PREV "<< node->data.first <<" "<< node->data.second<< std::endl;
 
 			node->left = TNULL;
 			node->right = TNULL;
@@ -426,15 +425,22 @@ namespace ft {
 
 			if (node->parent == NULL) {
 				node->color = 0;
+				upDate_TNULL_node();
+				std::cout<<"here\n";
 				return;
 			}
 
 			if (node->parent->parent == NULL) {
+				upDate_TNULL_node();
+				std::cout<<"here2\n";
 				return;
 			}
 
 			insertFix(node);
 			upDate_TNULL_node(); //todo
+
+			std::cout << "AFTER "<< node->data.first <<" "<< node->data.second << std::endl << std::endl;
+
 		}
 
 		NodePtr getRoot() {
@@ -453,19 +459,20 @@ namespace ft {
 
 		void traversal(Node<T>* x) const
 		{
-			if (x == NULL  && x != TNULL)
+			if (x == NULL || x == TNULL)
 				return ;
-			traversal(x->left);
-			traversal(x->right);
+			traversal(x->left); //deleteNodeHelper
+			traversal(x->right); //
+			//std::cout << "here\n";
 			std::string color = x->color == 0 ? "\e[33m" : "\e[34m";
 			if (x != this->TNULL)
-				std::cout << "node: " << color << "[" << x->data << "]" << "\e[0m" << "    addr: " << x << ", left: "
+				std::cout << "node: " << color << "[" << x->data.first << "]" << "\e[0m" << "    addr: " << x << ", left: "
 						  << x->left << ", right: " << x->right << ", parent: " << x->parent << std::endl;
 			else
 				std::cout << "found limit node, with addr: " << x << std::endl;
 		}
 
-		void traversal() const{
+		void inOrder() const{
 		//	std::cout << "tree with size: " << this->_size << std::endl; // _size кол-во нод в дереве без пустых нод
 			traversal(this->root);
 		}
@@ -481,7 +488,7 @@ namespace ft {
 				for (int i = 0; i < deep; i++)
 					std::cout << "    ";
 				if (root != this->TNULL )
-					std::cout << root->data << "\e[0m" << "\n";
+					std::cout << root->data.first << "\e[0m" << "\n";
 				print(root->left, deep + 1);
 			}
 			std::cout << "\e[0m";

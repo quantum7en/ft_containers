@@ -55,7 +55,7 @@ class Map : public ft::RedBlackTree< std::pair<Key, T> >{
 	public:
 		typedef Key 					key_type;
 		typedef T						mapped_type;
-		typedef std::pair<const Key, T> value_type;
+		typedef std::pair<Key, T> value_type;
 		typedef Compare					key_compare;
 //		typedef Compare					value_compare;
 		typedef Alloc					allocator_type;
@@ -100,13 +100,13 @@ class Map : public ft::RedBlackTree< std::pair<Key, T> >{
 		const key_compare& comp = key_compare(),
 		const allocator_type& alloc = allocator_type()):
 		_allocator(alloc), _compare(comp){
-//			//iterator it = begin();
-//			//iterator ite = end();
-//
-//			while(it != ite){
-//				RedBlackTree<T, Compare>::insert(*it);
-//				++it;
-//			}
+			iterator it = begin();
+			iterator ite = end();
+
+			while(it != ite){
+				this->insert(*it);
+				++it;
+			}
 		}
 
 
@@ -114,7 +114,7 @@ class Map : public ft::RedBlackTree< std::pair<Key, T> >{
 		// (3) copy constructor
 		//Constructs a container with a copy of each of the elements in x.
 		Map (const Map& x): _allocator(x._allocator), _compare(x._compare){
-			rbt = new RedBlackTree<value_type>;
+			//rbt = new RedBlackTree<value_type>;
 		}
 
 		// Assignation. Assigns new contents to the container, replacing its current content.
@@ -124,7 +124,6 @@ class Map : public ft::RedBlackTree< std::pair<Key, T> >{
 			if (this == &x) {
 				return *this;
 			}
-			//_valuesRBT = x._valuesRBT;
 			_compare   = x._compare;
 			return *this;
 		}
@@ -138,32 +137,69 @@ class Map : public ft::RedBlackTree< std::pair<Key, T> >{
 		// If the container is empty, the returned iterator value shall not be dereferenced.
 
 		iterator begin() {
-
-			return iterator (rbt.getTNULL()->left);
+		//	Node<value_type> *tmp = this->getTNULL()->left;
+			return iterator (this->getTNULL()->left);
 		}
 
 		const_iterator begin() const{
-			return const_iterator (RedBlackTree<T>::getTNULL()->left);
+			return const_iterator (this->getTNULL()->left);
+		}
+
+		iterator end() {
+			//	Node<value_type> *tmp = this->getTNULL()->left;
+			return iterator (this->getTNULL()->right->left);
+		}
+
+		const_iterator end() const{
+			return const_iterator (this->getTNULL()->right->left);
+		}
+
+		reverse_iterator rbegin() {
+			//	Node<value_type> *tmp = this->getTNULL()->left;
+			reverse_iterator rev (iterator(this->getTNULL()->left->left));
+			return rev;
+		}
+
+		const_reverse_iterator rbegin() const {
+			//	Node<value_type> *tmp = this->getTNULL()->left;
+			const_reverse_iterator rev (iterator(this->getTNULL()->left->left));
+			return rev;
+		}
+
+		reverse_iterator rend() {
+			//	Node<value_type> *tmp = this->getTNULL()->left;
+			reverse_iterator rev (iterator(this->getTNULL()->right->left));
+			return rev;
+		}
+
+		const_reverse_iterator rend() const {
+			//	Node<value_type> *tmp = this->getTNULL()->left;
+			const_reverse_iterator rev (iterator(this->getTNULL()->left->left));
+			return rev;
 		}
 
 
-		// todo inserrt проверить циклом по итератору что унивкальное значение
+		// todo insert проверить циклом по итератору что унивкальное значение
 
+		void show()
+		{ std::cout << this->get_root()->data.first;
+			this->print(this->get_root(), 10); }
 
-
+		void traversal() const{
+			//	std::cout << "tree with size: " << this->_size << std::endl; // _size кол-во нод в дереве без пустых нод
+			this->inOrder();
+		}
 
 	protected:
-//		void traversal() const{
-//			//	std::cout << "tree with size: " << this->_size << std::endl; // _size кол-во нод в дереве без пустых нод
-//			traversal(this->root);
-//		}
+
 		//virual key_type getKey(pointer node){ return Node->value.first}
 
 
 	private:
 		Alloc _allocator;
 		key_compare _compare;
-		RedBlackTree<value_type> rbt;
+		Node<T> *root;
+
 		//RedBlackTree<value_type, Compare> _valuesRBT; //
 
 	};
@@ -181,7 +217,9 @@ class Map : public ft::RedBlackTree< std::pair<Key, T> >{
 		typedef T	value_type;
 		typedef T *		pointer;
 		typedef T &	reference;
-		
+
+		typedef ptrdiff_t		difference_type;
+
 		typedef std::bidirectional_iterator_tag iterator_category;
 		typedef const T &	const_reference;
 		typedef const T *	const_pointer;
@@ -205,8 +243,7 @@ class Map : public ft::RedBlackTree< std::pair<Key, T> >{
 		}
 
 	public:
-		MapIterator() : NodePtr(NULL) {
-		};
+		MapIterator() : NodePtr(NULL) {};
 		explicit MapIterator(Node_pointer ptr) : NodePtr(ptr) {};
 
 		template <class Iter>
