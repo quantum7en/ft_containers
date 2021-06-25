@@ -68,10 +68,20 @@ for(int i = 1; i < 15; i++)
 bst.erase(1);
 bst.erase(12);
 bst.erase(10);
+bst.erase(2);
 
-//	for(int i = 1; i < 15; i++)
-//		orig.insert(std::make_pair(i, i+1));
-//	orig.erase(1);
+std::cout << bst.max_size() << " - max\n";
+
+
+	for(int i = 1; i < 15; i++)
+		orig.insert(std::make_pair(i, i+1));
+	orig.erase(1);
+	orig.erase(12);
+	orig.erase(10);
+	orig.erase(2);
+
+	std::cout << orig.max_size() << " - max orig\n";
+
 //	bst.insert(-1);
 //	bst.insert(0);
 //	bst.insert(-15);

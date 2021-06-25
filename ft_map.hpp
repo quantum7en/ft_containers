@@ -82,6 +82,9 @@ class Map : public ft::RedBlackTree< std::pair<Key, T>, Key>{
 			Compare comp;
 			explicit value_compare(Compare c) : comp(c) {}
 		public:
+			typedef bool result_type;
+			typedef value_type first_argument_type;
+			typedef value_type second_argument_type;
 			bool operator()(const value_type& x, const value_type& y) const {
 				return comp(x.first, y.first);
 			}
@@ -210,9 +213,9 @@ class Map : public ft::RedBlackTree< std::pair<Key, T>, Key>{
 		// This is the maximum potential size the container can reach due to known system
 		// or library implementation limitations, but the container is by no means guaranteed
 		// to be able to reach that size: it can still fail to allocate storage at any point before that size is reached.
-		size_type max_size() const{
-			return this->_allocator.max_size();
-		}
+
+		size_type max_size() const
+		{ return(std::numeric_limits<size_type>::max() / sizeof(Node<T>)); }
 
 		////  ****  Element access:  ****
 
@@ -221,9 +224,12 @@ class Map : public ft::RedBlackTree< std::pair<Key, T>, Key>{
 		// If k does not match the key of any element in the container, the function inserts a new element with that key and returns a reference to its mapped value. Notice that this always increases the container size by one, even if no mapped value is assigned to the element (the element is constructed using its default constructor).
 		// A similar member function, map::at, has the same behavior when an element with the key exists, but throws an exception when it does not.
 		mapped_type& operator[] (const key_type& k){
+
+
 			(*((this->insert(make_pair(k,mapped_type()))).first)).second;
 			// todo если не нашли этот ключ в мапе insert
-			++this->_size;
+			if ()
+				++this->_size;
 			return ;
 		}
 
@@ -248,8 +254,11 @@ class Map : public ft::RedBlackTree< std::pair<Key, T>, Key>{
 
 			// find
 			this->insert_RBT(val);
-			++this->_size;
-			return std::make_pair((iterator)NULL, true);
+			if(this->findNodeKey(val) != NULL){
+				++this->_size;
+				return std::make_pair((iterator)this->findNodeKey(val), false);
+			}
+			return std::make_pair((iterator)this->findNodeKey(val), true);
 		}
 
 		// The versions with a hint (2) return an iterator pointing to either the newly inserted element
@@ -286,9 +295,7 @@ class Map : public ft::RedBlackTree< std::pair<Key, T>, Key>{
 
 		void erase (iterator first, iterator last){
 			while(first != last){
-
 				erase(first++);
-
 			}
 		}
 
@@ -303,8 +310,16 @@ class Map : public ft::RedBlackTree< std::pair<Key, T>, Key>{
 			ft::swap(this->_size, x._size);
 			ft::swap(this->get_root(), x.get_root());
 			ft::swap(this->getTNULL(), x.getTNULL());
+			ft::swap(this->_allocator, x._allocator);
+			ft::swap(this->_compare, x._compare);
 		}
 
+		iterator find (const key_type& k){
+
+		}
+		const_iterator find (const key_type& k) const{
+
+		}
 
 
 		void show()
