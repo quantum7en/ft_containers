@@ -11,6 +11,7 @@
 #include "ft_reverse_iterator.hpp"
 #include "ft_vector.hpp"
 #include "RBTree.hpp"
+#include <list>
 
 namespace ft {
 
@@ -48,9 +49,9 @@ namespace ft {
 	template < class Key,											// map::key_type
 			class T,												// map::mapped_type
 			class Compare = std::less<Key>,							// map::key_compare
-			class Alloc = std::allocator<std::pair< Key, T> >	// map::allocator_type
+			class Alloc = std::allocator<T>	// map::allocator_type
 	>
-class Map : public ft::RedBlackTree< std::pair<Key, T> >{
+class Map : public ft::RedBlackTree< std::pair<Key, T>, Key>{
 
 	public:
 		typedef Key 					key_type;
@@ -88,8 +89,9 @@ class Map : public ft::RedBlackTree< std::pair<Key, T> >{
 
 		// (1) empty container constructor (default constructor)
 		//Constructs an empty container, with no elements.
-		explicit Map(const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()): RedBlackTree<class std::pair<Key, T>>(),
-		_allocator(alloc), _compare(comp)
+		explicit Map(const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()):
+		RedBlackTree<class std::pair<Key, T>, Key>(),
+		_allocator(alloc), _compare(comp), _size(0)
 		{}
 
 		// (2) range constructor
@@ -105,15 +107,14 @@ class Map : public ft::RedBlackTree< std::pair<Key, T> >{
 
 			while(it != ite){
 				this->insert(*it);
+				++_size;
 				++it;
 			}
 		}
 
-
-
 		// (3) copy constructor
 		//Constructs a container with a copy of each of the elements in x.
-		Map (const Map& x): _allocator(x._allocator), _compare(x._compare){
+		Map (const Map& x): _allocator(x._allocator), _compare(x._compare), _size(x._size){
 			//rbt = new RedBlackTree<value_type>;
 		}
 
@@ -124,7 +125,8 @@ class Map : public ft::RedBlackTree< std::pair<Key, T> >{
 			if (this == &x) {
 				return *this;
 			}
-			_compare   = x._compare;
+			_compare = x._compare;
+			_size = x._size;
 			return *this;
 		}
 
@@ -145,8 +147,14 @@ class Map : public ft::RedBlackTree< std::pair<Key, T> >{
 			return const_iterator (this->getTNULL()->left);
 		}
 
+		//Return iterator to end
+		//Returns an iterator referring to the past-the-end element in the map container.
+		//The past-the-end element is the theoretical element that would follow the last element in the map container.
+		// It does not point to any element, and thus shall not be dereferenced.
+		//Because the ranges used by functions of the standard library do not include the element pointed by their closing iterator,
+		// this function is often used in combination with map::begin to specify a range including all the elements in the container.
+		//If the container is empty, this function returns the same as map::begin.
 		iterator end() {
-			//	Node<value_type> *tmp = this->getTNULL()->left;
 			return iterator (this->getTNULL()->right->left);
 		}
 
@@ -154,53 +162,179 @@ class Map : public ft::RedBlackTree< std::pair<Key, T> >{
 			return const_iterator (this->getTNULL()->right->left);
 		}
 
+		// Return reverse iterator to reverse beginning
+		// Returns a reverse iterator pointing to the last element in the container (i.e., its reverse beginning).
+		// Reverse iterators iterate backwards: increasing them moves them towards the beginning of the container.
+		// rbegin points to the element preceding the one that would be pointed to by member end.
 		reverse_iterator rbegin() {
-			//	Node<value_type> *tmp = this->getTNULL()->left;
 			reverse_iterator rev (iterator(this->getTNULL()->left->left));
 			return rev;
 		}
 
 		const_reverse_iterator rbegin() const {
-			//	Node<value_type> *tmp = this->getTNULL()->left;
 			const_reverse_iterator rev (iterator(this->getTNULL()->left->left));
 			return rev;
 		}
 
+		// todo
+		// Return reverse iterator to reverse end
+		// Returns a reverse iterator pointing to the theoretical element right before the first element in the map container (which is considered its reverse end).
+		// The range between map::rbegin and map::rend contains all the elements of the container (in reverse order).
 		reverse_iterator rend() {
-			//	Node<value_type> *tmp = this->getTNULL()->left;
-			reverse_iterator rev (iterator(this->getTNULL()->right->left));
+			reverse_iterator rev (iterator(this->getTNULL()));
 			return rev;
 		}
 
 		const_reverse_iterator rend() const {
-			//	Node<value_type> *tmp = this->getTNULL()->left;
-			const_reverse_iterator rev (iterator(this->getTNULL()->left->left));
+			const_reverse_iterator rev (iterator(this->getTNULL()->left->right));
 			return rev;
 		}
 
+		//// **** Capacity: ****
 
-		// todo insert проверить циклом по итератору что унивкальное значение
+		// Test whether container is empty
+		// Returns whether the map container is empty (i.e. whether its size is 0).
+		// This function does not modify the container in any way. To clear the content of a map container, see map::clear.
+		bool empty() const{
+			return this->_size == 0;
+		}
+
+		// The number of elements in the container.
+		// Member type size_type is an unsigned integral type.
+		size_type size() const{
+			return this->_size; // todo считать у дерева или у мапы?
+		}
+
+		// Return maximum size
+		// Returns the maximum number of elements that the map container can hold.
+		// This is the maximum potential size the container can reach due to known system
+		// or library implementation limitations, but the container is by no means guaranteed
+		// to be able to reach that size: it can still fail to allocate storage at any point before that size is reached.
+		size_type max_size() const{
+			return this->_allocator.max_size();
+		}
+
+		////  ****  Element access:  ****
+
+		// Access element
+		// If k matches the key of an element in the container, the function returns a reference to its mapped value.
+		// If k does not match the key of any element in the container, the function inserts a new element with that key and returns a reference to its mapped value. Notice that this always increases the container size by one, even if no mapped value is assigned to the element (the element is constructed using its default constructor).
+		// A similar member function, map::at, has the same behavior when an element with the key exists, but throws an exception when it does not.
+		mapped_type& operator[] (const key_type& k){
+			(*((this->insert(make_pair(k,mapped_type()))).first)).second;
+			// todo если не нашли этот ключ в мапе insert
+			++this->_size;
+			return ;
+		}
+
+		//// **** Modifiers: ****
+
+
+		// Insert elements
+		//	Extends the container by inserting new elements, effectively increasing the container size by the number of elements inserted.
+		//	Because element keys in a map are unique, the insertion operation checks whether each inserted element has a key equivalent to the one of an element already in the container, and if so, the element is not inserted, returning an iterator to this existing element (if the function returns a value).
+		//	For a similar container allowing for duplicate elements, see multimap.
+		//	An alternative way to insert elements in a map is by using member function map::operator[].
+		//	Internally, map containers keep all their elements sorted by their key following the criterion specified by its comparison object. The elements are always inserted in its respective position following this ordering.
+		//	The parameters determine how many elements are inserted and to which values they are initialized:
+
+		// The single element versions (1) return a pair, with its member pair::first set to an iterator
+		// pointing to either the newly inserted element or to the element with an equivalent key in the map.
+		// The pair::second element in the pair is set to true if a new element was inserted or false if an equivalent key already existed.
+		std::pair<iterator,bool> insert (const value_type& val){
+
+			std::pair<iterator, bool> _pair;
+			// todo insert проверить циклом по итератору что уникальное значение
+
+			// find
+			this->insert_RBT(val);
+			++this->_size;
+			return std::make_pair((iterator)NULL, true);
+		}
+
+		// The versions with a hint (2) return an iterator pointing to either the newly inserted element
+		// or to the element that already had an equivalent key in the map.
+		iterator insert (iterator position, const value_type& val){
+			// todo
+		}
+
+		template <class InputIterator>
+		void insert (InputIterator first, InputIterator last){
+			// todo
+		}
+
+
+		//// Erase elements
+		// Removes from the map container either a single element or a range of elements ([first,last)).
+		// This effectively reduces the container size by the number of elements removed, which are destroyed.
+		void erase (iterator position){
+			this->deleteNode(*position);
+			--this->_size;
+		}
+
+		//
+		size_type erase (const key_type& k){
+			if (empty())
+				return 0; // check it
+			Node<value_type> *ptr = findNodeKey(k);
+			std::cout<< ptr->data.first << " data data\n";
+			this->deleteNode(ptr->data);
+			this->upDate_TNULL_node();
+			--this->_size;
+			return 1;
+		}
+
+		void erase (iterator first, iterator last){
+			while(first != last){
+
+				erase(first++);
+
+			}
+		}
+
+		////	Swap content
+		//	Exchanges the content of the container by the content of x, which is another map of the same type. Sizes may differ.
+		//	After the call to this member function, the elements in this container are those which were in x before the call,
+		//	and the elements of x are those which were in this.
+		//	All iterators, references and pointers remain valid for the swapped objects.
+		//	Notice that a non-member function exists with the same name, swap,
+		//	overloading that algorithm with an optimization that behaves like this member function.
+		void swap(Map& x){
+			ft::swap(this->_size, x._size);
+			ft::swap(this->get_root(), x.get_root());
+			ft::swap(this->getTNULL(), x.getTNULL());
+		}
+
+
 
 		void show()
-		{ std::cout << this->get_root()->data.first;
+		{ std::cout << "ROOT "<< this->get_root()->data.first;
 			this->print(this->get_root(), 10); }
 
 		void traversal() const{
-			//	std::cout << "tree with size: " << this->_size << std::endl; // _size кол-во нод в дереве без пустых нод
+			std::cout << "tree with size: " << this->_size << std::endl; // _size кол-во нод в дереве без пустых нод
 			this->inOrder();
 		}
 
-	protected:
 
+		Node<value_type> *findNodeKey(const key_type &k){
+			Node<value_type> * current = this->root;
+			while (current != this->getTNULL() && current != NULL) {
+				if (k == current->data.first) {
+					return current;
+				}
+				current = _compare(k, current->data.first) ? current->left : current->right;
+			}
+			return NULL;
+		}
 		//virual key_type getKey(pointer node){ return Node->value.first}
 
 
 	private:
 		Alloc _allocator;
 		key_compare _compare;
-		Node<T> *root;
-
-		//RedBlackTree<value_type, Compare> _valuesRBT; //
+		//Node<value_type> *root;
+		size_type _size;
 
 	};
 

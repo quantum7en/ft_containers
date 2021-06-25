@@ -28,6 +28,14 @@ namespace ft{
 		return &arg;
 	}
 
+	template<class T>
+	void swap(T &a, T &b) {
+		T tmp(a);
+
+		a = b;
+		b = tmp;
+	}
+
 	template <class ForwardIterator, class T>
 	void fill (ForwardIterator first, ForwardIterator last, const T& val)
 	{

@@ -5,6 +5,7 @@
 #ifndef FT_CONTAINERS_RBTREE_HPP
 #define FT_CONTAINERS_RBTREE_HPP
 
+#include "enable_if.hpp"
 #define GREEN   "\033[32m"      /* Green */
 #define YELLOW  "\033[33m"      /* Yellow */
 #define RESET   "\033[0m"
@@ -24,16 +25,15 @@ namespace ft {
 	};
 
 
-	template < class T> // class Compare
+	template < class T, class Key> // class Compare
 	class RedBlackTree {
 	public:
 		typedef Node<T> * NodePtr;
+		typedef Key key_type;
 
-	private:
+	protected:
 		NodePtr root;
 		NodePtr TNULL;
-//		NodePtr _first;
-//		NodePtr _last;
 
 	public:
 	NodePtr getTNULL(){
@@ -170,7 +170,7 @@ namespace ft {
 			NodePtr z = TNULL;
 			NodePtr x, y;
 			while (node != TNULL) {
-				if (node->data == key.first) {
+				if (node->data.first == key.first) {
 					z = node;
 				}
 
@@ -183,6 +183,7 @@ namespace ft {
 
 			if (z == TNULL) {
 				std::cout << "Key not found in the tree" << std::endl;
+				//upDate_TNULL_node();
 				return;
 			}
 
@@ -215,6 +216,7 @@ namespace ft {
 			if (y_original_color == 0) {
 				deleteFix(x);
 			}
+			//upDate_TNULL_node();
 		}
 
 		// For balancing the tree after insertion
@@ -388,7 +390,10 @@ namespace ft {
 		}
 		// Inserting a node
 		// int key
-		void insert(const T &data) {
+		NodePtr insert_RBT(const T &data) {
+
+		//std::cout <<"DATA "<< data.first <<" "<< data.second<< std::endl;
+
 			NodePtr node = new Node<T>;
 			node->parent = NULL;
 			node->data.first = data.first;
@@ -427,28 +432,29 @@ namespace ft {
 				node->color = 0;
 				upDate_TNULL_node();
 				std::cout<<"here\n";
-				return;
+				return NULL;
 			}
 
 			if (node->parent->parent == NULL) {
 				upDate_TNULL_node();
 				std::cout<<"here2\n";
-				return;
+				return NULL;
 			}
 
 			insertFix(node);
 			upDate_TNULL_node(); //todo
 
 			std::cout << "AFTER "<< node->data.first <<" "<< node->data.second << std::endl << std::endl;
-
+			return node;
 		}
 
 		NodePtr getRoot() {
 			return this->root;
 		}
 
-		void deleteNode(int data) {
+		void deleteNode(T data) {
 			deleteNodeHelper(this->root, data);
+			//upDate_TNULL_node();
 		}
 
 		void printTree() {
@@ -456,6 +462,27 @@ namespace ft {
 				printHelper(this->root, "", true);
 			}
 		}
+
+		//template<class key_type>
+//		Node<T> *findNode(key_type k) const {
+//			Node<T> * current = root;
+//			while (current != this->TNULL) {
+//				if (k == current->data.first) {
+//					return current;
+//				}
+//				//current = _comp(k, current->value_type.first) ? current->left : current->right;
+//			}
+//			return nullptr;
+//		}
+
+//		void swap(RedBlackTree<T>& tree)
+//		{
+//			ft::swap(this->root, tree.root);
+//			ft::swap(this->TNULL, tree.TNULL);
+//			//ft::swap(this->_size, tree._size);
+//		}
+
+
 
 		void traversal(Node<T>* x) const
 		{

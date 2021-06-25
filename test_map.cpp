@@ -59,15 +59,19 @@ int		main(){
 
 
 		ft::Map<int, int > bst;
-//		bst.insert(55);
-//		bst.insert(40);
-//		bst.insert(65);
-//		bst.insert(60);
-//		bst.insert(75);
-//		bst.insert(57);
+		std::map<int, int> orig;
+
 
 for(int i = 1; i < 15; i++)
 	bst.insert(std::make_pair(i, i+1));
+
+bst.erase(1);
+bst.erase(12);
+bst.erase(10);
+
+//	for(int i = 1; i < 15; i++)
+//		orig.insert(std::make_pair(i, i+1));
+//	orig.erase(1);
 //	bst.insert(-1);
 //	bst.insert(0);
 //	bst.insert(-15);
@@ -75,19 +79,28 @@ for(int i = 1; i < 15; i++)
 
 
 
-ft::Map<int, int>::iterator it;
-it = bst.begin();
-//it++;
-std::cout <<"Begin "<< it->first <<" "<< it->second << "\n";
 
-ft::Map<int, int>::iterator ite = bst.end();
-std::cout << "End "<<  ite->first <<" "<< ite->second << "\n";
-
-ft::Map<int, int>::reverse_iterator  rit = bst.rbegin();
-	std::cout <<"Rbegin " <<rit->first <<" "<< rit->second << "\n";
-
-	ft::Map<int, int>::reverse_iterator  rit1 = bst.rend();
-	std::cout <<"Rend " <<rit1->first <<" "<< rit1->second << "\n";
+//ft::Map<int, int>::iterator it;
+//it = bst.begin();
+////it++;
+//std::cout <<"Begin "<< it->first <<" "<< it->second << "\n";
+//
+//std::cout <<"Origin Begin "<< orig.begin()->first <<" "<<orig.begin()->second << "\n";
+//
+//
+//ft::Map<int, int>::iterator ite = bst.end();
+//std::cout << "End UB "<<  ite->first <<" "<< ite->second << "\n";
+//
+////std::cout << "Origin End "<<  orig.end()->first <<" "<< orig.end()->second << "\n";
+//
+//ft::Map<int, int>::reverse_iterator  rit = bst.rbegin();
+//	std::cout <<"Rbegin " <<rit->first <<" "<< rit->second << "\n";
+//	std::cout <<"Origin  Rbegin " <<orig.rbegin()->first <<" "<< orig.rbegin()->second << "\n";
+//
+//
+//	ft::Map<int, int>::reverse_iterator  rit1 = bst.rend();
+//	std::cout <<"Rend " <<rit1->first <<" "<< rit1->second << "\n";
+//	std::cout <<"Origin Rend " <<orig.rend()->first <<" "<< orig.rend()->second << "\n";
 
 //		bst.deleteNode(1);
 		bst.show();
