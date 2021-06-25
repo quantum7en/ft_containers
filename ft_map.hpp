@@ -58,7 +58,6 @@ class Map : public ft::RedBlackTree< std::pair<Key, T>, Key>{
 		typedef T						mapped_type;
 		typedef std::pair<Key, T> value_type;
 		typedef Compare					key_compare;
-//		typedef Compare					value_compare;
 		typedef Alloc					allocator_type;
 		typedef typename allocator_type::pointer			pointer;
 		typedef typename allocator_type::pointer			const_pointer;
@@ -179,7 +178,7 @@ class Map : public ft::RedBlackTree< std::pair<Key, T>, Key>{
 			return rev;
 		}
 
-		// todo
+		// todo REND
 		// Return reverse iterator to reverse end
 		// Returns a reverse iterator pointing to the theoretical element right before the first element in the map container (which is considered its reverse end).
 		// The range between map::rbegin and map::rend contains all the elements of the container (in reverse order).
@@ -225,12 +224,14 @@ class Map : public ft::RedBlackTree< std::pair<Key, T>, Key>{
 		// A similar member function, map::at, has the same behavior when an element with the key exists, but throws an exception when it does not.
 		mapped_type& operator[] (const key_type& k){
 
-
-			(*((this->insert(make_pair(k,mapped_type()))).first)).second;
-			// todo если не нашли этот ключ в мапе insert
-			if ()
+			Node<value_type> *tmp = findNodeKey(k);
+			if (tmp != NULL) {
 				++this->_size;
-			return ;
+				return tmp->data.second;
+			}
+			// todo если не нашли этот ключ в мапе insert
+
+			return (*((this->insert(std::make_pair(k,mapped_type()))).first)).second;
 		}
 
 		//// **** Modifiers: ****
@@ -249,27 +250,36 @@ class Map : public ft::RedBlackTree< std::pair<Key, T>, Key>{
 		// The pair::second element in the pair is set to true if a new element was inserted or false if an equivalent key already existed.
 		std::pair<iterator,bool> insert (const value_type& val){
 
-			std::pair<iterator, bool> _pair;
 			// todo insert проверить циклом по итератору что уникальное значение
 
-			// find
-			this->insert_RBT(val);
-			if(this->findNodeKey(val) != NULL){
-				++this->_size;
-				return std::make_pair((iterator)this->findNodeKey(val), false);
+			Node<value_type> *tmp = findNodeKey(val.first);
+			if (tmp != NULL) {
+				tmp->data.second = val.second;
+				return std::make_pair((iterator)this->findNodeKey(tmp->data.first), false);
 			}
-			return std::make_pair((iterator)this->findNodeKey(val), true);
+
+			this->insert_RBT(val);
+			++this->_size;
+
+			return std::make_pair((iterator)this->findNodeKey(val.first), true);
 		}
 
 		// The versions with a hint (2) return an iterator pointing to either the newly inserted element
 		// or to the element that already had an equivalent key in the map.
 		iterator insert (iterator position, const value_type& val){
-			// todo
+			// todo если поз перед вставленным, онон его оптимизирует
+			(void) position;
+			insert(*position);
 		}
 
 		template <class InputIterator>
 		void insert (InputIterator first, InputIterator last){
 			// todo
+
+			while(first != last){
+				insert(*first);
+				first++;
+			}
 		}
 
 
@@ -315,11 +325,12 @@ class Map : public ft::RedBlackTree< std::pair<Key, T>, Key>{
 		}
 
 		iterator find (const key_type& k){
-
+			return (iterator)findNodeKey(k);
 		}
 		const_iterator find (const key_type& k) const{
-
+			return (const_iterator)findNodeKey(k);
 		}
+
 
 
 		void show()
@@ -348,7 +359,6 @@ class Map : public ft::RedBlackTree< std::pair<Key, T>, Key>{
 	private:
 		Alloc _allocator;
 		key_compare _compare;
-		//Node<value_type> *root;
 		size_type _size;
 
 	};

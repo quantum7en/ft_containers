@@ -394,6 +394,7 @@ namespace ft {
 
 		//std::cout <<"DATA "<< data.first <<" "<< data.second<< std::endl;
 
+
 			NodePtr node = new Node<T>;
 			node->parent = NULL;
 			node->data.first = data.first;
@@ -463,14 +464,14 @@ namespace ft {
 			}
 		}
 
-		//template<class key_type>
-//		Node<T> *findNode(key_type k) const {
-//			Node<T> * current = root;
+
+//		NodePtr findNode(key_type k) const {
+//			NodePtr current = root;
 //			while (current != this->TNULL) {
 //				if (k == current->data.first) {
 //					return current;
 //				}
-//				//current = _comp(k, current->value_type.first) ? current->left : current->right;
+//				current = _comp(k, current->value_type.first) ? current->left : current->right;
 //			}
 //			return nullptr;
 //		}
