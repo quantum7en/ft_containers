@@ -7,8 +7,10 @@
 #include <string>
 #include "RBTree.hpp"
 #include "ft_map.hpp"
+#include "enable_if.hpp"
 #include "classes.hpp"
 #include <utility>
+#include <unistd.h>
 
 class Test {
 public:
@@ -58,32 +60,32 @@ public:
 int		main(){
 
 
-		ft::Map<int, int > bst;
-		std::map<int, int> orig;
-
-
-for(int i = 1; i < 15; i++)
-	bst.insert(std::make_pair(i, i+1));
+	ft::Map<int, int > bst;
+	std::map<int, int> orig;
+	for(int i = 1; i < 15; i++)
+		bst.insert(std::make_pair(i, i+1));
 
 	bst.insert(std::make_pair(10, 18888));
-bst[15] = 100;
-bst[15] = 500;
-bst[15] = -99;
-bst[16]= -5;
-	std::cout <<"15 elem "<< bst.findNodeKey(15)->data.second <<"\n";
-	std::cout <<"10 elem "<< bst.findNodeKey(10)->data.second <<"\n";
+	bst[15] = 100;
+	bst[15] = 500;
+	bst[15] = -99;
+	bst[16]= -5;
+
+	std::cout <<"MAP 15 elem "<< bst.findNodeKey(15)->data.second <<"\n";
+	std::cout <<"MAP 10 elem "<< bst.findNodeKey(10)->data.second <<"\n";
 
 	bst.erase(1);
 	bst.erase(12);
 	bst.erase(10);
 	bst.erase(2);
 
-std::cout << bst.max_size() << " - max\n";
+	std::cout << bst.max_size() << " - max\n";
 
+	std::cout << bst.size() << " CUR SIZE \n";
 
 	for(int i = 1; i < 15; i++)
 		orig.insert(std::make_pair(i, i+1));
-// todo fix insert, rend
+
 	orig.insert(std::make_pair(10, 18888));
 
 	orig[15]= 100;
@@ -99,6 +101,7 @@ std::cout << bst.max_size() << " - max\n";
 	orig.erase(10);
 	orig.erase(2);
 	std::cout << orig.max_size() << " - max orig\n";
+	std::cout << orig.size() << " ORIG CUR SIZE \n";
 
 //	bst.insert(-1);
 //	bst.insert(0);
@@ -125,18 +128,29 @@ ft::Map<int, int>::reverse_iterator  rit = bst.rbegin();
 
 
 	ft::Map<int, int>::reverse_iterator  rit1 = bst.rend();
+	--rit1;
 	std::cout <<"Rend " <<rit1->first <<" "<< rit1->second << "\n";
-//	std::cout <<"Origin Rend " <<orig.rend()->first <<" "<< orig.rend()->second << "\n";
+	std::cout <<"Origin Rend " << (--orig.rend())->first <<" "<< (--orig.rend())->second << "\n";
 
-//		bst.deleteNode(1);
-		bst.show();
-		bst.traversal();
-
-//		cout << endl
-//			 << "After deleting" << endl;
-//		bst.deleteNode(40);
-//		bst.printTree();
+	std::cout << " it erasing " << it->first << std::endl;
+	bst.erase(it);
+	orig.erase(orig.begin());
 
 
+	orig[10]= -5;
+	bst[10]= -5;
+	std::cout << " Checking again brackets: new key value 10 -> " << bst.find(10)->first << std::endl;
+	std::cout << " ORIGIN Checking again brackets: new key value 10 -> " << orig.find(10)->first << std::endl;
+
+	std::cout << " FINAL SIZE MY MAP " <<bst.size() << std::endl;
+	std::cout << " FINAL SIZE ORIGIN MAP "<<orig.size() << std::endl;
+
+	std::cout << " 				**** Visualised ****"<< std::endl;
+	bst.show();
+	bst.traversal();
+
+	bst.printing();
+
+	sleep(10);
 	return 0;
 };

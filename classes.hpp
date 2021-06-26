@@ -17,7 +17,6 @@ public:
 	std::string str;
 	void setStr(std::string const &s){str=s;}
 	std::string const &getStr()const {return this->str;}
-	example &operator=(example const rhs){this->str = rhs.str; *this=rhs; return *this;}
 
 };
 

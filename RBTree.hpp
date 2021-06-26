@@ -15,7 +15,7 @@ namespace ft {
 
 	template <class T>
 	struct Node {
-		T data; //T //int
+		T data; // pair
 		Node *parent;
 		Node *left;
 		Node *right;
@@ -45,13 +45,10 @@ namespace ft {
 	}
 
 	void initializeNULLNode(NodePtr node) {
-		//	node->data = 0;
-			node->parent = NULL;
 
+			node->parent = NULL;
 			node->left = node; // root = root
-			// node->left = NULL;
 			node->right = node;
-			//node->right = NULL;
 			node->color = 0; // 0 -black
 			node->is_tnull = true;
 		}
@@ -183,7 +180,7 @@ namespace ft {
 
 			if (z == TNULL) {
 				std::cout << "Key not found in the tree" << std::endl;
-				//upDate_TNULL_node();
+				upDate_TNULL_node();
 				return;
 			}
 
@@ -216,7 +213,7 @@ namespace ft {
 			if (y_original_color == 0) {
 				deleteFix(x);
 			}
-			//upDate_TNULL_node();
+			upDate_TNULL_node();
 		}
 
 		// For balancing the tree after insertion
@@ -276,7 +273,7 @@ namespace ft {
 				}
 
 				std::string sColor = root->color ? "RED" : "BLACK";
-				std::cout << root->data << "(" << sColor << ")" << std::endl;
+				std::cout << root->data.first << "(" << sColor << ")" << std::endl;
 				printHelper(root->left, indent, false);
 				printHelper(root->right, indent, true);
 			}
@@ -401,7 +398,7 @@ namespace ft {
 
 			node->data.second = data.second;
 
-			std::cout <<"PREV "<< node->data.first <<" "<< node->data.second<< std::endl;
+			// std::cout <<"PREV "<< node->data.first <<" "<< node->data.second<< std::endl;
 
 			node->left = TNULL;
 			node->right = TNULL;
@@ -432,20 +429,20 @@ namespace ft {
 			if (node->parent == NULL) {
 				node->color = 0;
 				upDate_TNULL_node();
-				std::cout<<"here\n";
+				//std::cout<<"here\n";
 				return NULL;
 			}
 
 			if (node->parent->parent == NULL) {
 				upDate_TNULL_node();
-				std::cout<<"here2\n";
+				//std::cout<<"here2\n";
 				return NULL;
 			}
 
 			insertFix(node);
-			upDate_TNULL_node(); //todo
+			upDate_TNULL_node();
 
-			std::cout << "AFTER "<< node->data.first <<" "<< node->data.second << std::endl << std::endl;
+			//std::cout << "AFTER "<< node->data.first <<" "<< node->data.second << std::endl << std::endl;
 			return node;
 		}
 
@@ -463,27 +460,6 @@ namespace ft {
 				printHelper(this->root, "", true);
 			}
 		}
-
-
-//		NodePtr findNode(key_type k) const {
-//			NodePtr current = root;
-//			while (current != this->TNULL) {
-//				if (k == current->data.first) {
-//					return current;
-//				}
-//				current = _comp(k, current->value_type.first) ? current->left : current->right;
-//			}
-//			return nullptr;
-//		}
-
-//		void swap(RedBlackTree<T>& tree)
-//		{
-//			ft::swap(this->root, tree.root);
-//			ft::swap(this->TNULL, tree.TNULL);
-//			//ft::swap(this->_size, tree._size);
-//		}
-
-
 
 		void traversal(Node<T>* x) const
 		{
@@ -505,6 +481,14 @@ namespace ft {
 			traversal(this->root);
 		}
 
+		void deleteRBTree(NodePtr ptr) {
+			if (ptr != this->TNULL) {
+				deleteRBTree(ptr->left);
+				deleteRBTree(ptr->right);
+				delete ptr;
+			}
+		}
+
 		void print(Node<T>* root, int deep)
 		{
 			if (root != NULL && root != TNULL) {
@@ -522,9 +506,6 @@ namespace ft {
 			std::cout << "\e[0m";
 		}
 
-		void show()
-		{ std::cout << this->root->data;
-			print(this->root, 10); }
 	};
 
 }

@@ -230,8 +230,7 @@ namespace ft {
 		// or library implementation limitations, but the container is by no means guaranteed
 		// to be able to reach that size: it can still fail to allocate storage at any point before that size is reached.
 		size_type max_size() const{
-			const size_type max_size = _allocator.max_size();
-			return max_size;
+			return std::min<size_type>(_allocator.max_size(), std::numeric_limits<difference_type>::max());;
 		}
 
 
@@ -251,7 +250,7 @@ namespace ft {
 					return ;
 				}
 				iterator position = end();
-				size_type diff = n - size();
+//				size_type diff = n - size();
 				pointer arr_reallocated = _allocator.allocate(n);
 
 				size_type n_size = sizeof(value_type) * _size;
@@ -306,7 +305,7 @@ namespace ft {
 //		This function has no effect on the vector size and cannot alter its elements.
 		void reserve (size_type n){
 			if (n > max_size())
-				throw Vector::ExeptionLengthError();
+				throw std::runtime_error("vector");
 			if (capacity() < n){
 				pointer _q = _allocator.allocate(n);
 				pointer _start = _q;
@@ -394,7 +393,7 @@ namespace ft {
 			}
 			Vector tmp;
 			this->swap(tmp);
-			throw Vector::ExeptionLengthError();
+			throw std::runtime_error("vector");
 		}
 
 		// In the fill version (2), the new contents are n elements, each initialized to a copy of val.

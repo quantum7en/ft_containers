@@ -14,19 +14,19 @@ namespace ft{
 		typedef T type;
 	};
 
-	template<class T>
-	typename ft::enable_if<std::is_object<T>::value, T*>::type  addressof(T& arg) noexcept
-	{
-		return reinterpret_cast<T*>(
-				&const_cast<char&>(
-						reinterpret_cast<const volatile char&>(arg)));
-	}
-
-	template<class T>
-	typename ft::enable_if<!std::is_object<T>::value, T*>::type addressof(T& arg) noexcept
-	{
-		return &arg;
-	}
+//	template<class T>
+//	typename ft::enable_if<std::is_object<T>::value, T*>::type  addressof(T& arg) noexcept
+//	{
+//		return reinterpret_cast<T*>(
+//				&const_cast<char&>(
+//						reinterpret_cast<const volatile char&>(arg)));
+//	}
+//
+//	template<class T>
+//	typename ft::enable_if<!std::is_object<T>::value, T*>::type addressof(T& arg) noexcept
+//	{
+//		return &arg;
+//	}
 
 	template<class T>
 	void swap(T &a, T &b) {

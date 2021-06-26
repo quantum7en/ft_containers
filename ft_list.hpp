@@ -200,7 +200,7 @@ namespace ft {
 
 		//Returns the maximum number of elements that the list container can hold.
 		size_type max_size() const {
-			return _allocator.max_size();
+			return std::min<size_type>(_allocator.max_size(), std::numeric_limits<difference_type>::max());;
 		}
 
 		/**** Element access ****/
