@@ -68,14 +68,14 @@ namespace ft {
 		//// **** Exceptions ****
 		class ExeptionOutOfRange : public std::exception {
 		public:
-			const char*  what() throw() {
+			const char*  what() const throw() {
 				return "vector::_M_range_check: n " " >= this->size() ";
 			}
 		};
 
 		class ExeptionLengthError : public std::exception{
 		public:
-			const char*  what() throw() {
+			const char*  what() const throw() {
 				return "vector::reserve : allocator<T>::allocate(size_t n) 'n' exceeds maximum supported size";
 			}
 		};
@@ -250,7 +250,6 @@ namespace ft {
 					return ;
 				}
 				iterator position = end();
-//				size_type diff = n - size();
 				pointer arr_reallocated = _allocator.allocate(n);
 
 				size_type n_size = sizeof(value_type) * _size;

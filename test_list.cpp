@@ -3,14 +3,12 @@
 #include <list>
 #include <stack>
 #include <string>
+#include <unistd.h>
 #include "classes.hpp"
-//#include "ft_stack.hpp"
 #include "ft_list.hpp"
 #include "ft_reverse_iterator.hpp"
-//#include "ft_map.hpp"
 
-#include <map>
-
+//  clang++ -g -Wall -Wextra -Werror -std=c++98 -o list test_list.cpp
 
 #define lib ft
 #define con List
@@ -33,7 +31,7 @@
 
 # define PRINT(x)		std::cout<< x <<"\n";
 
-
+/*
 class Test {
 public:
 	Test() : some_(0) {
@@ -1285,82 +1283,10 @@ void ft_remove_val_test() {
 		std::cout << *it << " ";
 	}
 
-	mouse.remove(1000);
-
-	std::cout << "mouse:" << std::endl;
-	std::cout << "size:"  << mouse.size()  << std::endl;
-	std::cout << "empty:" << mouse.empty() << std::endl;
-	for (it = mouse.begin(); it != mouse.end(); ++it) {
-		std::cout << *it << " ";
-	}
-	std::cout << std::endl;
-
-	fat_mouse.remove(1000);
-
-	std::cout << "fat_mouse:" << std::endl;
-	std::cout << "size:"  << fat_mouse.size()  << std::endl;
-	std::cout << "empty:" << fat_mouse.empty() << std::endl;
-	for (it = fat_mouse.begin(); it != fat_mouse.end(); ++it) {
-		std::cout << *it << " ";
-	}
-	std::cout << std::endl;
 }
 
 bool pred(const int & val) {
 	return val == 1000;
-}
-
-void ft_remove_if_test() {
-
-	std::cout <<"remove if" <<std::endl;
-	lib::con<int>           empty;
-	lib::con<int>           mouse;
-	lib::con<int>           fat_mouse;
-	lib::con<int>::iterator it;
-	lib::con<int>::iterator it2;
-	for (int i = 0; i < 10; ++i) {
-		if (i % 2 == 0) {
-			mouse.push_back(1000);
-		} else {
-			mouse.push_back(i + 10);
-		}
-	}
-	for (int i = 0; i < 100; ++i) {
-		if (i % 2 == 1) {
-			fat_mouse.push_back(1000);
-		} else {
-			fat_mouse.push_back(i + 10);
-		}
-	}
-
-	empty.remove_if(pred);
-
-	std::cout << "empty:" << std::endl;
-	std::cout << "size:"  << empty.size()  << std::endl;
-	std::cout << "empty:" << empty.empty() << std::endl;
-	for (it = empty.begin(); it != empty.end(); ++it) {
-		std::cout << *it << " ";
-	}
-
-	mouse.remove_if(pred);
-
-	std::cout << "mouse:" << std::endl;
-	std::cout << "size:"  << mouse.size()  << std::endl;
-	std::cout << "empty:" << mouse.empty() << std::endl;
-	for (it = mouse.begin(); it != mouse.end(); ++it) {
-		std::cout << *it << " ";
-	}
-	std::cout << std::endl;
-
-	fat_mouse.remove_if(pred);
-
-	std::cout << "fat_mouse:" << std::endl;
-	std::cout << "size:"  << fat_mouse.size()  << std::endl;
-	std::cout << "empty:" << fat_mouse.empty() << std::endl;
-	for (it = fat_mouse.begin(); it != fat_mouse.end(); ++it) {
-		std::cout << *it << " ";
-	}
-	std::cout << std::endl;
 }
 
 void ft_unique_test() {
@@ -1691,7 +1617,6 @@ void ListTest(){
 	ft_splice_pos_lst_i_test();
 	ft_splice_pos_lst_first_last_test();
 	ft_remove_val_test();
-	ft_remove_if_test();
 	ft_unique_test();
 	ft_unique_pred_test();
 
@@ -1719,32 +1644,13 @@ PRINT("list")
 //
 //	std::cout << DarkGreen << "ft:: List test" << RESET << std::endl;
 }
-
+*/
 
 int main() {
 
-	ListTest();
+//	ListTest();
 
 
-//	example ex;
-//	ex.setStr("hello");
-//
-//
-//	std::vector<class example> vec;
-//	for(int i = 0; i < 7; i++){
-//		ex.setStr(i+"qwertyuiopasdfghjkl");
-//		vec.push_back(ex);
-//		std::cout << vec[i] <<"\t";
-//		}
-//	std::cout << *(vec.end()) <<"a\t";
-//	std::cout << *(vec.end()) <<"a\t";
-
-	//std::stack stk(vec, <vector>);
-
-/*	size_type max_size() const throw(){
-//#if defined (__APPLE__) || defined (_WIN32)
-		return std::numeric_limits<size_type>::max() / sizeof(value_type);
-	}
-*/
 	std::cout << "end\n";
+	sleep(10);
 }

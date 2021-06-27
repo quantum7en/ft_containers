@@ -9,12 +9,10 @@
 #include <string>
 #include "classes.hpp"
 #include "ft_stack.hpp"
-#include "ft_list.hpp"
-#include "ft_reverse_iterator.hpp"
-
+#include <unistd.h>
 #define lib ft
 
-
+/*
 void test_stack(){
 	lib::Stack<int> def;
 
@@ -36,7 +34,9 @@ void test_stack(){
 	std::cout << def.size() << std::endl;
 
 }
-
+*/
 int main(){
-	test_stack();
+	//test_stack();
+	std::cout << "end\n";
+	sleep(10);
 }

@@ -11,13 +11,13 @@ add_executable(ft_containers
 
         #test LIST
         #ft_list.hpp
-        #main.cpp
+        #test_list.cpp
         # *********
 
 
         #test MAP
-        ft_map.hpp
-        test_map.cpp
+        #ft_map.hpp
+        #test_map.cpp
 
         #test QUEUE
         #ft_queue.hpp
@@ -35,6 +35,8 @@ add_executable(ft_containers
         enable_if.hpp
 
         #test VECTOR
-        # test_vector.cpp
-        # ft_vector.hpp
+         test_vector.cpp
+         ft_vector.hpp
+
+
         RBTree.hpp)

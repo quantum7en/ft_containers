@@ -6,10 +6,6 @@
 
 #IncludeRegexTransform: 
 
-/Users/pmelinda/ft_containers/RBTree.hpp
-enable_if.hpp
-/Users/pmelinda/ft_containers/enable_if.hpp
-
 /Users/pmelinda/ft_containers/classes.hpp
 iostream
 -
@@ -22,22 +18,6 @@ string
 
 /Users/pmelinda/ft_containers/enable_if.hpp
 type_traits
--
-
-/Users/pmelinda/ft_containers/ft_map.hpp
-string
--
-iostream
--
-enable_if.hpp
-/Users/pmelinda/ft_containers/enable_if.hpp
-ft_reverse_iterator.hpp
-/Users/pmelinda/ft_containers/ft_reverse_iterator.hpp
-ft_vector.hpp
-/Users/pmelinda/ft_containers/ft_vector.hpp
-RBTree.hpp
-/Users/pmelinda/ft_containers/RBTree.hpp
-list
 -
 
 /Users/pmelinda/ft_containers/ft_reverse_iterator.hpp
@@ -66,23 +46,17 @@ ft_reverse_iterator.hpp
 enable_if.hpp
 /Users/pmelinda/ft_containers/enable_if.hpp
 
-/Users/pmelinda/ft_containers/test_map.cpp
+/Users/pmelinda/ft_containers/test_vector.cpp
 iostream
 -
-map
+vector
 -
 string
 -
-RBTree.hpp
-/Users/pmelinda/ft_containers/RBTree.hpp
-ft_map.hpp
-/Users/pmelinda/ft_containers/ft_map.hpp
-enable_if.hpp
-/Users/pmelinda/ft_containers/enable_if.hpp
-classes.hpp
-/Users/pmelinda/ft_containers/classes.hpp
-utility
--
 unistd.h
 -
+ft_vector.hpp
+/Users/pmelinda/ft_containers/ft_vector.hpp
+classes.hpp
+/Users/pmelinda/ft_containers/classes.hpp
 

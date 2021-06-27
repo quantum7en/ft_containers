@@ -270,7 +270,6 @@ namespace ft {
 		// Return : An iterator that points to the first of the newly inserted elements.
 		// single element (1)
 		iterator insert(iterator position, const value_type& val) {
-		//	Node<T> *pos = position.getPtr();
 		//	std::cout<< "print\n";
 			Node<T> *newNodePtr;
 			newNodePtr = _node_alloc.allocate(1);
@@ -451,7 +450,11 @@ namespace ft {
 		// this function (list::remove) removes elements by their value. // Linear in container size (comparisons).
 
 		void	remove (const value_type& val){
-			for (iterator it = begin(); it != end(); ++it){
+			if (_listSize == 0)
+				return;
+			iterator it = begin();
+			iterator ite = end();
+			for (; it != ite; ++it){
 				if (it.getPtr()->data == val)
 					it = erase(it);
 			}

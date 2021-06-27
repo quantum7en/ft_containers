@@ -5,12 +5,14 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <unistd.h>
 #include "ft_vector.hpp"
 #include "classes.hpp"
 
 #define lib ft
 #define con Vector
 
+/*
 class Test {
 public:
 	Test() : some_(0) {
@@ -128,102 +130,6 @@ void ft_copy_constructor() {
 
 }
 
-void ft_resize_test() {
-	std::cout << "\nresize_test\n" << std::endl;
-	lib::con<Test> mouse(128);
-	for (size_t i = 0; i < mouse.size(); ++i) {
-		mouse[i].some_ = i;
-	}
-	lib::con<Test> big_empty(mouse);
-	lib::con<Test> small_mouse(mouse);
-	lib::con<Test> big_mouse(mouse);
-
-	std::cout << "size    : " << mouse.size()     << std::endl;
-	std::cout << "capacity: " << mouse.capacity() << std::endl;
-	std::cout << "arr     :" << std::endl;
-	for (size_t i = 0; i < mouse.size(); ++i) {
-		if (i != 0 && i % 32 == 0)
-			std::cout << std::endl;
-		std::cout << mouse[i].some_ << " ";
-	}
-	std::cout << std::endl;
-	std::cout << (*mouse.begin()).some_      << std::endl;
-	std::cout << (*(mouse.end() - 1)).some_  << std::endl;
-	std::cout << (*mouse.rbegin()).some_     << std::endl;
-	std::cout << (*(mouse.rend() - 1)).some_ << std::endl;
-
-	big_empty.resize(64, 7);
-	std::cout << "size    : " << big_empty.size()     << std::endl;
-	std::cout << "capacity: " << big_empty.capacity() << std::endl;
-	std::cout << "arr     :" << std::endl;
-	for (size_t i = 0; i < big_empty.size(); ++i) {
-		if (i != 0 && i % 32 == 0)
-			std::cout << std::endl;
-		std::cout << big_empty[i].some_ << " ";
-	}
-	std::cout << std::endl;
-
-	small_mouse.resize(64, 7);
-	std::cout << "size    : " << small_mouse.size()     << std::endl;
-	std::cout << "capacity: " << small_mouse.capacity() << std::endl;
-	std::cout << "arr     :" << std::endl;
-	for (size_t i = 0; i < small_mouse.size(); ++i) {
-		if (i != 0 && i % 32 == 0)
-			std::cout << std::endl;
-		std::cout << small_mouse[i].some_ << " ";
-	}
-	std::cout << std::endl;
-
-	small_mouse.resize(1, 7);
-	std::cout << "size    : " << small_mouse.size()     << std::endl;
-	std::cout << "capacity: " << small_mouse.capacity() << std::endl;
-	std::cout << "arr     :" << std::endl;
-	for (size_t i = 0; i < small_mouse.size(); ++i) {
-		if (i != 0 && i % 32 == 0)
-			std::cout << std::endl;
-		std::cout << small_mouse[i].some_ << " ";
-	}
-	std::cout << std::endl;
-
-	small_mouse.resize(0, 7);
-	std::cout << "size    : " << small_mouse.size()     << std::endl;
-	std::cout << "capacity: " << small_mouse.capacity() << std::endl;
-	std::cout << "arr     :" << std::endl;
-	for (size_t i = 0; i < small_mouse.size(); ++i) {
-		if (i != 0 && i % 32 == 0)
-			std::cout << std::endl;
-		std::cout << small_mouse[i].some_ << " ";
-	}
-	std::cout << std::endl;
-
-	big_mouse.resize(256, 7);
-	std::cout << "size    : " << big_mouse.size()     << std::endl;
-	std::cout << "capacity: " << big_mouse.capacity() << std::endl;
-	std::cout << "arr     :" << std::endl;
-	for (size_t i = 0; i < big_mouse.size(); ++i) {
-		if (i != 0 && i % 32 == 0)
-			std::cout << std::endl;
-		std::cout << big_mouse[i].some_ << " ";
-	}
-	std::cout << std::endl;
-
-	try {
-		big_mouse.resize(big_mouse.max_size() + 10);
-
-	} catch(std::exception & e) {
-		std::cout << e.what() << std::endl;
-	}
-
-	std::cout << "size    : " << big_mouse.size()     << std::endl;
-	std::cout << "capacity: " << big_mouse.capacity() << std::endl;
-	std::cout << "arr     :" << std::endl;
-	for (size_t i = 0; i < big_mouse.size(); ++i) {
-		if (i != 0 && i % 32 == 0)
-			std::cout << std::endl;
-		std::cout << big_mouse[i].some_ << " ";
-	}
-	std::cout << std::endl;
-}
 
 void ft_reserve_test() {
 	std::cout << "\nreserve_test\n" << std::endl;
@@ -340,19 +246,6 @@ void ft_reserve_test() {
 
 
 }
-/*
-void ft_constructors_capacity_test() {
-	ft_defoult_constructor();
-	ft_n_constructor();
-	ft_n_val_constructor();
-	ft_copy_constructor();
-	ft_resize_test();
-	ft_reserve_test();
-}
-*/
-// =============================================================================
-
-// Operator '=' ================================================================
 
 void ft_operator_assignment() {
 	std::cout << "\noperator_assignment\n" << std::endl;
@@ -1358,73 +1251,7 @@ void ft_relational_operators() {
 	std::cout << (big_mouse <= mouse) << std::endl;
 }
 
-/*
-void const_iterators() {
-	std::cout << "const_iterators" << std::endl;
-	lib::con<int> src;
-	for (int i = 0; i < 20; ++i) {
-		src.push_back(i);
-	}
-	lib::con<const int>                 def(src.begin(), src.end());
-	lib::con<const int>::const_iterator cit(def.begin());
 
-	while (cit != def.end()) {
-		std::cout << *cit << " ";
-		++cit;
-	}
-	std::cout << std::endl;
-//	*cit = 6; // DOES NOT COMPILE
-
-	--cit;
-	lib::con<const int>::const_iterator cit2(def.begin());
-	std::cout << (cit > cit2) << std::endl;
-	std::cout << (cit >= cit2) << std::endl;
-	std::cout << (cit < cit2) << std::endl;
-	std::cout << (cit <= cit2) << std::endl;
-	std::cout << (cit == cit2) << std::endl;
-
-	lib::con<int>::const_iterator cit_src(src.begin());
-	while (cit_src != src.end()) {
-		std::cout << *cit_src << " ";
-		++cit_src;
-	}
-	std::cout << std::endl;
-	// *cit_src = 6; // DOES NOT COMPILE
-}
-
-void reverse_iterators() {
-	std::cout << "reverse_iterators" << std::endl;
-	lib::con<int> src;
-	for (int i = 0; i < 20; ++i) {
-		src.push_back(i);
-	}
-	lib::con<const int>                         def(src.begin(), src.end());
-	lib::con<const int>::const_reverse_iterator rcit(def.rbegin());
-
-	while (rcit != def.rend()) {
-		std::cout << *rcit << " ";
-		++rcit;
-	}
-	std::cout << std::endl;
-//	*rcit = 6; // DOES NOT COMPILE
-
-	--rcit;
-	lib::con<const int>::const_reverse_iterator rcit2(def.rbegin());
-	std::cout << (rcit > rcit2) << std::endl;
-	std::cout << (rcit >= rcit2) << std::endl;
-	std::cout << (rcit < rcit2) << std::endl;
-	std::cout << (rcit <= rcit2) << std::endl;
-	std::cout << (rcit == rcit2) << std::endl;
-
-	lib::con<int>::const_reverse_iterator rcit_src(src.rbegin());
-	while (rcit_src != src.rend()) {
-		std::cout << *rcit_src << " ";
-		++rcit_src;
-	}
-	std::cout << std::endl;
-	// *rcit_src = 6; // DOES NOT COMPILE
-}
-*/
 void relational_operators() {
 	std::cout << "relational_operators" << std::endl;
 	lib::con<int> def;
@@ -1443,37 +1270,8 @@ void relational_operators() {
 	std::cout << (def != def2) << std::endl;
 }
 
-/*
-void const_iter_with_iter() {
-	std::cout << "const_iter_with_iter" << std::endl;
-	lib::con<int> def;
-	for (int i = 0; i < 20; i += 2) {
-		def.push_back(2);
-	}
-	lib::con<int>::iterator       it(def.begin());
-	lib::con<int>::const_iterator cit(def.begin());
 
-	std::cout << (it >  cit) << std::endl;
-	std::cout << (it >= cit) << std::endl;
-	std::cout << (it <  cit) << std::endl;
-	std::cout << (it <= cit) << std::endl;
-	std::cout << (it == cit) << std::endl;
-	std::cout << (it != cit) << std::endl;
-
-	lib::con<int>::reverse_iterator       rit(def.begin());
-	lib::con<int>::const_reverse_iterator rcit(def.begin());
-
-	std::cout << (rit >  rcit) << std::endl;
-	std::cout << (rit >= rcit) << std::endl;
-	std::cout << (rit <  rcit) << std::endl;
-	std::cout << (rit <= rcit) << std::endl;
-	std::cout << (rit == rcit) << std::endl;
-	std::cout << (rit != rcit) << std::endl;
-}
-*/
 void ft_modifiers_test() {
-//	ft_assign_iter_iter_leaks_test();
-//	ft_assign_iter_iter_1280b_leaks_test();
 
 	ft_assign_n_val_test();
 	ft_push_back_test();
@@ -1481,7 +1279,6 @@ void ft_modifiers_test() {
 	ft_insert_iter_val_test();
 	ft_insert_iter_n_val_test();
 	ft_insert_iter_iter_iter_test();
-//	ft_insert_iter_iter_iter_8390_leaks_test();
 
 	ft_erase_2540_leaks_test();
 	ft_swap_test();
@@ -1495,7 +1292,6 @@ void std_constructors_capacity_test() {
 	ft_n_constructor();
 	ft_n_val_constructor();
 	ft_copy_constructor();
-	ft_resize_test();
 	ft_reserve_test();
 }
 
@@ -1520,13 +1316,16 @@ void std_operator_assignment_test() {
 	std::cout << std::endl;
 
 }
+*/
 
 int		main(){
 	
-	std_constructors_capacity_test();
-	std_operator_assignment_test();
-	ft_iterator_test();
-	ft_el_access_test();
-	ft_modifiers_test();
-	relational_operators();
+//	std_constructors_capacity_test();
+//	std_operator_assignment_test();
+//	ft_iterator_test();
+//	ft_el_access_test();
+//	ft_modifiers_test();
+//	relational_operators();
+	std::cout << "end\n";
+	sleep(10);
 }

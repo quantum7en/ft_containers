@@ -8,15 +8,13 @@
 #include <stack>
 #include <string>
 #include "classes.hpp"
-//#include "ft_stack.hpp"
-#include "ft_list.hpp"
-#include "ft_reverse_iterator.hpp"
-//#include "ft_map.hpp"
+#include <unistd.h>
 
 #include <queue>
 
 #include "ft_queue.hpp"
 
+/*
 void member_func_test() {
 
 	std::queue < int > std_queue;
@@ -136,10 +134,12 @@ void relational_operators_test() {
 	std::cout << "ft: " <<   (ft1 >= ft2) << std::endl;
 	std::cout << std::endl;
 }
-
+*/
 int main(){
 
-	member_func_test();
-	relational_operators_test();
+//	member_func_test();
+//	relational_operators_test();
+	std::cout << "end\n";
+	sleep(10);
 	return 0;
 }
