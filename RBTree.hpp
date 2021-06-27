@@ -304,7 +304,7 @@ namespace ft {
 			return searchTreeHelper(this->root, k);
 		}
 
-		NodePtr minimum(NodePtr node) {
+		NodePtr minimum(NodePtr node) const {
 			while (node->left != TNULL) {
 				node = node->left;
 			}

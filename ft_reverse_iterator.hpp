@@ -38,7 +38,7 @@ namespace ft {
 		explicit ReverseIterator(iterator_type itr) : _it(itr){}
 
 		template<class RevIter>
-		ReverseIterator(const ReverseIterator<RevIter> &rhs_rev_it) : _it(rhs_rev_it.base){} //todo Iter?
+		ReverseIterator(const ReverseIterator<RevIter> &rhs_rev_it) : _it(rhs_rev_it.base){}
 		virtual ~ReverseIterator(){}
 
 		//= assigns another iterator
