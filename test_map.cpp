@@ -100,15 +100,16 @@ void constructor_first_last() {
 	std::cout << "constructor_first_last" << std::endl;
 	std::vector<std::pair<int, Test> > src;
 
-	for (int i = 0; i < 100; ++i) {
+	for (int i = 0; i < 20; ++i) {
 		src.push_back(std::pair<int, Test>(i, i));
+//		src.push_back((std::pair<int, int>(i, i * 2)));
 		src.push_back(std::pair<int, Test>(i, i));
 	}
 
 	lib::con<int, Test> def(src.begin(), src.end());
-	def.show();
-	def.traversal();
-	print_map<int, Test>(def);
+//	def.show();
+//	def.traversal();
+	print_map<int,Test>(def);
 
 }
 
@@ -238,10 +239,10 @@ void erase_key() {
 
 	lib::con<int, Test>           def(src.begin(), src.end());
 
-	for (int i = 0; i < 19 ; i += 2) {
+	for (int i = 0; i < 20 ; i += 2) {
 		std::cout << def.erase(i) << std::endl;
 	}
-//	std::cout << def.erase(100) << std::endl;
+
 	print_map<int, Test>(def);
 
 }
@@ -264,9 +265,6 @@ void erase_firts_last() {
 
 	def.erase(first, last);
 	print_map<int, Test>(def);
-	// todo ИДИТЕ НАХУЙ ПРОСТО УЕБКИ
-//	def.erase(def.begin(), def.end());
-//	print_map<int, Test>(def);
 
 }
 
@@ -424,21 +422,21 @@ int		main(){
 
 	// Constructors
 	default_constructor();
-//	constructor_first_last();
+	constructor_first_last();
 	copy_constructor();
-////	// ------------
-////
-////	// Element access
-//	brackets();
-//// todo C++11 for at
-////	// ------------
-////
-////	//Modifiers
-//	insert_val();
-//	insert_position_val();
-//	insert_first_last();
-//	erase_position();
-//	erase_key();
+	// ------------
+
+	// Element access
+	brackets();
+
+//	// ------------
+//
+	//Modifiers
+	insert_val();
+	insert_position_val();
+	insert_first_last();
+	erase_position();
+	erase_key();
 //	erase_firts_last();
 //	swap();
 //	clear();
@@ -539,6 +537,6 @@ int		main(){
 //
 //	bst.printing();
 //
-	sleep(10);
+//	sleep(10);
 	return 0;
 };

@@ -109,8 +109,15 @@ class Map : public ft::RedBlackTree< std::pair<Key, T>, Key>{
 
 		// (3) copy constructor
 		//Constructs a container with a copy of each of the elements in x.
-		Map (const Map& x): _allocator(x._allocator), _compare(x._compare), _size(x._size){
-			//rbt = new RedBlackTree<value_type>;
+		Map (const Map& x){
+			//this->_size = x._size;
+//			this->root = x.root;
+//			this->TNULL = x.getTNULL();
+			//this->_allocator = x._allocator;
+			//this->_compare = x._compare;
+			_size = 0;
+			this->insert(x.begin(), x.end());
+		//	this->upDate_TNULL_node();
 		}
 
 		// Assignation. Assigns new contents to the container, replacing its current content.
@@ -120,8 +127,14 @@ class Map : public ft::RedBlackTree< std::pair<Key, T>, Key>{
 			if (this == &x) {
 				return *this;
 			}
-			_compare = x._compare;
-			_size = x._size;
+			this->clear();
+			this->insert(x.begin(), x.end());
+//			this->_size = x._size;
+//			this->root = x.root;
+//			this->TNULL = x.getTNULL();
+//			_compare = x._compare;
+//			this->_allocator = x._allocator;
+//			this->upDate_TNULL_node();
 			return *this;
 		}
 

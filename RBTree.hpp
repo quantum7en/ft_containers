@@ -209,8 +209,8 @@ namespace ft {
 				y->left->parent = y;
 				y->color = z->color;
 			}
-			if (z != TNULL)
-				delete z;
+			//if (z != TNULL)
+			delete z;
 			if (y_original_color == 0) {
 				deleteFix(x);
 			}
