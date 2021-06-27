@@ -36,7 +36,7 @@ namespace ft {
 		NodePtr TNULL;
 
 	public:
-	NodePtr getTNULL(){
+	NodePtr getTNULL() const{
 		return this->TNULL;
 	}
 
@@ -209,7 +209,8 @@ namespace ft {
 				y->left->parent = y;
 				y->color = z->color;
 			}
-			delete z;
+			if (z != TNULL)
+				delete z;
 			if (y_original_color == 0) {
 				deleteFix(x);
 			}

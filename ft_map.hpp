@@ -103,7 +103,7 @@ class Map : public ft::RedBlackTree< std::pair<Key, T>, Key>{
 		Map (InputIterator first, InputIterator last,
 		const key_compare& comp = key_compare(),
 		const allocator_type& alloc = allocator_type()):
-		_allocator(alloc), _compare(comp){
+		_allocator(alloc), _compare(comp), _size(0){
 			this->insert(first, last);
 		}
 
@@ -156,7 +156,9 @@ class Map : public ft::RedBlackTree< std::pair<Key, T>, Key>{
 		// this function is often used in combination with map::begin to specify a range including all the elements in the container.
 		//If the container is empty, this function returns the same as map::begin.
 		iterator end() {
-			return iterator (this->getTNULL()->right->left);
+			if (this->getTNULL()->right != NULL)
+				return iterator (this->getTNULL()->right->left);
+			return iterator (this->getTNULL());
 		}
 
 		const_iterator end() const{
@@ -300,6 +302,7 @@ class Map : public ft::RedBlackTree< std::pair<Key, T>, Key>{
 
 		//
 		size_type erase (const key_type& k){
+			// todo check if key not exists
 			if (empty())
 				return 0; // check it
 			Node<value_type> *ptr = findNodeKey(k);
@@ -311,9 +314,11 @@ class Map : public ft::RedBlackTree< std::pair<Key, T>, Key>{
 		}
 
 		void erase (iterator first, iterator last){
+			iterator curr = first;
 			while(first != last){
-				erase(first);
-				--last;
+				curr = first;
+				first++;
+				erase(curr);
 			}
 		}
 
@@ -326,8 +331,8 @@ class Map : public ft::RedBlackTree< std::pair<Key, T>, Key>{
 		//	overloading that algorithm with an optimization that behaves like this member function.
 		void swap(Map& x){
 			ft::swap(this->_size, x._size);
-			ft::swap(this->get_root(), x.get_root());
-			ft::swap(this->getTNULL(), x.getTNULL());
+			ft::swap(this->root, x.root);
+			ft::swap(this->TNULL, x.TNULL);
 			ft::swap(this->_allocator, x._allocator);
 			ft::swap(this->_compare, x._compare);
 		}
@@ -340,6 +345,8 @@ class Map : public ft::RedBlackTree< std::pair<Key, T>, Key>{
 				this->deleteRBTree(this->root);
 			}
 			this->_size = 0;
+			this->TNULL->right = this->TNULL;
+			this->TNULL->left = this->TNULL;
 		}
 
 
@@ -392,35 +399,38 @@ class Map : public ft::RedBlackTree< std::pair<Key, T>, Key>{
 		//Because all elements in a map container are unique, the function can only return 1 (if the element is found) or zero (otherwise).
 		//Two keys are considered equivalent if the container's comparison object returns false reflexively (i.e., no matter the order in which the keys are passed as arguments).
 		size_type count (const key_type& k) const{
+			if (_size == 0)
+				return 0;
+
 			if (findNodeKey(k) != NULL)
 				return 1;
 			return 0;
 		}
 
 
-		iterator lower_bound (const key_type& k){
-
-		}
-
-		const_iterator lower_bound (const key_type& k) const{
-
-		}
-
-		iterator upper_bound (const key_type& k){
-
-		}
-
-		const_iterator upper_bound (const key_type& k) const{
-
-		}
-
-		std::pair<const_iterator,const_iterator> equal_range (const key_type& k) const{
-
-		}
-
-		std::pair<iterator,iterator>             equal_range (const key_type& k){
-
-		}
+//		iterator lower_bound (const key_type& k){
+//
+//		}
+//
+//		const_iterator lower_bound (const key_type& k) const{
+//
+//		}
+//
+//		iterator upper_bound (const key_type& k){
+//
+//		}
+//
+//		const_iterator upper_bound (const key_type& k) const{
+//
+//		}
+//
+//		std::pair<const_iterator,const_iterator> equal_range (const key_type& k) const{
+//
+//		}
+//
+//		std::pair<iterator,iterator>             equal_range (const key_type& k){
+//
+//		}
 
 		void printing(){
 			this->printTree();
@@ -437,7 +447,7 @@ class Map : public ft::RedBlackTree< std::pair<Key, T>, Key>{
 		}
 
 
-		Node<value_type> *findNodeKey(const key_type &k){
+		Node<value_type> *findNodeKey(const key_type &k) const {
 			Node<value_type> * current = this->root;
 			while (current != this->getTNULL() && current != NULL) {
 				if (k == current->data.first) {
@@ -514,20 +524,28 @@ class Map : public ft::RedBlackTree< std::pair<Key, T>, Key>{
 
 		// ++iterator
 		MapIterator operator++(){
+
+//			Node<value_type> *max = maximum(this->NodePtr);
+//			if (tmp==)
+
 			if (this->NodePtr->is_tnull)
 				this->NodePtr = this->NodePtr->left;
 
 			else if (!this->NodePtr->right->is_tnull)
 				this->NodePtr = minimum(this->NodePtr->right);
 
-			else if (this->NodePtr->parent)
+			else if (this->NodePtr->parent != NULL && !this->NodePtr->is_tnull)
 			{
 				Node_pointer curr_parent = this->NodePtr->parent;
-				while (curr_parent->data.first <= this->NodePtr->data.first)
+				while ( curr_parent != NULL && curr_parent->data.first <= this->NodePtr->data.first)
 					curr_parent = curr_parent->parent;
-				this->NodePtr = curr_parent;
+				if (curr_parent == NULL) {
+					this->NodePtr = NodePtr->right;
+				} else {
+					this->NodePtr = curr_parent;
+				}
 			}
-
+			// this->NodePtr = curr_parent;
 			//++_it;
 			return *this;
 		}
@@ -542,18 +560,22 @@ class Map : public ft::RedBlackTree< std::pair<Key, T>, Key>{
 			else if (!this->NodePtr->right->is_tnull)
 				this->NodePtr = minimum(this->NodePtr->right);
 
-			else if (this->NodePtr->parent)
+			else if (this->NodePtr->parent != NULL && !this->NodePtr->is_tnull)
 			{
 				Node_pointer curr_parent = this->NodePtr->parent;
 				while (curr_parent->data.first <= this->NodePtr->data.first)
 					curr_parent = curr_parent->parent;
-				this->NodePtr = curr_parent;
+				if (curr_parent == NULL) {
+					this->NodePtr = NodePtr->right;
+				} else {
+					this->NodePtr = curr_parent;
+				}
 			}
 
 			return tmp;
 		}
 
-		//
+		// todo cмотри выше
 		MapIterator operator--(){
 
 			if (this->NodePtr->is_tnull)
@@ -595,7 +617,7 @@ class Map : public ft::RedBlackTree< std::pair<Key, T>, Key>{
 		}
 
 		reference operator*(){
-			
+
 			return this->NodePtr->data;
 		}
 
